@@ -121,6 +121,54 @@ class ApiService {
     if (!path) return null;
     return `${this.baseUrl}${path}`;
   }
+
+  // Admin APIs (no auth required for now)
+  async adminRequest(endpoint, options = {}) {
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || 'An error occurred');
+    }
+
+    return data;
+  }
+
+  async getAllPatients(params = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.skip) queryParams.append('skip', params.skip);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.status_filter) queryParams.append('status_filter', params.status_filter);
+    if (params.search) queryParams.append('search', params.search);
+    
+    const queryString = queryParams.toString();
+    return this.adminRequest(`/api/admin/patients${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getPatientById(patientId) {
+    return this.adminRequest(`/api/admin/patients/${patientId}`);
+  }
+
+  async updatePatientStatus(patientId, isActive) {
+    return this.adminRequest(`/api/admin/patients/${patientId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_active: isActive }),
+    });
+  }
+
+  async getAdminStats() {
+    return this.adminRequest('/api/admin/stats');
+  }
 }
 
 export const apiService = new ApiService();

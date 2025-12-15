@@ -7,7 +7,7 @@ from pathlib import Path
 import uvicorn
 
 from app.core.config import settings
-from app.api.routes import health, patient
+from app.api.routes import health, patient, admin
 from app.db import Base, engine
 
 # Create database tables
@@ -47,6 +47,7 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router, tags=["health"])
 app.include_router(patient.router)
+app.include_router(admin.router)
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

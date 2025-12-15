@@ -61,7 +61,7 @@ const CTA = () => {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)' }}
                 whileTap={{ scale: 0.95 }}
-                className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-full shadow-xl flex items-center justify-center gap-2"
+                className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-poppins font-semibold rounded-full shadow-xl flex items-center justify-center gap-2"
               >
                 <span>Get Started Free</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

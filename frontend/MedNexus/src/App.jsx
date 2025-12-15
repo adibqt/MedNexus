@@ -17,6 +17,9 @@ import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
 import EditProfile from './pages/patient/EditProfile.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
+import AdminLogin from './pages/admin/AdminLogin.jsx';
+import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
 const Landing = () => (
   <div className="min-h-screen bg-white w-full overflow-x-hidden">
@@ -83,11 +86,41 @@ const ProfileRoute = ({ children }) => {
   return children;
 };
 
+// Admin Protected Route
+const AdminProtectedRoute = ({ children }) => {
+  const { isAdminAuthenticated, loading } = useAdminAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-950">
+        <div className="w-12 h-12 border-4 border-emerald-900 border-t-emerald-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAdminAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
+};
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/sign-in" element={<SignIn />} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route
+        path="/admin"
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        }
+      />
       
       {/* Patient Auth Routes */}
       <Route path="/sign-up/patient" element={<PatientSignUp />} />
@@ -125,7 +158,9 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <AdminAuthProvider>
+        <AppRoutes />
+      </AdminAuthProvider>
     </AuthProvider>
   );
 }
