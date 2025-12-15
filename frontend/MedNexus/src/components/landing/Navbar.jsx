@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,6 +73,7 @@ const Navbar = () => {
               whileTap={{ scale: 0.95 }}
               style={{ color: '#10b981' }}
               className="px-5 py-2.5 text-sm font-medium transition-colors"
+              onClick={() => navigate('/sign-in')}
             >
               Sign In
             </motion.button>
@@ -118,7 +121,13 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="pt-4 space-y-3">
-                <button className="w-full py-3 text-gray-700 font-medium rounded-full border border-gray-200 hover:border-emerald-500 transition-colors">
+                <button
+                  className="w-full py-3 text-gray-700 font-medium rounded-full border border-gray-200 hover:border-emerald-500 transition-colors"
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/sign-in');
+                  }}
+                >
                   Sign In
                 </button>
                 <button className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-full">
