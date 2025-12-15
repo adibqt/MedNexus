@@ -1,0 +1,7 @@
+
+
+Starting the server:
+
+cd D:\MedNexus\backend
+.\venv312\Scripts\Activate.ps1
+uvicorn main:app --reload
