@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.landing-page {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 0% 0%, #ecfdf5 0, transparent 45%),
+    radial-gradient(circle at 100% 0%, #e0f2fe 0, transparent 45%),
+    linear-gradient(180deg, #f9fafb 0%, #eff6ff 55%, #f9fafb 100%);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #020617;
+}
+
+.landing-main {
+  width: 100%;
+  padding-top: 0;
+}
+
+.landing-section-spacer {
+  height: 2rem;
+}
+
+@media (min-width: 640px) {
+  .landing-section-spacer {
+    height: 2.5rem;
+  }
+}
+
+

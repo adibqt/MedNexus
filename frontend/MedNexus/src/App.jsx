@@ -21,19 +21,21 @@ import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx'
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
+import './pages/Landing.css';
+
 const Landing = () => (
-  <div className="min-h-screen bg-white w-full overflow-x-hidden">
+  <div className="landing-page">
     <Navbar />
-    <main className="w-full pt-0">
+    <main className="landing-main">
       <Hero />
       <Services />
-      <div className="h-8 sm:h-10 !mt-0" />
+      <div className="landing-section-spacer" />
       <HowItWorks />
-      <div className="h-8 sm:h-10 !mt-0" />
+      <div className="landing-section-spacer" />
       <Doctors />
-      <div className="h-8 sm:h-10 !mt-0" />
+      <div className="landing-section-spacer" />
       <Testimonials />
-      <div className="h-8 sm:h-10 !mt-0" />
+      <div className="landing-section-spacer" />
       <CTA />
     </main>
     <Footer />
