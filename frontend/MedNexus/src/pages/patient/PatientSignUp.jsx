@@ -45,32 +45,69 @@ const PatientSignUp = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex">
-      {/* Left Panel - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-white">
+    <div className="min-h-screen w-full flex relative overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+      {/* Full Screen Animated Background */}
+      <div className="absolute inset-0">
+        {/* Gradient Orbs */}
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-3xl" 
+          style={{ backgroundColor: 'rgba(16, 185, 129, 0.3)' }} 
+        />
+        <motion.div 
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl" 
+          style={{ backgroundColor: 'rgba(6, 182, 212, 0.25)' }} 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.3, 1], x: [0, 50, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 w-96 h-96 rounded-full blur-3xl" 
+          style={{ backgroundColor: 'rgba(139, 92, 246, 0.2)' }} 
+        />
+        
+        {/* Grid Pattern Overlay */}
+        <div 
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+      </div>
+
+      {/* Left Panel - Form with Glassmorphism */}
+      <div className="w-full lg:w-1/2 flex flex-col relative z-10 p-6 lg:p-12">
         {/* Header */}
-        <div className="p-6 sm:p-8">
+        <div className="mb-8">
           <Link to="/" className="inline-flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#10b981' }}>
               <Heart className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">
+            <span className="text-xl font-bold text-white">
               Med<span style={{ color: '#10b981' }}>Nexus</span>
             </span>
           </Link>
         </div>
 
-        {/* Form */}
-        <div className="flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
-          <div className="w-full max-w-md">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+        {/* Form Card */}
+        <div className="flex-1 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md p-8 sm:p-10 rounded-3xl backdrop-blur-2xl border border-white/30 shadow-2xl"
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                 Create your account
               </h1>
-              <p className="text-gray-500 mb-8">
+              <p className="text-gray-300 mb-8">
                 Join MedNexus and take control of your health journey
               </p>
 
@@ -78,7 +115,8 @@ const PatientSignUp = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm"
+                  className="mb-6 p-4 rounded-xl text-red-300 text-sm"
+                  style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.3)' }}
                 >
                   {error}
                 </motion.div>
@@ -87,12 +125,12 @@ const PatientSignUp = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Full Name
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200 group-focus-within:from-emerald-50 group-focus-within:to-emerald-100 group-focus-within:border-emerald-200 transition-all">
-                      <User className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors" />
+                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl border-r transition-all" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                      <User className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
                       type="text"
@@ -100,8 +138,8 @@ const PatientSignUp = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      style={{ paddingLeft: '4.5rem' }}
-                      className="w-full pr-4 py-4 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
+                      style={{ paddingLeft: '4.5rem', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                      className="w-full pr-4 py-4 rounded-xl border text-white placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
                       placeholder="John Doe"
                     />
                   </div>
@@ -109,12 +147,12 @@ const PatientSignUp = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Email Address
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200 group-focus-within:from-emerald-50 group-focus-within:to-emerald-100 group-focus-within:border-emerald-200 transition-all">
-                      <Mail className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors" />
+                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl border-r transition-all" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                      <Mail className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
                       type="email"
@@ -122,8 +160,8 @@ const PatientSignUp = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      style={{ paddingLeft: '4.5rem' }}
-                      className="w-full pr-4 py-4 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
+                      style={{ paddingLeft: '4.5rem', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                      className="w-full pr-4 py-4 rounded-xl border text-white placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -131,12 +169,12 @@ const PatientSignUp = () => {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Phone Number
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200 group-focus-within:from-emerald-50 group-focus-within:to-emerald-100 group-focus-within:border-emerald-200 transition-all">
-                      <Phone className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors" />
+                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl border-r transition-all" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                      <Phone className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
                       type="tel"
@@ -144,8 +182,8 @@ const PatientSignUp = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       required
-                      style={{ paddingLeft: '4.5rem' }}
-                      className="w-full pr-4 py-4 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
+                      style={{ paddingLeft: '4.5rem', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                      className="w-full pr-4 py-4 rounded-xl border text-white placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
                       placeholder="+1 234 567 8900"
                     />
                   </div>
@@ -153,12 +191,12 @@ const PatientSignUp = () => {
 
                 {/* Password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Password
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200 group-focus-within:from-emerald-50 group-focus-within:to-emerald-100 group-focus-within:border-emerald-200 transition-all">
-                      <Lock className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors" />
+                    <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center rounded-l-xl border-r transition-all" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                      <Lock className="w-5 h-5 text-gray-400 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -167,14 +205,14 @@ const PatientSignUp = () => {
                       onChange={handleChange}
                       required
                       minLength={6}
-                      style={{ paddingLeft: '4.5rem' }}
-                      className="w-full pr-12 py-4 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
+                      style={{ paddingLeft: '4.5rem', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                      className="w-full pr-12 py-4 rounded-xl border text-white placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-left"
                       placeholder="••••••••"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -187,8 +225,8 @@ const PatientSignUp = () => {
                   disabled={loading}
                   whileHover={{ scale: loading ? 1 : 1.02 }}
                   whileTap={{ scale: loading ? 1 : 0.98 }}
-                  className="w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70"
-                  style={{ backgroundColor: '#10b981' }}
+                  className="w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70 shadow-lg"
+                  style={{ backgroundColor: '#10b981', boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)' }}
                 >
                   {loading ? (
                     <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -201,62 +239,21 @@ const PatientSignUp = () => {
                 </motion.button>
               </form>
 
-              <p className="mt-8 text-center text-gray-500">
+              <p className="mt-8 text-center text-gray-400">
                 Already have an account?{' '}
-                <Link to="/sign-in/patient" className="font-semibold hover:underline" style={{ color: '#10b981' }}>
+                <Link to="/sign-in/patient" className="font-semibold hover:underline text-emerald-400">
                   Sign in
                 </Link>
               </p>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Right Panel - Decorative */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          {/* Gradient Orbs */}
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3]
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 -left-20 w-96 h-96 rounded-full blur-3xl" 
-            style={{ backgroundColor: 'rgba(16, 185, 129, 0.4)' }} 
-          />
-          <motion.div 
-            animate={{ 
-              scale: [1.2, 1, 1.2],
-              opacity: [0.2, 0.4, 0.2]
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-1/4 right-10 w-[500px] h-[500px] rounded-full blur-3xl" 
-            style={{ backgroundColor: 'rgba(6, 182, 212, 0.3)' }} 
-          />
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.3, 1],
-              x: [0, 30, 0]
-            }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/2 left-1/3 w-72 h-72 rounded-full blur-3xl" 
-            style={{ backgroundColor: 'rgba(139, 92, 246, 0.2)' }} 
-          />
-          
-          {/* Grid Pattern Overlay */}
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
-
+      {/* Right Panel - Content */}
+      <div className="hidden lg:flex lg:w-1/2 relative z-10">
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center w-full p-12 xl:p-16">
+        <div className="flex flex-col justify-center w-full p-12 xl:p-16">
           {/* Main Content */}
           <div className="flex-1 flex flex-col justify-center">
             <motion.div
