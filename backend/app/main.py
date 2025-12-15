@@ -20,8 +20,10 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 # Lightweight dev migration: add newly introduced columns for existing DBs.
 try:
     with engine.begin() as conn:
+        # PostgreSQL supports ADD COLUMN IF NOT EXISTS
         conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_group VARCHAR(3)"))
         conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(500)"))
+        conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(10)"))
 except Exception as _e:
     # Don't block app startup if migration isn't supported (or DB is read-only).
     pass

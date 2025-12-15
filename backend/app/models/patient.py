@@ -24,6 +24,7 @@ class Patient(Base):
     
     # Profile Info (from profile completion)
     age = Column(Integer, nullable=True)
+    gender = Column(String(10), nullable=True)  # Male, Female, Other
     weight = Column(Float, nullable=True)  # in kg
     height = Column(Float, nullable=True)  # in cm
     blood_group = Column(String(3), nullable=True)  # e.g. A+, AB-, O+

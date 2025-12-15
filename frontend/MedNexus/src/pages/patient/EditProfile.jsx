@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Plus,
   Shield,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import ApiService from '../../services/api';
@@ -50,6 +51,7 @@ const EditProfile = () => {
     name: user?.name || '',
     phone: user?.phone || '',
     age: user?.age || '',
+    gender: user?.gender || '',
     weight: user?.weight || '',
     height: user?.height || '',
     blood_group: user?.blood_group || '',
@@ -138,9 +140,10 @@ const EditProfile = () => {
         name: formData.name,
         phone: formData.phone,
         age: parseInt(formData.age),
+        gender: formData.gender || null,  // Send null instead of empty string
         weight: parseFloat(formData.weight),
         height: parseFloat(formData.height),
-        blood_group: formData.blood_group,
+        blood_group: formData.blood_group || null,  // Send null instead of empty string
         medical_conditions: formData.conditions.length > 0 ? formData.conditions.join(', ') : null,
       };
 
@@ -381,7 +384,7 @@ const EditProfile = () => {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {/* Age */}
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <div className="flex items-center gap-2 mb-3">
@@ -400,6 +403,27 @@ const EditProfile = () => {
                     placeholder="25"
                   />
                   <p className="text-xs text-slate-400 mt-1">years</p>
+                </div>
+
+                {/* Gender */}
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Users size={16} className="text-pink-500" />
+                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Gender</label>
+                  </div>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-0 py-1 bg-transparent border-0 border-b-2 border-slate-200 focus:border-pink-500 outline-none text-xl font-semibold text-slate-800 transition-colors cursor-pointer appearance-none"
+                  >
+                    <option value="" disabled>-</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <p className="text-xs text-slate-400 mt-1">identity</p>
                 </div>
 
                 {/* Weight */}

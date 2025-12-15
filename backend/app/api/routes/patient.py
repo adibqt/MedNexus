@@ -144,6 +144,7 @@ async def complete_profile(
 ):
     """Complete patient's profile with health information"""
     current_patient.age = profile_data.age
+    current_patient.gender = profile_data.gender
     current_patient.weight = profile_data.weight
     current_patient.height = profile_data.height
     current_patient.blood_group = profile_data.blood_group

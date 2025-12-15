@@ -493,6 +493,10 @@ const PatientManagement = () => {
                       </span>
                     </div>
                     <div className="patient-detail-item">
+                      <span className="patient-detail-label">Gender</span>
+                      <span className="patient-detail-value">{selectedPatient.gender || 'Not provided'}</span>
+                    </div>
+                    <div className="patient-detail-item">
                       <span className="patient-detail-label">Blood Group</span>
                       <span className="patient-detail-value">{selectedPatient.blood_group || 'Not provided'}</span>
                     </div>
