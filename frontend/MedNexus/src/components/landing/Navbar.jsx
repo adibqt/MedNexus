@@ -69,7 +69,7 @@ const Navbar = () => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05,boxShadow: '0 10px 40px rgba(175, 235, 215, 0.3)' }}
               whileTap={{ scale: 0.95 }}
               style={{ color: '#10b981' }}
               className="px-5 py-2.5 text-sm font-medium transition-colors"
@@ -77,14 +77,7 @@ const Navbar = () => {
             >
               Sign In
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(16, 185, 129, 0.3)' }}
-              whileTap={{ scale: 0.95 }}
-              style={{ backgroundColor: '#10b981' }}
-              className="px-6 py-2.5 text-white text-sm font-medium rounded-lg shadow-lg transition-all"
-            >
-              Get Started
-            </motion.button>
+            
           </div>
 
           {/* Mobile Menu Button */}
