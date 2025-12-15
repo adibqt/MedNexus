@@ -15,6 +15,7 @@ import PatientSignUp from './pages/patient/PatientSignUp.jsx';
 import PatientSignIn from './pages/patient/PatientSignIn.jsx';
 import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
+import EditProfile from './pages/patient/EditProfile.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const Landing = () => (
@@ -23,9 +24,13 @@ const Landing = () => (
     <main className="w-full pt-0">
       <Hero />
       <Services />
+      <div className="h-8 sm:h-10 !mt-0" />
       <HowItWorks />
+      <div className="h-8 sm:h-10 !mt-0" />
       <Doctors />
+      <div className="h-8 sm:h-10 !mt-0" />
       <Testimonials />
+      <div className="h-8 sm:h-10 !mt-0" />
       <CTA />
     </main>
     <Footer />
@@ -102,6 +107,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <PatientDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patient/profile"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <EditProfile />
           </ProtectedRoute>
         }
       />
