@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import apiService from '../../services/api';
-import ApiService from '../../services/api';
 import './PatientDashboard.css';
 
 const API_URL = 'http://localhost:8000';
@@ -73,6 +72,7 @@ const PatientDashboard = () => {
   const [suggesting, setSuggesting] = useState(false);
   const [suggestion, setSuggestion] = useState(null);
   const [concerns, setConcerns] = useState(fallbackConcerns);
+  const [symptoms, setSymptoms] = useState([]); // Store full symptom objects with specialization
   const [showNotifications, setShowNotifications] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
@@ -135,91 +135,37 @@ const PatientDashboard = () => {
     (async () => {
       try {
         setLoading(true);
-        
-        // Load available doctors (mock data for now)
+
+        // Load doctors and appointments from backend
         setLoadingDoctors(true);
-        // Simulated doctors data
-        const mockDoctors = [
-          {
-            id: 1,
-            full_name: 'Dr. Sarah Wilson',
-            specialization: 'Cardiologist',
-            profile_picture_url: null,
-            is_verified: true,
-            average_rating: 4.8,
-            total_ratings: 124,
-          },
-          {
-            id: 2,
-            full_name: 'Dr. James Chen',
-            specialization: 'General Physician',
-            profile_picture_url: null,
-            is_verified: true,
-            average_rating: 4.6,
-            total_ratings: 89,
-          },
-          {
-            id: 3,
-            full_name: 'Dr. Emily Brown',
-            specialization: 'Dermatologist',
-            profile_picture_url: null,
-            is_verified: true,
-            average_rating: 4.9,
-            total_ratings: 156,
-          },
-          {
-            id: 4,
-            full_name: 'Dr. Michael Lee',
-            specialization: 'Neurologist',
-            profile_picture_url: null,
-            is_verified: false,
-            average_rating: 4.5,
-            total_ratings: 67,
-          },
-        ];
-        
-        if (mounted) {
-          setDoctors(mockDoctors);
-          setLoadingDoctors(false);
+        try {
+          const [doctorsData, appointmentsData] = await Promise.all([
+            apiService.getPublicDoctors(),
+            apiService.getPatientAppointments(),
+          ]);
+
+          if (mounted) {
+            setDoctors(doctorsData || []);
+            setAppointments(appointmentsData || []);
+            setLoadingDoctors(false);
+          }
+        } catch (e) {
+          console.warn('Failed to load doctors or appointments from API.', e);
+          if (mounted) {
+            setLoadingDoctors(false);
+          }
         }
 
         // Load symptoms from backend
         try {
-          const symptoms = await apiService.getAllSymptoms();
-          if (mounted && Array.isArray(symptoms) && symptoms.length > 0) {
-            setConcerns(symptoms.filter((s) => s.is_active).map((s) => s.name));
+          const symptomsData = await apiService.getAllSymptoms();
+          if (mounted && Array.isArray(symptomsData) && symptomsData.length > 0) {
+            const activeSymptoms = symptomsData.filter((s) => s.is_active);
+            setSymptoms(activeSymptoms); // Store full symptom objects
+            setConcerns(activeSymptoms.map((s) => s.name)); // Store names for display
           }
         } catch (e) {
           console.warn('Failed to load symptoms from API, using fallback list.', e);
-        }
-
-        // Load user appointments (mock data)
-        const mockAppointments = [
-          {
-            id: 1,
-            doctor: { name: 'Sarah Wilson', specialization: 'Cardiologist', profile_picture_url: null },
-            doctor_id: 1,
-            appointment_date: new Date().toISOString().split('T')[0],
-            appointment_time: '10:00 AM',
-            time_slot: '10:00 AM',
-            status: 'Confirmed',
-            reason: 'Regular checkup',
-            symptoms: 'Chest discomfort',
-          },
-          {
-            id: 2,
-            doctor: { name: 'James Chen', specialization: 'General Physician', profile_picture_url: null },
-            doctor_id: 2,
-            appointment_date: '2025-12-20',
-            appointment_time: '02:30 PM',
-            time_slot: '02:30 PM',
-            status: 'Pending',
-            reason: 'Follow-up',
-          },
-        ];
-        
-        if (mounted) {
-          setAppointments(mockAppointments);
         }
 
         setError('');
@@ -286,37 +232,67 @@ const PatientDashboard = () => {
     try {
       setSuggesting(true);
       
-      // Simple mapping logic
-      const symptomSpecMap = {
-        'Temperature': 'General Physician',
-        'Headache': 'Neurologist',
-        'Weakness': 'General Physician',
-        'Cough': 'Pulmonologist',
-        'Fever': 'General Physician',
-        'Fatigue': 'General Physician',
-        'Chest Pain': 'Cardiologist',
-        'Dizziness': 'Neurologist',
-        'Nausea': 'Gastroenterologist',
-      };
+      // Find specializations for selected symptoms from database
+      const selectedSymptoms = symptoms.filter((s) => selected.includes(s.name));
       
-      // Find the most relevant specialization
-      const specs = selected.map(s => symptomSpecMap[s] || 'General Physician');
-      const preferredSpec = specs[0] || 'General Physician';
+      // Get the specialization from the first selected symptom (or use the most common one)
+      let preferredSpec = null;
+      if (selectedSymptoms.length > 0) {
+        // Find the first symptom with a specialization, or use the first symptom's specialization
+        const specCounts = {};
+        selectedSymptoms.forEach((symptom) => {
+          if (symptom.specialization) {
+            specCounts[symptom.specialization] = (specCounts[symptom.specialization] || 0) + 1;
+          }
+        });
+        
+        // Get the most common specialization, or the first one found
+        if (Object.keys(specCounts).length > 0) {
+          preferredSpec = Object.keys(specCounts).reduce((a, b) =>
+            specCounts[a] > specCounts[b] ? a : b
+          );
+        } else {
+          // Fallback: use the first symptom's specialization if available
+          preferredSpec = selectedSymptoms[0]?.specialization || null;
+        }
+      }
       
-      // Find matching doctor
-      const matchingDoctors = doctors.filter(d => 
-        d.specialization.toLowerCase().includes(preferredSpec.toLowerCase().split(' ')[0])
-      );
+      // If no specialization found, default to General Physician
+      if (!preferredSpec) {
+        preferredSpec = 'General Physician';
+      }
       
-      const availableDoctors = matchingDoctors.length > 0 ? matchingDoctors : doctors;
-      
-      if (availableDoctors.length > 0) {
-        const suggestedDoctor = availableDoctors[0];
+      // Find matching doctors by exact specialization match
+      const matchingDoctors = doctors.filter((d) => {
+        if (!d.specialization) return false;
+        // Case-insensitive exact match or contains match
+        const docSpec = d.specialization.toLowerCase().trim();
+        const targetSpec = preferredSpec.toLowerCase().trim();
+        return docSpec === targetSpec || docSpec.includes(targetSpec) || targetSpec.includes(docSpec);
+      });
+
+      // If no exact match, try partial match
+      const availableDoctors = matchingDoctors.length > 0 
+        ? matchingDoctors 
+        : doctors.filter((d) => {
+            if (!d.specialization) return false;
+            const docSpec = d.specialization.toLowerCase();
+            const targetSpec = preferredSpec.toLowerCase();
+            // Check if any word in the specialization matches
+            const targetWords = targetSpec.split(' ');
+            return targetWords.some(word => docSpec.includes(word));
+          });
+
+      // Final fallback: if still no match, use all doctors
+      const finalDoctors = availableDoctors.length > 0 ? availableDoctors : doctors;
+
+      if (finalDoctors.length > 0) {
+        const suggestedDoctor = finalDoctors[0];
         setSuggestion({
           id: suggestedDoctor.id,
-          name: suggestedDoctor.full_name,
+          name: suggestedDoctor.name,
           specialty: suggestedDoctor.specialization,
-          photo_url: suggestedDoctor.profile_picture_url,
+          photo_url: suggestedDoctor.profile_picture,
           experience_years: 8,
           rating: suggestedDoctor.average_rating || 4.5,
           total_ratings: suggestedDoctor.total_ratings || 0,
@@ -729,17 +705,15 @@ const PatientDashboard = () => {
                   >
                     <div className="patient-dashboard-doctor-photo-wrap">
                       <div className="patient-dashboard-doctor-photo">
-                        {doctor.profile_picture_url ? (
-                          <img src={getImageUrl(doctor.profile_picture_url)} alt="" />
+                        {doctor.profile_picture ? (
+                          <img src={getImageUrl(doctor.profile_picture)} alt="" />
                         ) : (
                           <User />
                         )}
                       </div>
                     </div>
                     <div className="patient-dashboard-doctor-info">
-                      <h3 className="patient-dashboard-doctor-name">
-                        {doctor.full_name}
-                      </h3>
+                      <h3 className="patient-dashboard-doctor-name">Dr. {doctor.name}</h3>
                       <p className="patient-dashboard-doctor-spec">
                         <Stethoscope />
                         {doctor.specialization}
@@ -888,18 +862,21 @@ const PatientDashboard = () => {
                         <div className="patient-dashboard-modal-apt-main">
                           <div className="patient-dashboard-modal-apt-doctor">
                             <div className="patient-dashboard-modal-apt-avatar">
-                              {appointment.doctor?.profile_picture_url ? (
-                                <img
-                                  src={getImageUrl(appointment.doctor.profile_picture_url)}
-                                  alt=""
-                                />
+                            {appointment.doctor?.profile_picture_url ? (
+                              <img
+                                src={getImageUrl(appointment.doctor.profile_picture_url)}
+                                alt=""
+                              />
                               ) : (
                                 <User />
                               )}
                             </div>
                             <div className="patient-dashboard-modal-apt-doctor-text">
-                              <h4>Dr. {appointment.doctor?.name}</h4>
-                              <p>{appointment.doctor?.specialization}</p>
+                              <h4>Dr. {appointment.doctor_name || appointment.doctor?.name}</h4>
+                              <p>
+                                {appointment.doctor_specialization ||
+                                  appointment.doctor?.specialization}
+                              </p>
                             </div>
                           </div>
                           <div className="patient-dashboard-modal-apt-meta">

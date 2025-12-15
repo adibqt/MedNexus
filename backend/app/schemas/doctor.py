@@ -1,18 +1,18 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
 
 
 class DoctorSignUp(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
-    phone: str = Field(..., min_length=10, max_length=20)
+    phone: str = Field(..., min_length=11, max_length=11)
     specialization: str = Field(..., min_length=2, max_length=100)
     bmdc_number: str = Field(..., min_length=2, max_length=50)
     password: str = Field(..., min_length=6)
 
 
 class DoctorSignIn(BaseModel):
-    phone: str = Field(..., min_length=10, max_length=20)
+    phone: str = Field(..., min_length=11, max_length=11)
     password: str = Field(..., min_length=6)
 
 

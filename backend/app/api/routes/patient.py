@@ -6,7 +6,7 @@ import uuid
 from pathlib import Path
 
 from app.db import get_db
-from app.models import Patient
+from app.models import Patient, Appointment, Doctor
 from app.schemas import (
     PatientSignUp,
     PatientSignIn,
@@ -15,6 +15,7 @@ from app.schemas import (
     ProfileUpdate,
     PatientResponse,
     MessageResponse,
+    AppointmentOut,
 )
 from app.services import (
     verify_password,
@@ -279,3 +280,34 @@ async def get_dashboard_data(current_patient: Patient = Depends(get_current_pati
         },
         "recent_activity": [],  # Placeholder
     }
+
+
+@router.get("/appointments", response_model=list[AppointmentOut])
+async def get_patient_appointments(
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """Return all appointments for the current patient (if any)."""
+    rows = (
+        db.query(Appointment, Doctor)
+        .join(Doctor, Appointment.doctor_id == Doctor.id)
+        .filter(Appointment.patient_id == current_patient.id)
+        .order_by(Appointment.date.desc(), Appointment.time.desc())
+        .all()
+    )
+
+    results: list[AppointmentOut] = []
+    for appt, doc in rows:
+        results.append(
+            AppointmentOut(
+                id=appt.id,
+                appointment_date=appt.date,
+                appointment_time=appt.time,
+                status=appt.status,
+                reason=appt.reason,
+                symptoms=appt.symptoms,
+                doctor_name=doc.name,
+                doctor_specialization=doc.specialization,
+            )
+        )
+    return results

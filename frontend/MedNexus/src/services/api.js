@@ -123,6 +123,16 @@ class ApiService {
     return this.adminRequest('/api/admin/symptoms');
   }
 
+  // Doctors visible to patients
+  async getPublicDoctors() {
+    return this.request('/api/doctors');
+  }
+
+  // Patient appointments
+  async getPatientAppointments() {
+    return this.request('/api/patients/appointments');
+  }
+
   // Helper to get full URL for profile pictures
   getProfilePictureUrl(path) {
     if (!path) return null;

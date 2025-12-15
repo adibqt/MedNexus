@@ -9,6 +9,7 @@ from app.schemas.patient import (
     MessageResponse,
 )
 from app.schemas.doctor import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken
+from app.schemas.appointment import AppointmentOut
 
 __all__ = [
     "PatientSignUp",
@@ -23,4 +24,5 @@ __all__ = [
     "DoctorSignIn",
     "DoctorResponse",
     "DoctorToken",
+    "AppointmentOut",
 ]

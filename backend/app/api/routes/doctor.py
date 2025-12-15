@@ -151,6 +151,18 @@ async def get_me(current_doctor: Doctor = Depends(get_current_doctor)):
   return DoctorResponse.model_validate(current_doctor)
 
 
+@router.get("", response_model=list[DoctorResponse])
+async def list_public_doctors(db: Session = Depends(get_db)):
+    """List doctors visible to patients (approved and active)."""
+    docs = (
+        db.query(Doctor)
+        .filter(Doctor.is_approved == True, Doctor.is_active == True)
+        .order_by(Doctor.created_at.desc())
+        .all()
+    )
+    return [DoctorResponse.model_validate(d) for d in docs]
+
+
 @router.put("/schedule", response_model=DoctorResponse)
 async def update_schedule(
     schedule: dict,

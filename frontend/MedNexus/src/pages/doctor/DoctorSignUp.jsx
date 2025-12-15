@@ -1,23 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Stethoscope, ArrowRight } from 'lucide-react';
 import apiService from '../../services/api';
 import './DoctorSignUp.css';
 
-const specializationOptions = [
-  { value: 'General Physician', label: 'General Physician – Fever, Fatigue, Weakness' },
-  { value: 'Cardiologist', label: 'Cardiologist – Chest Pain, Shortness of Breath' },
-  { value: 'Pulmonologist', label: 'Pulmonologist – Cough, Breathing Issues' },
-  { value: 'Neurologist', label: 'Neurologist – Headache, Dizziness' },
-  { value: 'Gastroenterologist', label: 'Gastroenterologist – Abdominal Pain, Nausea' },
-  { value: 'Dermatologist', label: 'Dermatologist – Rash, Skin Problems' },
-];
-
 const DoctorSignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [specializations, setSpecializations] = useState([]);
 
   const [form, setForm] = useState({
     name: '',
@@ -37,6 +29,19 @@ const DoctorSignUp = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
   };
+
+  useEffect(() => {
+    const loadSpecializations = async () => {
+      try {
+        const data = await apiService.getSpecializations();
+        setSpecializations(data || []);
+      } catch (e) {
+        console.warn('Failed to load specializations, using empty list.', e);
+      }
+    };
+
+    loadSpecializations();
+  }, []);
 
   const handleFileChange = (field, fileList) => {
     const file = fileList?.[0] || null;
@@ -154,7 +159,9 @@ const DoctorSignUp = () => {
                     value={form.phone}
                     onChange={handleChange}
                     required
-                    placeholder="+8801XXXXXXXXX"
+                    placeholder="11-digit number, e.g. 01XXXXXXXXX"
+                    pattern="\d{11}"
+                    maxLength={11}
                     className="doctor-signup-input"
                   />
                 </div>
@@ -177,9 +184,9 @@ const DoctorSignUp = () => {
                     <option value="" disabled>
                       Select specialization
                     </option>
-                    {specializationOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
+                    {specializations.map((spec) => (
+                      <option key={spec.id} value={spec.name}>
+                        {spec.name}
                       </option>
                     ))}
                   </select>
