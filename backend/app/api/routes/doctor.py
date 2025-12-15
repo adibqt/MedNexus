@@ -7,7 +7,12 @@ from datetime import timedelta
 from app.db import get_db
 from app.models import Doctor
 from app.schemas import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken
-from app.services import get_password_hash, verify_password, create_access_token
+from app.services import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    get_current_doctor,
+)
 from app.core.config import settings
 
 router = APIRouter(prefix="/api/doctors", tags=["doctors"])
@@ -138,5 +143,33 @@ async def doctor_signin(credentials: DoctorSignIn, db: Session = Depends(get_db)
         access_token=access_token,
         user=DoctorResponse.model_validate(doctor),
     )
+
+
+@router.get("/me", response_model=DoctorResponse)
+async def get_me(current_doctor: Doctor = Depends(get_current_doctor)):
+  """Return the current authenticated doctor profile."""
+  return DoctorResponse.model_validate(current_doctor)
+
+
+@router.put("/schedule", response_model=DoctorResponse)
+async def update_schedule(
+    schedule: dict,
+    current_doctor: Doctor = Depends(get_current_doctor),
+    db: Session = Depends(get_db),
+):
+    """
+    Update the current doctor's schedule.
+
+    The `schedule` dict is stored as JSON in the `schedule` column and can contain
+    days and time ranges (e.g. { "Mon": { "enabled": true, "start": "09:00", "end": "13:00" }, ... }).
+    """
+    import json
+
+    current_doctor.schedule = json.dumps(schedule)
+    db.add(current_doctor)
+    db.commit()
+    db.refresh(current_doctor)
+
+    return DoctorResponse.model_validate(current_doctor)
 
 

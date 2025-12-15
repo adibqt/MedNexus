@@ -35,7 +35,12 @@ const DoctorSignIn = () => {
       });
       localStorage.setItem('doctor_access_token', data.access_token);
       localStorage.setItem('doctor_user', JSON.stringify(data.user));
-      navigate('/', { replace: true });
+      // If no schedule configured yet, send to schedule setup first
+      if (!data.user.schedule) {
+        navigate('/doctor/schedule', { replace: true });
+      } else {
+        navigate('/doctor/dashboard', { replace: true });
+      }
     } catch (err) {
       setError(err.message || 'Failed to sign in');
     } finally {

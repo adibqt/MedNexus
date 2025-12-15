@@ -22,6 +22,7 @@ class Doctor(Base):
 
     # Profile
     profile_picture = Column(String(500), nullable=True)    # optional file path
+    schedule = Column(Text, nullable=True)                  # JSON-encoded schedule config
 
     # Status
     is_approved = Column(Boolean, default=False)

@@ -1,0 +1,451 @@
+.doctor-dashboard-page {
+  min-height: 100vh;
+  padding: 20px 20px 28px;
+  background: #f3f4f6;
+  color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.doctor-dashboard-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f9fafb;
+}
+
+.doctor-dashboard-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.doctor-dashboard-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.doctor-dashboard-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  overflow: hidden;
+}
+
+.doctor-dashboard-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doctor-dashboard-avatar--large {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+.doctor-dashboard-hero {
+  border-radius: 999px;
+  padding: 10px 22px;
+  background: linear-gradient(90deg, #047857, #0ea5e9);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.25);
+}
+
+.doctor-dashboard-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doctor-dashboard-hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-dashboard-hero-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.doctor-dashboard-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.doctor-dashboard-hero-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.15);
+}
+
+.doctor-dashboard-hero-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #ecfdf5;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.doctor-dashboard-hero-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-dashboard-hero-btn {
+  border-radius: 999px;
+  padding: 7px 14px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.doctor-dashboard-hero-btn.secondary {
+  background: rgba(15, 23, 42, 0.1);
+  color: #e5e7eb;
+  border: 1px solid rgba(226, 232, 240, 0.3);
+}
+
+.doctor-dashboard-hero-btn.danger {
+  background: #ef4444;
+  color: #fef2f2;
+}
+
+.doctor-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.doctor-dashboard-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doctor-dashboard-greeting {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.doctor-dashboard-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doctor-dashboard-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.doctor-dashboard-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.doctor-dashboard-tag {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.doctor-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+
+.doctor-dashboard-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.doctor-dashboard-stat-card {
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.doctor-dashboard-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.doctor-dashboard-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2px;
+}
+
+.doctor-dashboard-stat-caption {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.doctor-dashboard-card {
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 16px 16px 14px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.doctor-dashboard-card--primary {
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+}
+
+.doctor-dashboard-card--stacked {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.doctor-dashboard-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.doctor-dashboard-badge {
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+.doctor-dashboard-schedule-list {
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-dashboard-schedule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doctor-dashboard-schedule-day {
+  color: #6b7280;
+}
+
+.doctor-dashboard-schedule-time {
+  font-weight: 600;
+}
+
+.doctor-dashboard-empty {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.doctor-dashboard-cta {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.doctor-dashboard-cta button {
+  border-radius: 999px;
+  padding: 6px 12px;
+  border: none;
+  background: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+  color: #eff6ff;
+  cursor: pointer;
+}
+
+.doctor-dashboard-quick {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.doctor-dashboard-pill-card {
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.doctor-dashboard-pill-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.doctor-dashboard-pill-value {
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.doctor-dashboard-quick-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doctor-dashboard-quick-card {
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.doctor-dashboard-quick-card--accent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+}
+
+.doctor-dashboard-quick-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eff6ff;
+  flex-shrink: 0;
+}
+
+.doctor-dashboard-quick-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.doctor-dashboard-quick-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.doctor-dashboard-quick-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.doctor-dashboard-quick-button {
+  border-radius: 999px;
+  padding: 6px 12px;
+  border: none;
+  background: rgba(16, 185, 129, 0.95);
+  font-size: 11px;
+  font-weight: 600;
+  color: #ecfdf5;
+  cursor: pointer;
+}
+
+.doctor-dashboard-quick-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.doctor-dashboard-quick-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.doctor-dashboard-quick-pill {
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.doctor-dashboard-quick-empty {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+@media (max-width: 800px) {
+  .doctor-dashboard-page {
+    padding: 18px 14px 22px;
+  }
+
+  .doctor-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .doctor-dashboard-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+

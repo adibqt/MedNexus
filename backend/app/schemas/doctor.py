@@ -25,6 +25,7 @@ class DoctorResponse(BaseModel):
     mbbs_certificate: str
     fcps_certificate: Optional[str] = None
     profile_picture: Optional[str] = None
+    schedule: Optional[str] = None
     is_approved: bool
     is_active: bool
     created_at: Optional[datetime] = None

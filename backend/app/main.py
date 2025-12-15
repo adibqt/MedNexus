@@ -34,6 +34,9 @@ try:
         conn.execute(
             text("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)")
         )
+        conn.execute(
+            text("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS schedule TEXT")
+        )
 except Exception as _e:
     # Don't block app startup if migration isn't supported (or DB is read-only).
     pass

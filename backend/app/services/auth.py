@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db import get_db
-from app.models import Patient
+from app.models import Patient, Doctor
 from app.schemas import TokenData
 
 # Password hashing
@@ -90,3 +90,31 @@ async def get_current_patient(
             detail="Inactive account"
         )
     return patient
+
+
+async def get_current_doctor(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> Doctor:
+    """Get current authenticated doctor from JWT token"""
+    token = credentials.credentials
+    token_data = decode_token(token)
+
+    if token_data.role != "doctor":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access doctor resources",
+        )
+
+    doctor = db.query(Doctor).filter(Doctor.id == token_data.user_id).first()
+    if doctor is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found"
+        )
+    if not doctor.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Doctor account is deactivated",
+        )
+
+    return doctor
