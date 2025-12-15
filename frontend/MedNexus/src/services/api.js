@@ -194,6 +194,17 @@ class ApiService {
       body: JSON.stringify({ is_active: isActive }),
     });
   }
+
+  async updateDoctorProfile(formData) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request('/api/doctors/me', {
+      method: 'PUT',
+      body: formData,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
 }
 
 export const apiService = new ApiService();

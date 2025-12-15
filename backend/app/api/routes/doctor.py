@@ -173,3 +173,41 @@ async def update_schedule(
     return DoctorResponse.model_validate(current_doctor)
 
 
+@router.put("/me", response_model=DoctorResponse)
+async def update_me(
+    name: str | None = Form(None),
+    specialization: str | None = Form(None),
+    phone: str | None = Form(None),
+    profile_picture: UploadFile | None = File(None),
+    current_doctor: Doctor = Depends(get_current_doctor),
+    db: Session = Depends(get_db),
+):
+    """Update basic doctor profile information."""
+    # Handle phone uniqueness if changed
+    if phone and phone != current_doctor.phone:
+        existing = db.query(Doctor).filter(Doctor.phone == phone).first()
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Phone number already registered for another doctor",
+            )
+        current_doctor.phone = phone
+
+    if name:
+        current_doctor.name = name
+
+    if specialization:
+        current_doctor.specialization = specialization
+
+    if profile_picture:
+        # Save new profile picture
+        profile_path = _save_upload(profile_picture, "profile")
+        current_doctor.profile_picture = profile_path
+
+    db.add(current_doctor)
+    db.commit()
+    db.refresh(current_doctor)
+
+    return DoctorResponse.model_validate(current_doctor)
+
+
