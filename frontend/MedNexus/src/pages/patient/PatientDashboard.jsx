@@ -18,6 +18,7 @@ import {
   Bot,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import apiService from '../../services/api';
 import ApiService from '../../services/api';
 import './PatientDashboard.css';
 
@@ -180,6 +181,16 @@ const PatientDashboard = () => {
         if (mounted) {
           setDoctors(mockDoctors);
           setLoadingDoctors(false);
+        }
+
+        // Load symptoms from backend
+        try {
+          const symptoms = await apiService.getAllSymptoms();
+          if (mounted && Array.isArray(symptoms) && symptoms.length > 0) {
+            setConcerns(symptoms.filter((s) => s.is_active).map((s) => s.name));
+          }
+        } catch (e) {
+          console.warn('Failed to load symptoms from API, using fallback list.', e);
         }
 
         // Load user appointments (mock data)

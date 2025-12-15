@@ -117,6 +117,12 @@ class ApiService {
     return this.request('/api/patients/dashboard');
   }
 
+  // Shared: public symptoms (for patient dashboard)
+  async getAllSymptoms() {
+    // reuse admin endpoint which currently has no auth
+    return this.adminRequest('/api/admin/symptoms');
+  }
+
   // Helper to get full URL for profile pictures
   getProfilePictureUrl(path) {
     if (!path) return null;
@@ -192,6 +198,56 @@ class ApiService {
     return this.adminRequest(`/api/admin/doctors/${doctorId}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ is_active: isActive }),
+    });
+  }
+
+  // Admin: Specializations
+  async getSpecializations() {
+    return this.adminRequest('/api/admin/specializations');
+  }
+
+  async createSpecialization(payload) {
+    return this.adminRequest('/api/admin/specializations', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateSpecialization(id, payload) {
+    return this.adminRequest(`/api/admin/specializations/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteSpecialization(id) {
+    return this.adminRequest(`/api/admin/specializations/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Admin: Symptoms
+  async getSymptoms() {
+    return this.adminRequest('/api/admin/symptoms');
+  }
+
+  async createSymptom(payload) {
+    return this.adminRequest('/api/admin/symptoms', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateSymptom(id, payload) {
+    return this.adminRequest(`/api/admin/symptoms/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteSymptom(id) {
+    return this.adminRequest(`/api/admin/symptoms/${id}`, {
+      method: 'DELETE',
     });
   }
 

@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from app.db import get_db
-from app.models import Patient, Doctor
+from app.models import Patient, Doctor, Specialization, Symptom
 from app.schemas import PatientResponse, DoctorResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -33,6 +33,36 @@ class DoctorsListResponse(BaseModel):
 
 class DoctorStatusUpdate(BaseModel):
     is_active: bool
+
+
+class SpecializationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
+    description: str | None = None
+    is_active: bool
+
+
+class SpecializationCreate(BaseModel):
+    name: str
+    description: str | None = None
+    is_active: bool = True
+
+
+class SymptomOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
+    description: str | None = None
+    specialization: str | None = None
+    is_active: bool
+
+
+class SymptomCreate(BaseModel):
+    name: str
+    description: str | None = None
+    specialization: str | None = None
+    is_active: bool = True
 
 
 # Temporary admin authentication - should be replaced with proper auth
@@ -260,4 +290,131 @@ async def update_doctor_status(
     db.refresh(doctor)
 
     return DoctorResponse.model_validate(doctor)
+
+
+@router.get("/specializations", response_model=list[SpecializationOut])
+async def list_specializations(db: Session = Depends(get_db)):
+    specs = db.query(Specialization).order_by(Specialization.name.asc()).all()
+    return [SpecializationOut.model_validate(s) for s in specs]
+
+
+@router.post("/specializations", response_model=SpecializationOut, status_code=status.HTTP_201_CREATED)
+async def create_specialization(data: SpecializationCreate, db: Session = Depends(get_db)):
+    existing = db.query(Specialization).filter(Specialization.name == data.name).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Specialization with this name already exists",
+        )
+    spec = Specialization(
+        name=data.name,
+        description=data.description,
+        is_active=data.is_active,
+    )
+    db.add(spec)
+    db.commit()
+    db.refresh(spec)
+    return SpecializationOut.model_validate(spec)
+
+
+@router.put("/specializations/{spec_id}", response_model=SpecializationOut)
+async def update_specialization(
+    spec_id: int,
+    data: SpecializationCreate,
+    db: Session = Depends(get_db),
+):
+    spec = db.query(Specialization).filter(Specialization.id == spec_id).first()
+    if not spec:
+        raise HTTPException(status_code=404, detail="Specialization not found")
+
+    # Check for name conflict
+    if data.name != spec.name:
+        conflict = db.query(Specialization).filter(Specialization.name == data.name).first()
+        if conflict:
+            raise HTTPException(
+                status_code=400,
+                detail="Another specialization with this name already exists",
+            )
+
+    spec.name = data.name
+    spec.description = data.description
+    spec.is_active = data.is_active
+
+    db.commit()
+    db.refresh(spec)
+    return SpecializationOut.model_validate(spec)
+
+
+@router.delete("/specializations/{spec_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_specialization(spec_id: int, db: Session = Depends(get_db)):
+    spec = db.query(Specialization).filter(Specialization.id == spec_id).first()
+    if not spec:
+        raise HTTPException(status_code=404, detail="Specialization not found")
+    db.delete(spec)
+    db.commit()
+    return
+
+
+@router.get("/symptoms", response_model=list[SymptomOut])
+async def list_symptoms(db: Session = Depends(get_db)):
+    items = db.query(Symptom).order_by(Symptom.name.asc()).all()
+    return [SymptomOut.model_validate(s) for s in items]
+
+
+@router.post("/symptoms", response_model=SymptomOut, status_code=status.HTTP_201_CREATED)
+async def create_symptom(data: SymptomCreate, db: Session = Depends(get_db)):
+    existing = db.query(Symptom).filter(Symptom.name == data.name).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Symptom with this name already exists",
+        )
+    item = Symptom(
+        name=data.name,
+        description=data.description,
+        specialization=data.specialization,
+        is_active=data.is_active,
+    )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return SymptomOut.model_validate(item)
+
+
+@router.put("/symptoms/{symptom_id}", response_model=SymptomOut)
+async def update_symptom(
+    symptom_id: int,
+    data: SymptomCreate,
+    db: Session = Depends(get_db),
+):
+    item = db.query(Symptom).filter(Symptom.id == symptom_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Symptom not found")
+
+    if data.name != item.name:
+        conflict = db.query(Symptom).filter(Symptom.name == data.name).first()
+        if conflict:
+            raise HTTPException(
+                status_code=400,
+                detail="Another symptom with this name already exists",
+            )
+
+    item.name = data.name
+    item.description = data.description
+    item.specialization = data.specialization
+    item.is_active = data.is_active
+
+    db.commit()
+    db.refresh(item)
+    return SymptomOut.model_validate(item)
+
+
+@router.delete("/symptoms/{symptom_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_symptom(symptom_id: int, db: Session = Depends(get_db)):
+    item = db.query(Symptom).filter(Symptom.id == symptom_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Symptom not found")
+    db.delete(item)
+    db.commit()
+    return
 

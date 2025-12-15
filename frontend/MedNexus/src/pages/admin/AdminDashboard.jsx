@@ -25,6 +25,8 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import apiService from '../../services/api';
 import PatientManagement from './PatientManagement';
 import DoctorManagement from './DoctorManagement';
+import SpecializationManagement from './SpecializationManagement';
+import SymptomManagement from './SymptomManagement';
 import './AdminDashboard.css';
 
 const statCards = [
@@ -190,6 +192,10 @@ const AdminDashboard = () => {
             <PatientManagement />
           ) : activeNav === 'doctors' ? (
             <DoctorManagement onPendingChange={setPendingDoctors} />
+          ) : activeNav === 'specializations' ? (
+            <SpecializationManagement />
+          ) : activeNav === 'symptoms' ? (
+            <SymptomManagement />
           ) : (
             <div className="admin-dashboard-content">
               {/* Stats Grid */}
