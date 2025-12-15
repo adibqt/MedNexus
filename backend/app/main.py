@@ -1,10 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from pathlib import Path
 import uvicorn
 
 from app.core.config import settings
-from app.api.routes import health
+from app.api.routes import health, patient
+from app.db import Base, engine
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+# Create uploads directory
+UPLOAD_DIR = Path("uploads/profile_pictures")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+# Lightweight dev migration: add newly introduced columns for existing DBs.
+try:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_group VARCHAR(3)"))
+        conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(500)"))
+except Exception as _e:
+    # Don't block app startup if migration isn't supported (or DB is read-only).
+    pass
 
 # Create FastAPI application
 app = FastAPI(
@@ -26,6 +46,10 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, tags=["health"])
+app.include_router(patient.router)
+
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Global exception handler
 @app.exception_handler(Exception)
