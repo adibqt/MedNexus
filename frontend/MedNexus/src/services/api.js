@@ -17,8 +17,9 @@ class ApiService {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
     const headers = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...this.getAuthHeaders(),
       ...options.headers,
     };
@@ -168,6 +169,30 @@ class ApiService {
 
   async getAdminStats() {
     return this.adminRequest('/api/admin/stats');
+  }
+
+  async getAllDoctors(params = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.skip) queryParams.append('skip', params.skip);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.status_filter) queryParams.append('status_filter', params.status_filter);
+    if (params.search) queryParams.append('search', params.search);
+
+    const queryString = queryParams.toString();
+    return this.adminRequest(`/api/admin/doctors${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async updateDoctorApproval(doctorId, approve) {
+    return this.adminRequest(`/api/admin/doctors/${doctorId}/approval?approve=${approve}`, {
+      method: 'PATCH',
+    });
+  }
+
+  async updateDoctorStatus(doctorId, isActive) {
+    return this.adminRequest(`/api/admin/doctors/${doctorId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_active: isActive }),
+    });
   }
 }
 

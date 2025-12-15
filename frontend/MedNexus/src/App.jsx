@@ -16,6 +16,8 @@ import PatientSignIn from './pages/patient/PatientSignIn.jsx';
 import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
 import EditProfile from './pages/patient/EditProfile.jsx';
+import DoctorSignUp from './pages/doctor/DoctorSignUp.jsx';
+import DoctorSignIn from './pages/doctor/DoctorSignIn.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
@@ -112,6 +114,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/sign-in" element={<SignIn />} />
+      <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
+      <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />

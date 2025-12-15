@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Activity,
@@ -22,7 +22,9 @@ import {
   Heart,
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import apiService from '../../services/api';
 import PatientManagement from './PatientManagement';
+import DoctorManagement from './DoctorManagement';
 import './AdminDashboard.css';
 
 const statCards = [
@@ -64,11 +66,28 @@ const AdminDashboard = () => {
   const { logout } = useAdminAuth();
   const [activeNav, setActiveNav] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [pendingDoctors, setPendingDoctors] = useState(0);
+
+  // Load initial pending doctor count for sidebar badge
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const stats = await apiService.getAdminStats();
+        if (typeof stats.pending_doctors === 'number') {
+          setPendingDoctors(stats.pending_doctors);
+        }
+      } catch (e) {
+        console.error('Failed to load admin stats', e);
+      }
+    };
+
+    loadStats();
+  }, []);
 
   const navItems = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'patients', label: 'Patients', icon: Users },
-    { id: 'doctors', label: 'Doctors', icon: Stethoscope, badge: 1 },
+    { id: 'doctors', label: 'Doctors', icon: Stethoscope, badge: pendingDoctors || null },
     { id: 'pharmacies', label: 'Pharmacies', icon: Pill },
     { id: 'clinics', label: 'Clinics', icon: Building2 },
     { id: 'specializations', label: 'Specializations', icon: Microscope },
@@ -169,6 +188,8 @@ const AdminDashboard = () => {
           {/* Conditionally render based on active nav */}
           {activeNav === 'patients' ? (
             <PatientManagement />
+          ) : activeNav === 'doctors' ? (
+            <DoctorManagement onPendingChange={setPendingDoctors} />
           ) : (
             <div className="admin-dashboard-content">
               {/* Stats Grid */}
