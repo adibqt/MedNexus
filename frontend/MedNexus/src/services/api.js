@@ -5,8 +5,10 @@ class ApiService {
     this.baseUrl = API_BASE_URL;
   }
 
-  getAuthHeaders() {
-    const token = localStorage.getItem('access_token');
+  getAuthHeaders(isDoctor = false) {
+    const token = isDoctor 
+      ? localStorage.getItem('doctor_access_token')
+      : localStorage.getItem('access_token');
     if (token) {
       console.log('Token exists:', token.substring(0, 20) + '...');
     } else {
@@ -18,9 +20,11 @@ class ApiService {
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
     const isFormData = options.body instanceof FormData;
+    // Check if this is a doctor endpoint
+    const isDoctor = endpoint.includes('/doctor') || options.isDoctor === true;
     const headers = {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-      ...this.getAuthHeaders(),
+      ...this.getAuthHeaders(isDoctor),
       ...options.headers,
     };
 
@@ -131,6 +135,62 @@ class ApiService {
   // Patient appointments
   async getPatientAppointments() {
     return this.request('/api/patients/appointments');
+  }
+
+  // Appointment booking
+  async getAvailableSlots(doctorId, date) {
+    const dateStr = date instanceof Date ? date.toISOString().split('T')[0] : date;
+    return this.request(`/api/appointments/doctors/${doctorId}/available-slots?selected_date=${dateStr}`);
+  }
+
+  async bookAppointment(appointmentData) {
+    return this.request('/api/appointments', {
+      method: 'POST',
+      body: JSON.stringify(appointmentData),
+    });
+  }
+
+  // Doctor appointments
+  async getDoctorAppointments(statusFilter = null) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    const url = statusFilter 
+      ? `/api/appointments/doctors/my-appointments?status_filter=${statusFilter}`
+      : '/api/appointments/doctors/my-appointments';
+    return this.request(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async confirmAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/confirm`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async cancelAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async completeAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/complete`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
   }
 
   // Helper to get full URL for profile pictures
@@ -269,6 +329,64 @@ class ApiService {
       headers: {
         Authorization: token ? `Bearer ${token}` : undefined,
       },
+    });
+  }
+
+  // Video Call APIs (Following guide structure)
+  async joinAppointmentCall(appointmentId, roomType = 'consultation', isDoctor = false) {
+    const endpoint = isDoctor 
+      ? '/api/livekit/join-appointment/doctor'
+      : '/api/livekit/join-appointment';
+    
+    // Use the standard request method which handles auth headers automatically
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({
+        appointment_id: appointmentId,
+        room_type: roomType
+      }),
+      isDoctor: isDoctor, // Pass flag to request method
+    });
+  }
+
+  // Legacy methods for backward compatibility
+  async getVideoToken(roomName, participantName) {
+    return this.request(`/api/video-call/token?room_name=${roomName}&participant_name=${participantName}`);
+  }
+
+  async getDoctorVideoToken(roomName, participantName) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/video-call/token/doctor?room_name=${roomName}&participant_name=${participantName}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async initiateCall(appointmentId) {
+    return this.request('/api/livekit/initiate', {
+      method: 'POST',
+      body: JSON.stringify({ appointment_id: appointmentId }),
+    });
+  }
+
+  async initiateCallDoctor(appointmentId) {
+    return this.request('/api/livekit/initiate/doctor', {
+      method: 'POST',
+      body: JSON.stringify({ appointment_id: appointmentId }),
+      isDoctor: true, // Use doctor token
+    });
+  }
+
+  // Room status for polling-based notifications
+  async checkRoomStatus(appointmentId, isDoctor = false) {
+    const endpoint = isDoctor 
+      ? `/api/livekit/room-status/${appointmentId}/doctor`
+      : `/api/livekit/room-status/${appointmentId}`;
+    
+    // Use the standard request method which handles auth headers automatically
+    return this.request(endpoint, {
+      isDoctor: isDoctor, // Pass flag to request method for correct token
     });
   }
 }

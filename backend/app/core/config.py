@@ -38,10 +38,15 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str = "your-secret-key-change-this-in-production"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 90
     
     # Google AI
     GOOGLE_API_KEY: Optional[str] = None
+    
+    # LiveKit
+    LIVEKIT_URL: Optional[str] = None
+    LIVEKIT_API_KEY: Optional[str] = None
+    LIVEKIT_API_SECRET: Optional[str] = None
 
 
 settings = Settings()

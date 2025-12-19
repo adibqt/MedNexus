@@ -35,6 +35,8 @@ const DoctorSignIn = () => {
       });
       localStorage.setItem('doctor_access_token', data.access_token);
       localStorage.setItem('doctor_user', JSON.stringify(data.user));
+      localStorage.setItem('doctor_id', data.user.id);
+      localStorage.setItem('doctor_name', data.user.name);
       // If no schedule configured yet, send to schedule setup first
       if (!data.user.schedule) {
         navigate('/doctor/schedule', { replace: true });

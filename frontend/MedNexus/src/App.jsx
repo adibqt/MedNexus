@@ -16,13 +16,16 @@ import PatientSignIn from './pages/patient/PatientSignIn.jsx';
 import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
 import EditProfile from './pages/patient/EditProfile.jsx';
+import BookAppointment from './pages/patient/BookAppointment.jsx';
 import DoctorSignUp from './pages/doctor/DoctorSignUp.jsx';
 import DoctorSignIn from './pages/doctor/DoctorSignIn.jsx';
 import DoctorSchedule from './pages/doctor/DoctorSchedule.jsx';
 import DoctorDashboard from './pages/doctor/DoctorDashboard.jsx';
 import DoctorEditProfile from './pages/doctor/DoctorEditProfile.jsx';
+import DoctorAppointments from './pages/doctor/DoctorAppointments.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
+import { VideoCallProvider } from './context/VideoCallContext';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
@@ -120,8 +123,16 @@ function AppRoutes() {
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
       <Route path="/doctor/schedule" element={<DoctorSchedule />} />
-      <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+      <Route
+        path="/doctor/dashboard"
+        element={
+          <DoctorVideoCallWrapper>
+            <DoctorDashboard />
+          </DoctorVideoCallWrapper>
+        }
+      />
       <Route path="/doctor/profile" element={<DoctorEditProfile />} />
+      <Route path="/doctor/appointments" element={<DoctorAppointments />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -151,7 +162,9 @@ function AppRoutes() {
         path="/patient/dashboard"
         element={
           <ProtectedRoute requireProfileComplete>
-            <PatientDashboard />
+            <PatientVideoCallWrapper>
+              <PatientDashboard />
+            </PatientVideoCallWrapper>
           </ProtectedRoute>
         }
       />
@@ -163,9 +176,51 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/patient/book-appointment/:doctorId"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <BookAppointment />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
+
+// VideoCall wrapper for patient routes
+const PatientVideoCallWrapper = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return children;
+  
+  return (
+    <VideoCallProvider
+      userId={user.id}
+      userType="patient"
+      userName={user.name}
+    >
+      {children}
+    </VideoCallProvider>
+  );
+};
+
+// VideoCall wrapper for doctor routes
+const DoctorVideoCallWrapper = ({ children }) => {
+  const doctorId = localStorage.getItem('doctor_id');
+  const doctorName = localStorage.getItem('doctor_name');
+  
+  if (!doctorId) return children;
+  
+  return (
+    <VideoCallProvider
+      userId={parseInt(doctorId)}
+      userType="doctor"
+      userName={doctorName || `Doctor_${doctorId}`}
+    >
+      {children}
+    </VideoCallProvider>
+  );
+};
 
 function App() {
   return (

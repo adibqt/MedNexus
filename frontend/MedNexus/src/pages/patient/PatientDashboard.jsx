@@ -18,6 +18,7 @@ import {
   Bot,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
 import './PatientDashboard.css';
 
@@ -64,6 +65,7 @@ const fallbackConcerns = [
 const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { initiateCall } = useVideoCall();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -80,6 +82,8 @@ const PatientDashboard = () => {
   const [showAppointments, setShowAppointments] = useState(false);
 
   const doctorsCarouselRef = useRef(null);
+  const carouselIntervalRef = useRef(null);
+  const carouselPausedRef = useRef(false);
 
   // Sample notifications
   const notifications = [
@@ -183,8 +187,6 @@ const PatientDashboard = () => {
 
   // Auto carousel for Available Doctors
   useEffect(() => {
-    const el = doctorsCarouselRef.current;
-    if (!el) return;
     if (loadingDoctors) return;
     if (!doctors || doctors.length <= 1) return;
 
@@ -194,29 +196,134 @@ const PatientDashboard = () => {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const getStep = () => {
-      const firstCard = el.querySelector('[data-carousel-item="doctor"]');
-      if (!firstCard) return 0;
-      const cardWidth = firstCard.getBoundingClientRect().width;
-      const styles = window.getComputedStyle(el);
-      const gapRaw = styles.columnGap || styles.gap || '0px';
-      const gap = Number.parseFloat(gapRaw) || 0;
-      return Math.round(cardWidth + gap);
+    // Clear any existing interval
+    if (carouselIntervalRef.current) {
+      clearInterval(carouselIntervalRef.current);
+      carouselIntervalRef.current = null;
+    }
+
+    carouselPausedRef.current = false;
+    let scrollTimeout = null;
+    let startDelayId = null;
+    let pauseCarouselFn = null;
+    let resumeCarouselFn = null;
+    let handleScrollFn = null;
+
+    // Setup carousel function
+    const setupCarousel = (el) => {
+      const getStep = () => {
+        const firstCard = el.querySelector('[data-carousel-item="doctor"]');
+        if (!firstCard) return 0;
+        const cardWidth = firstCard.getBoundingClientRect().width;
+        const styles = window.getComputedStyle(el);
+        const gapRaw = styles.columnGap || styles.gap || '0px';
+        const gap = Number.parseFloat(gapRaw) || 0;
+        return Math.round(cardWidth + gap);
+      };
+
+      const tick = () => {
+        if (carouselPausedRef.current || !el) return;
+        
+        const step = getStep();
+        if (!step) return;
+        
+        const scrollLeft = el.scrollLeft;
+        const scrollWidth = el.scrollWidth;
+        const clientWidth = el.clientWidth;
+        const nearEnd = scrollLeft + clientWidth >= scrollWidth - 20;
+        
+        if (nearEnd) {
+          el.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          el.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      };
+
+      pauseCarouselFn = () => {
+        carouselPausedRef.current = true;
+      };
+
+      resumeCarouselFn = () => {
+        carouselPausedRef.current = false;
+      };
+
+      handleScrollFn = () => {
+        carouselPausedRef.current = true;
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          carouselPausedRef.current = false;
+        }, 5000);
+      };
+
+      // Start carousel
+      console.log('Carousel: Starting...');
+      startDelayId = setTimeout(() => {
+        console.log('Carousel: Interval started');
+        carouselIntervalRef.current = window.setInterval(tick, 3000);
+        // Also trigger first tick immediately
+        setTimeout(tick, 500);
+      }, 500);
+
+      // Event listeners
+      el.addEventListener('mouseenter', pauseCarouselFn);
+      el.addEventListener('mouseleave', resumeCarouselFn);
+      el.addEventListener('scroll', handleScrollFn, { passive: true });
     };
 
-    const tick = () => {
-      const step = getStep();
-      if (!step) return;
-      const nearEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
-      if (nearEnd) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: step, behavior: 'smooth' });
+    // Retry mechanism to wait for element
+    let retryCount = 0;
+    const maxRetries = 15;
+    let retryTimeoutId = null;
+    
+    const tryInit = () => {
+      const el = doctorsCarouselRef.current;
+      if (!el) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          retryTimeoutId = setTimeout(tryInit, 200);
+        } else {
+          console.log('Carousel: Element not found after retries');
+        }
+        return;
+      }
+
+      // Check if scrolling is needed
+      const needsScroll = el.scrollWidth > el.clientWidth;
+      console.log('Carousel check:', {
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+        needsScroll,
+        doctorsCount: doctors.length
+      });
+
+      if (!needsScroll) {
+        console.log('Carousel: No scroll needed, content fits');
+        return;
+      }
+
+      // Setup carousel
+      setupCarousel(el);
+    };
+
+    // Start trying to initialize after a short delay
+    retryTimeoutId = setTimeout(tryInit, 500);
+
+    return () => {
+      if (retryTimeoutId) clearTimeout(retryTimeoutId);
+      if (startDelayId) clearTimeout(startDelayId);
+      if (carouselIntervalRef.current) {
+        clearInterval(carouselIntervalRef.current);
+        carouselIntervalRef.current = null;
+      }
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      
+      const el = doctorsCarouselRef.current;
+      if (el && pauseCarouselFn && resumeCarouselFn && handleScrollFn) {
+        el.removeEventListener('mouseenter', pauseCarouselFn);
+        el.removeEventListener('mouseleave', resumeCarouselFn);
+        el.removeEventListener('scroll', handleScrollFn);
       }
     };
-
-    const id = window.setInterval(tick, 2500);
-    return () => window.clearInterval(id);
   }, [doctors, loadingDoctors]);
 
   // Toggle concern selection
@@ -568,7 +675,7 @@ const PatientDashboard = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => navigate(`/doctor/${suggestion.id}`)}
+                    onClick={() => navigate(`/patient/book-appointment/${suggestion.id}`)}
                     className="patient-dashboard-suggestion-cta"
                   >
                     <Calendar />
@@ -591,9 +698,9 @@ const PatientDashboard = () => {
             {todayAppointment ? (
               <div className="patient-dashboard-appointment-main">
                 <div className="patient-dashboard-appointment-avatar">
-                  {todayAppointment.doctor?.profile_picture_url ? (
+                  {todayAppointment.doctor?.profile_picture_url || todayAppointment.doctor?.profile_picture ? (
                     <img
-                      src={getImageUrl(todayAppointment.doctor.profile_picture_url)}
+                      src={getImageUrl(todayAppointment.doctor.profile_picture_url || todayAppointment.doctor.profile_picture)}
                       alt=""
                     />
                   ) : (
@@ -602,10 +709,10 @@ const PatientDashboard = () => {
                 </div>
                 <div className="patient-dashboard-appointment-info">
                   <h3 className="patient-dashboard-appointment-name">
-                    Dr. {todayAppointment.doctor?.name}
+                    Dr. {todayAppointment.doctor_name || 'Unknown'}
                   </h3>
                   <p className="patient-dashboard-appointment-spec">
-                    {todayAppointment.doctor?.specialization}
+                    {todayAppointment.doctor_specialization || ''}
                   </p>
                   <div className="patient-dashboard-appointment-meta">
                     <span>
@@ -641,7 +748,7 @@ const PatientDashboard = () => {
                 <div className="patient-dashboard-appointment-actions">
                   <button
                     type="button"
-                    onClick={() => navigate(`/doctor/${todayAppointment.doctor_id}`)}
+                    onClick={() => navigate(`/patient/book-appointment/${todayAppointment.doctor_id}`)}
                     className="patient-dashboard-appointment-more"
                   >
                     <ChevronRight />
@@ -650,6 +757,8 @@ const PatientDashboard = () => {
                     <button
                       type="button"
                       className="patient-dashboard-appointment-join"
+                      onClick={() => initiateCall(todayAppointment.id)}
+                      title="Start video call"
                     >
                       <Video />
                     </button>
@@ -720,7 +829,7 @@ const PatientDashboard = () => {
                       </p>
                       <button
                         type="button"
-                        onClick={() => navigate(`/doctor/${doctor.id}`)}
+                        onClick={() => navigate(`/patient/book-appointment/${doctor.id}`)}
                         className="patient-dashboard-doctor-cta"
                       >
                         <Calendar />
