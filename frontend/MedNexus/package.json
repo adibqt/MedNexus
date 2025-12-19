@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@livekit/components-core": "^0.12.12",
+    "@livekit/components-react": "^2.9.17",
+    "@livekit/components-styles": "^1.2.0",
     "@tailwindcss/vite": "^4.1.18",
     "framer-motion": "^12.23.26",
+    "livekit-client": "^2.16.1",
     "lucide-react": "^0.561.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     
     # Google AI
     GOOGLE_API_KEY: Optional[str] = None
+    
+    # LiveKit
+    LIVEKIT_URL: Optional[str] = None
+    LIVEKIT_API_KEY: Optional[str] = None
+    LIVEKIT_API_SECRET: Optional[str] = None
 
 
 settings = Settings()

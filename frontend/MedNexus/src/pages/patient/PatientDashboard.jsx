@@ -18,6 +18,7 @@ import {
   Bot,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
 import './PatientDashboard.css';
 
@@ -64,6 +65,7 @@ const fallbackConcerns = [
 const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { initiateCall } = useVideoCall();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -755,6 +757,8 @@ const PatientDashboard = () => {
                     <button
                       type="button"
                       className="patient-dashboard-appointment-join"
+                      onClick={() => initiateCall(todayAppointment.id)}
+                      title="Start video call"
                     >
                       <Video />
                     </button>

@@ -12,11 +12,13 @@ import {
   LogOut,
   Video,
 } from 'lucide-react';
+import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
+  const { initiateCall } = useVideoCall();
   const [doctor, setDoctor] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -332,6 +334,7 @@ const DoctorDashboard = () => {
                               type="button"
                               className="doctor-dashboard-video-call-btn"
                               title="Start video call"
+                              onClick={() => initiateCall(apt.id)}
                             >
                               <Video size={18} />
                             </button>

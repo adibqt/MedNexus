@@ -7,7 +7,7 @@ from pathlib import Path
 import uvicorn
 
 from app.core.config import settings
-from app.api.routes import health, patient, admin, doctor, appointment
+from app.api.routes import health, patient, admin, doctor, appointment, video_call
 from app.db import Base, engine
 
 # Create database tables
@@ -125,6 +125,7 @@ app.include_router(patient.router)
 app.include_router(doctor.router)
 app.include_router(admin.router)
 app.include_router(appointment.router)
+app.include_router(video_call.router)
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
