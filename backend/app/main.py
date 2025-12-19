@@ -7,7 +7,7 @@ from pathlib import Path
 import uvicorn
 
 from app.core.config import settings
-from app.api.routes import health, patient, admin, doctor
+from app.api.routes import health, patient, admin, doctor, appointment
 from app.db import Base, engine
 
 # Create database tables
@@ -40,6 +40,13 @@ try:
             )
         )
         conn.execute(text("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS schedule TEXT"))
+
+        # Appointments: update status default if table exists
+        try:
+            conn.execute(text("ALTER TABLE appointments ALTER COLUMN status SET DEFAULT 'Pending'"))
+        except Exception:
+            # Table might not exist yet, SQLAlchemy will create it with correct default
+            pass
 
         # Core lookup: doctor specializations (from doctor sign-up page)
         conn.execute(
@@ -117,6 +124,7 @@ app.include_router(health.router, tags=["health"])
 app.include_router(patient.router)
 app.include_router(doctor.router)
 app.include_router(admin.router)
+app.include_router(appointment.router)
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

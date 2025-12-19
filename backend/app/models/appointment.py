@@ -13,7 +13,7 @@ class Appointment(Base):
 
     date = Column(Date, nullable=False)
     time = Column(Time, nullable=False)
-    status = Column(String(20), default="Scheduled", nullable=False)
+    status = Column(String(20), default="Pending", nullable=False)
     reason = Column(String(255), nullable=True)
     symptoms = Column(Text, nullable=True)
 

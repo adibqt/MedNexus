@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Pencil,
   LogOut,
+  Video,
 } from 'lucide-react';
 import apiService from '../../services/api';
 import './DoctorDashboard.css';
@@ -18,6 +19,8 @@ const DoctorDashboard = () => {
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [schedule, setSchedule] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [loadingAppointments, setLoadingAppointments] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('doctor_access_token');
@@ -46,7 +49,21 @@ const DoctorDashboard = () => {
       }
     };
 
+    const loadAppointments = async () => {
+      try {
+        setLoadingAppointments(true);
+        const data = await apiService.getDoctorAppointments();
+        setAppointments(data || []);
+      } catch (err) {
+        console.error('Failed to load appointments:', err);
+        setAppointments([]);
+      } finally {
+        setLoadingAppointments(false);
+      }
+    };
+
     load();
+    loadAppointments();
   }, [navigate]);
 
   const scheduleEntries = schedule
@@ -57,6 +74,57 @@ const DoctorDashboard = () => {
     doctor && doctor.profile_picture
       ? apiService.getProfilePictureUrl(doctor.profile_picture)
       : null;
+
+  // Get today's date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Get start of week (Monday)
+  const startOfWeek = new Date(today);
+  const day = startOfWeek.getDay();
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  startOfWeek.setDate(diff);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  // Get end of week (Sunday)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  // Filter appointments for this week
+  const thisWeekAppointments = appointments.filter((apt) => {
+    const aptDate = new Date(apt.appointment_date);
+    return aptDate >= startOfWeek && aptDate <= endOfWeek;
+  });
+
+  // Filter appointments for today
+  const todayAppointments = appointments.filter((apt) => {
+    const aptDate = new Date(apt.appointment_date);
+    aptDate.setHours(0, 0, 0, 0);
+    return aptDate.getTime() === today.getTime();
+  });
+
+  // Format time helper
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    const time = typeof timeStr === 'string' ? timeStr : timeStr;
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  // Format date helper
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('doctor_access_token');
@@ -118,12 +186,14 @@ const DoctorDashboard = () => {
       <section className="doctor-dashboard-stats-row">
         <div className="doctor-dashboard-stat-card">
           <div className="doctor-dashboard-stat-label">Today&apos;s patients</div>
-          <div className="doctor-dashboard-stat-value">0</div>
-          <div className="doctor-dashboard-stat-caption">No visits scheduled yet</div>
+          <div className="doctor-dashboard-stat-value">{todayAppointments.length}</div>
+          <div className="doctor-dashboard-stat-caption">
+            {todayAppointments.length === 0 ? 'No visits scheduled yet' : `${todayAppointments.length} appointment${todayAppointments.length === 1 ? '' : 's'}`}
+          </div>
         </div>
         <div className="doctor-dashboard-stat-card">
           <div className="doctor-dashboard-stat-label">This week</div>
-          <div className="doctor-dashboard-stat-value">0</div>
+          <div className="doctor-dashboard-stat-value">{thisWeekAppointments.length}</div>
           <div className="doctor-dashboard-stat-caption">Appointments this week</div>
         </div>
         <div className="doctor-dashboard-stat-card">
@@ -143,7 +213,7 @@ const DoctorDashboard = () => {
         <section className="doctor-dashboard-card doctor-dashboard-card--primary">
           <div className="doctor-dashboard-card-header">
             <div className="doctor-dashboard-card-title">
-              <CalendarDays size={13} style={{ marginRight: 6 }} />
+              <CalendarDays size={14} />
               Weekly availability
             </div>
             <div className="doctor-dashboard-badge">
@@ -204,15 +274,81 @@ const DoctorDashboard = () => {
             <div className="doctor-dashboard-quick-card">
               <div className="doctor-dashboard-quick-header">
                 <div className="doctor-dashboard-quick-label">
-                  <Clock size={14} style={{ marginRight: 4 }} />
+                  <Clock size={18} style={{ marginRight: 6 }} />
                   This week&apos;s appointments
                 </div>
-                <span className="doctor-dashboard-quick-pill">0 scheduled</span>
+                <span className="doctor-dashboard-quick-pill">
+                  {thisWeekAppointments.length} scheduled
+                </span>
               </div>
-              <p className="doctor-dashboard-quick-empty">
-                Once booking is live, all appointments for the current week will appear
-                here.
-              </p>
+              {loadingAppointments ? (
+                <p className="doctor-dashboard-quick-empty">Loading appointments...</p>
+              ) : thisWeekAppointments.length === 0 ? (
+                <div>
+                  <p className="doctor-dashboard-quick-empty">
+                    No appointments scheduled for this week yet.
+                  </p>
+                  <button
+                    type="button"
+                    className="doctor-dashboard-view-all-btn"
+                    onClick={() => navigate('/doctor/appointments')}
+                    style={{ marginTop: '8px' }}
+                  >
+                    View All Appointments
+                  </button>
+                </div>
+              ) : (
+                <div className="doctor-dashboard-appointments-list">
+                  {thisWeekAppointments.slice(0, 5).map((apt) => (
+                    <div key={apt.id} className="doctor-dashboard-appointment-item">
+                      <div className="doctor-dashboard-appointment-main">
+                        <div className="doctor-dashboard-appointment-info">
+                          <div className="doctor-dashboard-appointment-date-time">
+                            <div className="doctor-dashboard-appointment-date">
+                              {formatDate(apt.appointment_date)}
+                            </div>
+                            <div className="doctor-dashboard-appointment-time">
+                              {formatTime(apt.appointment_time)}
+                            </div>
+                          </div>
+                          <div className="doctor-dashboard-appointment-patient">
+                            {apt.patient_name}
+                          </div>
+                        </div>
+                        <div className="doctor-dashboard-appointment-actions">
+                          <div 
+                            className="doctor-dashboard-appointment-status"
+                            style={{ 
+                              color: apt.status === 'Confirmed' ? '#10b981' : 
+                                     apt.status === 'Pending' ? '#f59e0b' : '#ef4444',
+                              backgroundColor: apt.status === 'Confirmed' ? '#ecfdf5' : 
+                                             apt.status === 'Pending' ? '#fffbeb' : '#fef2f2'
+                            }}
+                          >
+                            {apt.status}
+                          </div>
+                          {apt.status === 'Confirmed' && (
+                            <button
+                              type="button"
+                              className="doctor-dashboard-video-call-btn"
+                              title="Start video call"
+                            >
+                              <Video size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="doctor-dashboard-view-all-btn"
+                    onClick={() => navigate('/doctor/appointments')}
+                  >
+                    {thisWeekAppointments.length > 5 ? 'View All Appointments' : 'Manage Appointments'}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="doctor-dashboard-quick-card">

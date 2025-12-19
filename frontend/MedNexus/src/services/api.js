@@ -133,6 +133,62 @@ class ApiService {
     return this.request('/api/patients/appointments');
   }
 
+  // Appointment booking
+  async getAvailableSlots(doctorId, date) {
+    const dateStr = date instanceof Date ? date.toISOString().split('T')[0] : date;
+    return this.request(`/api/appointments/doctors/${doctorId}/available-slots?selected_date=${dateStr}`);
+  }
+
+  async bookAppointment(appointmentData) {
+    return this.request('/api/appointments', {
+      method: 'POST',
+      body: JSON.stringify(appointmentData),
+    });
+  }
+
+  // Doctor appointments
+  async getDoctorAppointments(statusFilter = null) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    const url = statusFilter 
+      ? `/api/appointments/doctors/my-appointments?status_filter=${statusFilter}`
+      : '/api/appointments/doctors/my-appointments';
+    return this.request(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async confirmAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/confirm`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async cancelAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
+  async completeAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/appointments/${appointmentId}/complete`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+
   // Helper to get full URL for profile pictures
   getProfilePictureUrl(path) {
     if (!path) return null;

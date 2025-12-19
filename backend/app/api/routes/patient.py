@@ -308,6 +308,7 @@ async def get_patient_appointments(
                 symptoms=appt.symptoms,
                 doctor_name=doc.name,
                 doctor_specialization=doc.specialization,
+                doctor_id=appt.doctor_id,
             )
         )
     return results

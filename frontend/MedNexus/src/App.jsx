@@ -16,11 +16,13 @@ import PatientSignIn from './pages/patient/PatientSignIn.jsx';
 import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
 import EditProfile from './pages/patient/EditProfile.jsx';
+import BookAppointment from './pages/patient/BookAppointment.jsx';
 import DoctorSignUp from './pages/doctor/DoctorSignUp.jsx';
 import DoctorSignIn from './pages/doctor/DoctorSignIn.jsx';
 import DoctorSchedule from './pages/doctor/DoctorSchedule.jsx';
 import DoctorDashboard from './pages/doctor/DoctorDashboard.jsx';
 import DoctorEditProfile from './pages/doctor/DoctorEditProfile.jsx';
+import DoctorAppointments from './pages/doctor/DoctorAppointments.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
@@ -122,6 +124,7 @@ function AppRoutes() {
       <Route path="/doctor/schedule" element={<DoctorSchedule />} />
       <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
       <Route path="/doctor/profile" element={<DoctorEditProfile />} />
+      <Route path="/doctor/appointments" element={<DoctorAppointments />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -160,6 +163,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <EditProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patient/book-appointment/:doctorId"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <BookAppointment />
           </ProtectedRoute>
         }
       />
