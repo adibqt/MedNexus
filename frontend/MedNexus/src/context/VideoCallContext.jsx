@@ -67,8 +67,19 @@ export const VideoCallProvider = ({ children, userId, userType, userName, appoin
       console.log('[VideoCallContext] Checking active rooms...', {
         appointmentsCount: appointmentsToUse.length,
         userType,
-        userId
+        userId,
+        hasActiveCall: !!activeCall
       });
+      
+      // Don't check for notifications if user is already in a call
+      if (activeCall) {
+        console.log('[VideoCallContext] User already in call, skipping notification checks');
+        // Clear any existing notification since user is in a call
+        if (incomingCall) {
+          setIncomingCall(null);
+        }
+        return;
+      }
       
       // Only check confirmed appointments
       const confirmedAppointments = appointmentsToUse.filter(
@@ -83,14 +94,6 @@ export const VideoCallProvider = ({ children, userId, userType, userName, appoin
       let foundActiveRoom = false;
 
       for (const appointment of confirmedAppointments) {
-        // Skip if we're already in this call
-        if (activeCall && activeCall.appointmentId === appointment.id) {
-          // Clear notification if we're in the call
-          if (incomingCall && incomingCall.appointment_id === appointment.id) {
-            setIncomingCall(null);
-          }
-          continue;
-        }
 
         try {
           console.log(`[VideoCallContext] Checking room status for appointment ${appointment.id}`);
@@ -157,7 +160,7 @@ export const VideoCallProvider = ({ children, userId, userType, userName, appoin
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [userId, userType, appointmentsToUse.length, activeCall?.appointmentId, incomingCall?.appointment_id]);
+  }, [userId, userType, appointmentsToUse.length, activeCall, incomingCall?.appointment_id]);
 
   const initiateCall = useCallback(async (appointmentId) => {
     try {

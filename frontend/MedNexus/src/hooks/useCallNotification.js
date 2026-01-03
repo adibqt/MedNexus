@@ -72,6 +72,16 @@ export const useCallNotification = (userId, userType, appointments = [], activeC
     // Don't check if we don't have appointments
     if (!appointments || appointments.length === 0) return;
 
+    // Don't check for notifications if user is already in a call
+    if (activeCall) {
+      console.log('[useCallNotification] User already in call, skipping notification checks');
+      // Clear any existing notification since user is in a call
+      if (notification) {
+        setNotification(null);
+      }
+      return;
+    }
+
     // Only check confirmed appointments
     const confirmedAppointments = appointments.filter(
       apt => apt.status?.toLowerCase() === 'confirmed'
@@ -83,14 +93,6 @@ export const useCallNotification = (userId, userType, appointments = [], activeC
     let foundActiveRoom = false;
 
     for (const appointment of confirmedAppointments) {
-      // Skip if we're already in this call
-      if (activeCall && activeCall.appointmentId === appointment.id) {
-        // Clear notification if we're in the call
-        if (notification && notification.appointmentId === appointment.id) {
-          setNotification(null);
-        }
-        continue;
-      }
 
       try {
         const response = await apiService.checkRoomStatus(appointment.id, userType === 'doctor');
@@ -143,7 +145,7 @@ export const useCallNotification = (userId, userType, appointments = [], activeC
       setNotification(null);
       lastNotificationIdRef.current = null;
     }
-  }, [userId, userType, appointments.length, activeCall?.appointmentId, notification?.appointmentId, playNotificationSound]);
+  }, [userId, userType, appointments.length, activeCall, notification?.appointmentId, playNotificationSound]);
 
   useEffect(() => {
     if (!userId || !userType || !appointments || appointments.length === 0) return;
