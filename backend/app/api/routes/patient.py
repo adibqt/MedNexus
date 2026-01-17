@@ -357,12 +357,26 @@ async def ai_doctor_consultation(
             available_symptoms=symptom_data
         )
         
+        # Create a mapping of specialization to match info
+        spec_match_map = {}
+        for spec_info in analysis["recommended_specializations"]:
+            if isinstance(spec_info, dict):
+                spec_match_map[spec_info["name"]] = {
+                    "percentage": spec_info.get("match_percentage", 75),
+                    "reason": spec_info.get("reason", "Based on symptom analysis")
+                }
+            else:
+                spec_match_map[spec_info] = {"percentage": 75, "reason": "Based on symptom analysis"}
+        
+        # Get list of specialization names for querying
+        spec_names = list(spec_match_map.keys())
+        
         # Find matching doctors based on recommended specializations
         suggested_doctors = []
-        if analysis["recommended_specializations"]:
+        if spec_names:
             # Query doctors with matching specializations who are approved and active
             doctors = db.query(Doctor).filter(
-                Doctor.specialization.in_(analysis["recommended_specializations"]),
+                Doctor.specialization.in_(spec_names),
                 Doctor.is_approved == True,
                 Doctor.is_active == True
             ).limit(10).all()
@@ -374,10 +388,15 @@ async def ai_doctor_consultation(
                     specialization=doc.specialization,
                     phone=doc.phone,
                     profile_picture=doc.profile_picture,
-                    schedule=doc.schedule
+                    schedule=doc.schedule,
+                    match_percentage=spec_match_map.get(doc.specialization, {}).get("percentage", 75),
+                    match_reason=spec_match_map.get(doc.specialization, {}).get("reason", "Based on symptom analysis")
                 )
                 for doc in doctors
             ]
+            
+            # Sort doctors by match percentage (highest first)
+            suggested_doctors.sort(key=lambda x: x.match_percentage, reverse=True)
         
         # Generate health advice if symptoms detected and not emergency
         health_advice = None
@@ -391,7 +410,10 @@ async def ai_doctor_consultation(
         response = AIConsultationResponse(
             detected_symptoms=analysis["detected_symptoms"],
             symptom_analysis=analysis["symptom_analysis"],
-            recommended_specializations=analysis["recommended_specializations"],
+            recommended_specializations=[
+                {"name": k, "match_percentage": v["percentage"], "reason": v["reason"]}
+                for k, v in spec_match_map.items()
+            ],
             severity=analysis["severity"],
             confidence=analysis["confidence"],
             additional_notes=analysis["additional_notes"],
