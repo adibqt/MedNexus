@@ -19,6 +19,142 @@ class AIService:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-3-flash-preview')
     
+    def chat_response(
+        self,
+        user_message: str,
+        conversation_history: List[Dict[str, str]],
+        available_specializations: List[str],
+        available_symptoms: List[Dict[str, str]]
+    ) -> Dict:
+        """
+        Generate a conversational response. Detects if symptoms are being discussed
+        and provides appropriate response with optional symptom analysis.
+        
+        Args:
+            user_message: The current message from the user
+            conversation_history: List of previous messages [{role: "user"|"assistant", content: str}]
+            available_specializations: List of available doctor specializations
+            available_symptoms: List of symptom objects
+        
+        Returns:
+            Dict containing response text and optional symptom analysis
+        """
+        try:
+            # Build conversation context
+            history_text = ""
+            for msg in conversation_history[-10:]:  # Keep last 10 messages for context
+                role = "Patient" if msg["role"] == "user" else "Health Assistant"
+                history_text += f"{role}: {msg['content']}\n"
+            
+            # Create symptom context for reference
+            symptom_context = "\n".join([
+                f"- {s['name']}: {s.get('description', 'N/A')} (Related to: {s.get('specialization', 'General')})"
+                for s in available_symptoms[:50]
+            ])
+            
+            spec_context = ", ".join(available_specializations)
+            
+            prompt = f"""You are a friendly and professional AI Health Assistant for MedNexus, a healthcare platform. Your role is to help patients understand their health concerns and connect them with appropriate doctors.
+
+CONVERSATION HISTORY:
+{history_text}
+
+CURRENT PATIENT MESSAGE: "{user_message}"
+
+AVAILABLE MEDICAL SPECIALIZATIONS IN OUR SYSTEM:
+{spec_context}
+
+KNOWN SYMPTOMS IN OUR DATABASE:
+{symptom_context}
+
+INSTRUCTIONS:
+1. First, determine if the patient is describing health symptoms/concerns OR having general conversation.
+2. If describing symptoms: Provide empathetic response AND symptom analysis in JSON format.
+3. If general conversation (greetings, questions about the service, irrelevant topics): Respond conversationally and naturally.
+4. Be warm, professional, and helpful. Use simple language.
+5. Never diagnose - only suggest seeing appropriate specialists.
+6. If unsure about symptoms, ask clarifying questions.
+
+RESPONSE FORMAT - Return a JSON object:
+
+For SYMPTOM-RELATED messages:
+{{
+    "response_type": "symptom_analysis",
+    "message": "Your empathetic response acknowledging their symptoms and explaining what you found",
+    "detected_symptoms": ["symptom1", "symptom2"],
+    "symptom_analysis": "Brief medical explanation of the symptoms",
+    "recommended_specializations": [
+        {{"name": "specialization1", "match_percentage": 85, "reason": "Why this matches"}}
+    ],
+    "severity": "low|moderate|high",
+    "confidence": "low|medium|high",
+    "additional_notes": "Any important notes",
+    "emergency_warning": false,
+    "should_show_doctors": true
+}}
+
+For GENERAL CONVERSATION (greetings, questions, off-topic):
+{{
+    "response_type": "conversation",
+    "message": "Your friendly conversational response",
+    "should_show_doctors": false
+}}
+
+For FOLLOW-UP QUESTIONS about health:
+{{
+    "response_type": "follow_up",
+    "message": "Your question asking for more details about their symptoms",
+    "should_show_doctors": false
+}}
+
+GUIDELINES:
+- Be concise but thorough
+- Show empathy and understanding
+- If symptoms seem severe, indicate urgency
+- Encourage professional consultation
+- Stay within the healthcare context but handle off-topic gracefully
+
+Respond ONLY with valid JSON, no additional text."""
+
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            
+            # Extract JSON from response
+            json_match = re.search(r'```json\n(.*?)\n```', response_text, re.DOTALL)
+            if json_match:
+                response_text = json_match.group(1)
+            else:
+                json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+                if json_match:
+                    response_text = json_match.group(0)
+            
+            result = json.loads(response_text)
+            
+            # Ensure required fields
+            if "message" not in result:
+                result["message"] = "I'm here to help you with your health concerns. Could you please tell me more about how you're feeling?"
+            if "response_type" not in result:
+                result["response_type"] = "conversation"
+            if "should_show_doctors" not in result:
+                result["should_show_doctors"] = result.get("response_type") == "symptom_analysis"
+            
+            return result
+            
+        except json.JSONDecodeError as e:
+            print(f"JSON parsing error in chat: {e}")
+            return {
+                "response_type": "conversation",
+                "message": "I'm sorry, I had trouble processing that. Could you please rephrase your question or describe your symptoms in a different way?",
+                "should_show_doctors": False
+            }
+        except Exception as e:
+            print(f"Chat response error: {e}")
+            return {
+                "response_type": "conversation",
+                "message": "I apologize, but I'm experiencing some technical difficulties. Please try again in a moment.",
+                "should_show_doctors": False
+            }
+    
     def analyze_symptoms(
         self, 
         patient_description: str, 

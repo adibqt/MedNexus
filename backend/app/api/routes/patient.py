@@ -19,6 +19,8 @@ from app.schemas import (
     AppointmentOut,
     AIConsultationRequest,
     AIConsultationResponse,
+    AIChatRequest,
+    AIChatResponse,
     DoctorSuggestion,
     SymptomInfo,
     AIConsultationHistoryItem,
@@ -324,7 +326,125 @@ async def get_patient_appointments(
 
 # ============ AI Doctor Consultation ============
 
-@router.post("/ai-consultation", response_model=AIConsultationResponse)
+@router.post("/ai-chat", response_model=AIChatResponse)
+async def ai_chat(
+    request: AIChatRequest,
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    Conversational AI chat for health assistance.
+    Supports continuous conversation with context awareness.
+    """
+    try:
+        # Get all active specializations
+        specializations = db.query(Specialization).filter(
+            Specialization.is_active == True
+        ).all()
+        available_specs = [s.name for s in specializations]
+        
+        # Get all active symptoms with their specializations
+        symptoms = db.query(Symptom).filter(Symptom.is_active == True).all()
+        symptom_data = [
+            {
+                "name": s.name,
+                "description": s.description or "",
+                "specialization": s.specialization or "General"
+            }
+            for s in symptoms
+        ]
+        
+        # Convert conversation history to the format expected by AI service
+        conversation_history = [
+            {"role": msg.role, "content": msg.content}
+            for msg in request.conversation_history
+        ]
+        
+        # Get AI response
+        ai_result = ai_service.chat_response(
+            user_message=request.message,
+            conversation_history=conversation_history,
+            available_specializations=available_specs,
+            available_symptoms=symptom_data
+        )
+        
+        # Find matching doctors if symptom analysis was performed
+        suggested_doctors = []
+        spec_match_map = {}
+        
+        if ai_result.get("should_show_doctors") and ai_result.get("recommended_specializations"):
+            # Build specialization match map
+            for spec_info in ai_result.get("recommended_specializations", []):
+                if isinstance(spec_info, dict):
+                    spec_match_map[spec_info["name"]] = {
+                        "percentage": spec_info.get("match_percentage", 75),
+                        "reason": spec_info.get("reason", "Based on symptom analysis")
+                    }
+            
+            spec_names = list(spec_match_map.keys())
+            
+            if spec_names:
+                doctors = db.query(Doctor).filter(
+                    Doctor.specialization.in_(spec_names),
+                    Doctor.is_approved == True,
+                    Doctor.is_active == True
+                ).limit(10).all()
+                
+                suggested_doctors = [
+                    DoctorSuggestion(
+                        id=doc.id,
+                        name=doc.name,
+                        specialization=doc.specialization,
+                        phone=doc.phone,
+                        profile_picture=doc.profile_picture,
+                        schedule=doc.schedule,
+                        match_percentage=spec_match_map.get(doc.specialization, {}).get("percentage", 75),
+                        match_reason=spec_match_map.get(doc.specialization, {}).get("reason", "Based on symptom analysis")
+                    )
+                    for doc in doctors
+                ]
+                
+                suggested_doctors.sort(key=lambda x: x.match_percentage, reverse=True)
+        
+        # Generate health advice if symptoms detected and not emergency
+        health_advice = None
+        if ai_result.get("detected_symptoms") and not ai_result.get("emergency_warning", False):
+            health_advice = ai_service.generate_health_advice(
+                symptoms=ai_result.get("detected_symptoms", []),
+                severity=ai_result.get("severity", "moderate")
+            )
+        
+        # Build response
+        response = AIChatResponse(
+            response_type=ai_result.get("response_type", "conversation"),
+            message=ai_result.get("message", "I'm here to help. Could you tell me more?"),
+            detected_symptoms=ai_result.get("detected_symptoms", []),
+            symptom_analysis=ai_result.get("symptom_analysis"),
+            recommended_specializations=[
+                {"name": k, "match_percentage": v["percentage"], "reason": v["reason"]}
+                for k, v in spec_match_map.items()
+            ] if spec_match_map else [],
+            severity=ai_result.get("severity"),
+            confidence=ai_result.get("confidence"),
+            additional_notes=ai_result.get("additional_notes"),
+            emergency_warning=ai_result.get("emergency_warning", False),
+            suggested_doctors=suggested_doctors,
+            health_advice=health_advice,
+            should_show_doctors=ai_result.get("should_show_doctors", False) and len(suggested_doctors) > 0,
+            has_matching_doctors=len(suggested_doctors) > 0
+        )
+        
+        return response
+        
+    except Exception as e:
+        print(f"AI chat error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process AI chat: {str(e)}"
+        )
+
+
+@router.post("/ai-consultation")
 async def ai_doctor_consultation(
     request: AIConsultationRequest,
     current_patient: Patient = Depends(get_current_patient),

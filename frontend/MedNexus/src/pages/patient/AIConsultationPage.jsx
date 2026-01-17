@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Bot,
-  Sparkles,
-  MessageSquare,
+  Send,
   AlertTriangle,
   Activity,
   Heart,
@@ -16,9 +15,13 @@ import {
   TrendingUp,
   History,
   Clock,
-  ChevronRight,
   Trash2,
   X,
+  User,
+  Loader2,
+  Plus,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import apiService from '../../services/api';
 import './AIConsultationPage.css';
@@ -35,21 +38,55 @@ const getImageUrl = (url) => {
 
 const AIConsultationPage = () => {
   const navigate = useNavigate();
-  const [description, setDescription] = useState('');
+  const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null);
+  
+  // Chat state
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  
+  // Doctor recommendations state
+  const [currentAnalysis, setCurrentAnalysis] = useState(null);
+  const [showDoctors, setShowDoctors] = useState(false);
   
   // History state
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+  
+  // Track if initial load is done
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load history on mount
+  // Initialize with welcome message
   useEffect(() => {
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: "Hello! I'm your AI Health Assistant. 👋\n\nI'm here to help you understand your health concerns and connect you with the right specialists. You can tell me about any symptoms you're experiencing, ask health-related questions, or simply chat with me.\n\nHow can I help you today?",
+        timestamp: new Date(),
+      },
+    ]);
     loadHistory();
+    // Mark as initialized after a short delay
+    setTimeout(() => setIsInitialized(true), 100);
   }, []);
+
+  // Auto-scroll to bottom only after user sends a message (not on initial load)
+  useEffect(() => {
+    if (isInitialized && messages.length > 1) {
+      scrollToBottom();
+    }
+  }, [messages, isInitialized]);
+
+  const scrollToBottom = () => {
+    // Scroll only within the messages container, not the whole page
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
 
   const loadHistory = async () => {
     try {
@@ -63,52 +100,93 @@ const AIConsultationPage = () => {
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!description.trim() || description.trim().length < 10) {
-      setError('Please provide at least 10 characters describing your symptoms.');
-      return;
-    }
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || loading) return;
 
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: inputValue.trim(),
+      timestamp: new Date(),
+    };
+
+    // Add user message and clear input
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
     setError('');
     setLoading(true);
-    setResults(null);
-    setSelectedHistoryItem(null);
 
     try {
-      const response = await apiService.aiDoctorConsultation({
-        description: description.trim(),
-      });
-      setResults(response);
-      // Reload history to include the new consultation
-      loadHistory();
+      // Build conversation history for context
+      const conversationHistory = messages
+        .filter((m) => m.id !== 'welcome')
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+
+      // Send to AI
+      const response = await apiService.aiChat(userMessage.content, conversationHistory);
+
+      // Create assistant message
+      const assistantMessage = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: response.message,
+        timestamp: new Date(),
+        analysis: response.response_type === 'symptom_analysis' ? response : null,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      // If symptom analysis, store it for doctor display
+      if (response.should_show_doctors && response.suggested_doctors?.length > 0) {
+        setCurrentAnalysis(response);
+        setShowDoctors(true);
+      }
     } catch (err) {
-      console.error('AI consultation error:', err);
-      setError(
-        err.response?.data?.detail ||
-          err.message ||
-          'Failed to analyze symptoms. Please try again.'
-      );
+      console.error('AI chat error:', err);
+      setError(err.message || 'Failed to get response. Please try again.');
+      
+      // Add error message
+      const errorMessage = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: "I'm sorry, I encountered an error processing your message. Please try again.",
+        timestamp: new Date(),
+        isError: true,
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
+      inputRef.current?.focus();
     }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleNewChat = () => {
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: "Hello! I'm your AI Health Assistant. 👋\n\nI'm here to help you understand your health concerns and connect you with the right specialists. You can tell me about any symptoms you're experiencing, ask health-related questions, or simply chat with me.\n\nHow can I help you today?",
+        timestamp: new Date(),
+      },
+    ]);
+    setCurrentAnalysis(null);
+    setShowDoctors(false);
+    setError('');
+    setInputValue('');
   };
 
   const handleBookAppointment = (doctorId) => {
     navigate(`/patient/book-appointment/${doctorId}`);
-  };
-
-  const handleNewConsultation = () => {
-    setResults(null);
-    setDescription('');
-    setError('');
-    setSelectedHistoryItem(null);
-  };
-
-  const handleViewHistoryItem = (item) => {
-    setSelectedHistoryItem(item);
-    setResults(item);
-    setDescription(item.description);
-    setShowHistory(false);
   };
 
   const handleDeleteHistoryItem = async (e, consultationId) => {
@@ -118,10 +196,7 @@ const AIConsultationPage = () => {
     }
     try {
       await apiService.deleteAIConsultation(consultationId);
-      setHistory(history.filter(h => h.id !== consultationId));
-      if (selectedHistoryItem?.id === consultationId) {
-        handleNewConsultation();
-      }
+      setHistory(history.filter((h) => h.id !== consultationId));
     } catch (err) {
       console.error('Failed to delete consultation:', err);
     }
@@ -133,6 +208,13 @@ const AIConsultationPage = () => {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatTime = (date) => {
+    return new Date(date).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -153,26 +235,20 @@ const AIConsultationPage = () => {
     return 'match-low';
   };
 
-  const getMatchBadgeClass = (percentage) => {
-    if (percentage >= 80) return 'ai-match-high';
-    if (percentage >= 50) return 'ai-match-medium';
-    return 'ai-match-low';
-  };
-
   return (
-    <div className="ai-consultation-page">
+    <div className="ai-chat-page">
       {/* Animated background orbs */}
       <div className="ai-orb ai-orb-1" />
       <div className="ai-orb ai-orb-2" />
       <div className="ai-orb ai-orb-3" />
 
-      <div className="ai-consultation-container">
+      <div className="ai-chat-container">
         {/* Header */}
-        <header className="ai-header">
+        <header className="ai-chat-header">
           <div className="ai-header-left">
             <button className="ai-back-btn" onClick={() => navigate('/patient/dashboard')}>
               <ArrowLeft size={18} />
-              <span>Back to Dashboard</span>
+              <span>Dashboard</span>
             </button>
           </div>
 
@@ -183,14 +259,21 @@ const AIConsultationPage = () => {
               </div>
               <div className="ai-header-text">
                 <h1>AI Health Assistant</h1>
-                <p>Describe your symptoms and get personalized doctor recommendations</p>
+                <p className="ai-status">
+                  <span className="ai-status-dot" />
+                  Online & Ready to Help
+                </p>
               </div>
             </div>
           </div>
 
           <div className="ai-header-right">
-            <button 
-              className="ai-history-btn" 
+            <button className="ai-new-chat-btn" onClick={handleNewChat}>
+              <Plus size={18} />
+              <span>New Chat</span>
+            </button>
+            <button
+              className="ai-history-btn"
               onClick={() => setShowHistory(!showHistory)}
             >
               <History size={18} />
@@ -209,13 +292,13 @@ const AIConsultationPage = () => {
               <div className="ai-history-header">
                 <h3>
                   <History size={20} />
-                  Consultation History
+                  Previous Consultations
                 </h3>
                 <button className="ai-history-close" onClick={() => setShowHistory(false)}>
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="ai-history-list">
                 {historyLoading ? (
                   <div className="ai-history-loading">Loading history...</div>
@@ -226,35 +309,26 @@ const AIConsultationPage = () => {
                   </div>
                 ) : (
                   history.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`ai-history-item ${selectedHistoryItem?.id === item.id ? 'active' : ''}`}
-                      onClick={() => handleViewHistoryItem(item)}
-                    >
+                    <div key={item.id} className="ai-history-item">
                       <div className="ai-history-item-content">
                         <p className="ai-history-description">
-                          {item.description.length > 80 
-                            ? item.description.substring(0, 80) + '...' 
+                          {item.description.length > 80
+                            ? item.description.substring(0, 80) + '...'
                             : item.description}
                         </p>
                         <div className="ai-history-meta">
                           <span className={`ai-history-severity ${getSeverityClass(item.severity)}`}>
                             {item.severity}
                           </span>
-                          <span className="ai-history-date">
-                            {formatDate(item.created_at)}
-                          </span>
+                          <span className="ai-history-date">{formatDate(item.created_at)}</span>
                         </div>
                       </div>
-                      <div className="ai-history-actions">
-                        <ChevronRight size={18} />
-                        <button 
-                          className="ai-history-delete"
-                          onClick={(e) => handleDeleteHistoryItem(e, item.id)}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      <button
+                        className="ai-history-delete"
+                        onClick={(e) => handleDeleteHistoryItem(e, item.id)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ))
                 )}
@@ -263,307 +337,195 @@ const AIConsultationPage = () => {
           </div>
         )}
 
-        {/* Main Content Grid */}
-        <div className="ai-main-grid">
-          {/* Left Panel - Input Section */}
-          <div className="ai-glass-card ai-input-section">
-            <div className="ai-section-header">
-              <div className="ai-section-icon">
-                <MessageSquare />
-              </div>
-              <div>
-                <h2 className="ai-section-title">Describe Your Symptoms</h2>
-                <p className="ai-section-subtitle">Tell us how you're feeling today</p>
-              </div>
-            </div>
-
-            {selectedHistoryItem && (
-              <div className="ai-viewing-history-banner">
-                <Clock size={16} />
-                <span>Viewing consultation from {formatDate(selectedHistoryItem.created_at)}</span>
-                <button onClick={handleNewConsultation}>New Consultation</button>
-              </div>
-            )}
-
-            <div className="ai-textarea-wrapper">
-              <textarea
-                className="ai-textarea"
-                placeholder="Example: I've been experiencing severe headaches for the past 3 days, along with fever and body aches. The pain is mostly on the right side of my head and gets worse in bright light. I also feel nauseous sometimes..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={loading || selectedHistoryItem}
-                maxLength={2000}
-              />
-              <div className="ai-char-count">{description.length}/2000 characters</div>
-            </div>
-
-            {error && (
-              <div style={{
-                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-                border: '1px solid #fecaca',
-                borderRadius: '12px',
-                padding: '14px 16px',
-                marginBottom: '16px',
-                color: '#b91c1c',
-                fontSize: '14px',
-                fontWeight: '500',
-              }}>
-                {error}
-              </div>
-            )}
-
-            {selectedHistoryItem ? (
-              <button
-                className="ai-new-consultation-btn"
-                onClick={handleNewConsultation}
-              >
-                <RefreshCw size={18} />
-                Start New Consultation
-              </button>
-            ) : (
-              <button
-                className="ai-analyze-btn"
-                onClick={handleAnalyze}
-                disabled={loading || !description.trim()}
-              >
-                <Sparkles size={20} />
-                {loading ? 'Analyzing Your Symptoms...' : 'Analyze & Find Doctors'}
-              </button>
-            )}
-          </div>
-
-          {/* Right Panel - Results Section */}
-          <div className="ai-glass-card ai-results-section">
-            {/* Loading State */}
-            {loading && (
-              <div className="ai-loading-state">
-                <div className="ai-loading-animation">
-                  <div className="ai-loading-ring" />
-                  <div className="ai-loading-ring" />
-                  <div className="ai-loading-ring" />
-                  <div className="ai-loading-center">
-                    <Bot />
+        {/* Main Chat Area */}
+        <div className="ai-chat-main">
+          {/* Messages Container */}
+          <div className="ai-messages-container" ref={messagesContainerRef}>
+            <div className="ai-messages-list">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`ai-message ${message.role === 'user' ? 'ai-message-user' : 'ai-message-assistant'} ${message.isError ? 'ai-message-error' : ''}`}
+                >
+                  <div className="ai-message-avatar">
+                    {message.role === 'user' ? <User size={20} /> : <Bot size={20} />}
                   </div>
-                </div>
-                <p className="ai-loading-text">Analyzing your symptoms...</p>
-                <p className="ai-loading-subtext">Our AI is finding the best doctors for you</p>
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && !results && (
-              <div className="ai-empty-state">
-                <div className="ai-empty-icon">
-                  <Stethoscope />
-                </div>
-                <h3 className="ai-empty-title">Ready to Help You</h3>
-                <p className="ai-empty-text">
-                  Describe your symptoms in detail on the left, and our AI will analyze them
-                  to recommend the most suitable doctors for your needs.
-                </p>
-              </div>
-            )}
-
-            {/* Results */}
-            {!loading && results && (
-              <>
-                {/* Emergency Warning */}
-                {results.emergency_warning && (
-                  <div className="ai-emergency-banner">
-                    <div className="ai-emergency-icon">
-                      <AlertTriangle />
-                    </div>
-                    <div className="ai-emergency-content">
-                      <h3>⚠️ Seek Immediate Medical Attention</h3>
-                      <p>
-                        Based on your symptoms, we strongly recommend visiting the nearest
-                        emergency facility immediately.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Severity & Confidence */}
-                <div className="ai-severity-container">
-                  <div className={`ai-severity-badge ${getSeverityClass(results.severity)}`}>
-                    <Activity size={16} />
-                    Severity: {results.severity?.toUpperCase()}
-                  </div>
-                  <div className="ai-confidence-badge">
-                    <TrendingUp size={14} />
-                    Confidence: {results.confidence?.toUpperCase()}
-                  </div>
-                </div>
-
-                {/* Detected Symptoms */}
-                {results.detected_symptoms?.length > 0 && (
-                  <div className="ai-result-card">
-                    <div className="ai-result-card-header">
-                      <div className="ai-result-card-icon">
-                        <Heart />
-                      </div>
-                      <h3 className="ai-result-card-title">Detected Symptoms</h3>
-                    </div>
-                    <div className="ai-symptoms-grid">
-                      {results.detected_symptoms.map((symptom, idx) => (
-                        <span key={idx} className="ai-symptom-tag">{symptom}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* AI Analysis */}
-                {results.symptom_analysis && (
-                  <div className="ai-result-card">
-                    <div className="ai-result-card-header">
-                      <div className="ai-result-card-icon">
-                        <Sparkles />
-                      </div>
-                      <h3 className="ai-result-card-title">AI Analysis</h3>
-                    </div>
-                    <p className="ai-analysis-text">{results.symptom_analysis}</p>
-                  </div>
-                )}
-
-                {/* Recommended Specializations with Match % */}
-                {results.recommended_specializations?.length > 0 && (
-                  <div className="ai-result-card">
-                    <div className="ai-result-card-header">
-                      <div className="ai-result-card-icon">
-                        <Stethoscope />
-                      </div>
-                      <h3 className="ai-result-card-title">Recommended Specialists</h3>
-                    </div>
-                    <div className="ai-spec-list">
-                      {results.recommended_specializations.map((spec, idx) => (
-                        <div key={idx} className="ai-spec-item">
-                          <div className="ai-spec-info">
-                            <div className="ai-spec-icon">
-                              <Stethoscope />
-                            </div>
-                            <div>
-                              <div className="ai-spec-name">{spec.name}</div>
-                              {spec.reason && (
-                                <div className="ai-spec-reason">{spec.reason}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className={`ai-match-badge ${getMatchBadgeClass(spec.match_percentage)}`}>
-                            {spec.match_percentage}% Match
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Suggested Doctors */}
-                {results.has_matching_doctors ? (
-                  <div className="ai-result-card">
-                    <div className="ai-doctors-header">
-                      <div className="ai-result-card-header" style={{ marginBottom: 0 }}>
-                        <div className="ai-result-card-icon">
-                          <Stethoscope />
-                        </div>
-                        <h3 className="ai-result-card-title">Available Doctors</h3>
-                      </div>
-                      <span className="ai-doctors-count">
-                        {results.suggested_doctors.length} doctor(s) found
-                      </span>
-                    </div>
-                    <div className="ai-doctors-grid">
-                      {results.suggested_doctors.map((doctor) => (
-                        <div key={doctor.id} className="ai-doctor-card">
-                          <div className={`ai-doctor-match-ribbon ${getMatchClass(doctor.match_percentage)}`}>
-                            {doctor.match_percentage}% Match
-                          </div>
-                          <div className="ai-doctor-header">
-                            {doctor.profile_picture ? (
-                              <div className="ai-doctor-avatar">
-                                <img src={getImageUrl(doctor.profile_picture)} alt={doctor.name} />
-                              </div>
-                            ) : (
-                              <div className="ai-doctor-avatar">
-                                {doctor.name?.charAt(0) || 'D'}
-                              </div>
-                            )}
-                            <div className="ai-doctor-info">
-                              <h4>Dr. {doctor.name}</h4>
-                              <div className="ai-doctor-specialization">
-                                <Stethoscope size={14} />
-                                {doctor.specialization}
-                              </div>
-                            </div>
-                          </div>
-                          {doctor.match_reason && (
-                            <div className="ai-doctor-match-reason">
-                              💡 {doctor.match_reason}
+                  <div className="ai-message-content">
+                    <div className="ai-message-bubble">
+                      <p className="ai-message-text">{message.content}</p>
+                      
+                      {/* Inline Analysis Results */}
+                      {message.analysis && (
+                        <div className="ai-inline-analysis">
+                          {/* Emergency Warning */}
+                          {message.analysis.emergency_warning && (
+                            <div className="ai-emergency-inline">
+                              <AlertTriangle size={16} />
+                              <span>⚠️ Seek Immediate Medical Attention</span>
                             </div>
                           )}
-                          <div className="ai-doctor-contact">
-                            <Phone size={14} />
-                            {doctor.phone}
+
+                          {/* Severity & Confidence */}
+                          <div className="ai-analysis-badges">
+                            <span className={`ai-badge ${getSeverityClass(message.analysis.severity)}`}>
+                              <Activity size={12} />
+                              {message.analysis.severity?.toUpperCase()}
+                            </span>
+                            <span className="ai-badge ai-confidence">
+                              <TrendingUp size={12} />
+                              {message.analysis.confidence?.toUpperCase()} Confidence
+                            </span>
                           </div>
-                          <button
-                            className="ai-book-btn"
-                            onClick={() => handleBookAppointment(doctor.id)}
-                          >
-                            <Calendar size={16} />
-                            Book Appointment
-                          </button>
+
+                          {/* Detected Symptoms */}
+                          {message.analysis.detected_symptoms?.length > 0 && (
+                            <div className="ai-symptoms-inline">
+                              <div className="ai-symptoms-label">
+                                <Heart size={14} />
+                                Detected Symptoms:
+                              </div>
+                              <div className="ai-symptoms-tags">
+                                {message.analysis.detected_symptoms.map((symptom, idx) => (
+                                  <span key={idx} className="ai-symptom-tag">{symptom}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Recommended Specializations */}
+                          {message.analysis.recommended_specializations?.length > 0 && (
+                            <div className="ai-specs-inline">
+                              <div className="ai-specs-label">
+                                <Stethoscope size={14} />
+                                Recommended Specialists:
+                              </div>
+                              <div className="ai-specs-list">
+                                {message.analysis.recommended_specializations.map((spec, idx) => (
+                                  <div key={idx} className="ai-spec-inline">
+                                    <span className="ai-spec-name">{spec.name}</span>
+                                    <span className={`ai-spec-match ${getMatchClass(spec.match_percentage)}`}>
+                                      {spec.match_percentage}%
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      ))}
+                      )}
                     </div>
+                    <span className="ai-message-time">{formatTime(message.timestamp)}</span>
                   </div>
-                ) : (
-                  <div className="ai-no-doctors">
-                    <div className="ai-no-doctors-icon">
-                      <AlertTriangle />
-                    </div>
-                    <div className="ai-no-doctors-content">
-                      <h4>No Matching Doctors Available</h4>
-                      <p>
-                        We couldn't find doctors in our database matching your symptoms.
-                        Please try contacting a general practitioner or visit a nearby
-                        hospital for consultation.
-                      </p>
-                    </div>
-                  </div>
-                )}
+                </div>
+              ))}
 
-                {/* Health Advice */}
-                {results.health_advice && (
-                  <div className="ai-advice-card">
-                    <div className="ai-advice-header">
-                      <div className="ai-advice-icon">
-                        <Lightbulb />
+              {/* Typing Indicator */}
+              {loading && (
+                <div className="ai-message ai-message-assistant">
+                  <div className="ai-message-avatar">
+                    <Bot size={20} />
+                  </div>
+                  <div className="ai-message-content">
+                    <div className="ai-message-bubble ai-typing">
+                      <div className="ai-typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                       </div>
-                      <h3 className="ai-advice-title">Health Advice</h3>
                     </div>
-                    <p className="ai-advice-text">{results.health_advice}</p>
                   </div>
-                )}
+                </div>
+              )}
+            </div>
+          </div>
 
-                {/* Additional Notes */}
-                {results.additional_notes && (
-                  <div className="ai-result-card">
-                    <div className="ai-result-card-header">
-                      <div className="ai-result-card-icon">
-                        <AlertTriangle />
+          {/* Doctor Recommendations Panel */}
+          {currentAnalysis && currentAnalysis.suggested_doctors?.length > 0 && (
+            <div className={`ai-doctors-panel ${showDoctors ? 'expanded' : 'collapsed'}`}>
+              <button
+                className="ai-doctors-toggle"
+                onClick={() => setShowDoctors(!showDoctors)}
+              >
+                <Stethoscope size={18} />
+                <span>
+                  {currentAnalysis.suggested_doctors.length} Doctor{currentAnalysis.suggested_doctors.length > 1 ? 's' : ''} Available
+                </span>
+                {showDoctors ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+              </button>
+
+              {showDoctors && (
+                <div className="ai-doctors-list">
+                  {currentAnalysis.suggested_doctors.map((doctor) => (
+                    <div key={doctor.id} className="ai-doctor-card-mini">
+                      <div className="ai-doctor-info-mini">
+                        {doctor.profile_picture ? (
+                          <img
+                            src={getImageUrl(doctor.profile_picture)}
+                            alt={doctor.name}
+                            className="ai-doctor-avatar-mini"
+                          />
+                        ) : (
+                          <div className="ai-doctor-avatar-mini ai-doctor-avatar-placeholder">
+                            {doctor.name?.charAt(0) || 'D'}
+                          </div>
+                        )}
+                        <div className="ai-doctor-details-mini">
+                          <h4>Dr. {doctor.name}</h4>
+                          <p>
+                            <Stethoscope size={12} />
+                            {doctor.specialization}
+                          </p>
+                        </div>
+                        <span className={`ai-match-mini ${getMatchClass(doctor.match_percentage)}`}>
+                          {doctor.match_percentage}%
+                        </span>
                       </div>
-                      <h3 className="ai-result-card-title">Important Notes</h3>
+                      <button
+                        className="ai-book-btn-mini"
+                        onClick={() => handleBookAppointment(doctor.id)}
+                      >
+                        <Calendar size={14} />
+                        Book
+                      </button>
                     </div>
-                    <p className="ai-analysis-text">{results.additional_notes}</p>
-                  </div>
-                )}
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-                {/* New Consultation Button */}
-                <button className="ai-new-consultation-btn" onClick={handleNewConsultation}>
-                  <RefreshCw size={18} />
-                  Start New Consultation
-                </button>
-              </>
-            )}
+          {/* Health Advice */}
+          {currentAnalysis?.health_advice && (
+            <div className="ai-advice-banner">
+              <Lightbulb size={16} />
+              <p>{currentAnalysis.health_advice}</p>
+            </div>
+          )}
+
+          {/* Input Area */}
+          <div className="ai-input-container">
+            <div className="ai-input-wrapper">
+              <textarea
+                ref={inputRef}
+                className="ai-input"
+                placeholder="Type your message... (Press Enter to send)"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={loading}
+                rows={1}
+              />
+              <button
+                className="ai-send-btn"
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim() || loading}
+              >
+                {loading ? <Loader2 size={20} className="ai-spin" /> : <Send size={20} />}
+              </button>
+            </div>
+            <p className="ai-input-hint">
+              💡 Tip: Describe your symptoms in detail for better recommendations
+            </p>
           </div>
         </div>
       </div>

@@ -390,7 +390,18 @@ class ApiService {
     });
   }
 
-  // AI Doctor Consultation
+  // AI Doctor Chat (Conversational)
+  async aiChat(message, conversationHistory = []) {
+    return this.request('/api/patients/ai-chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        message,
+        conversation_history: conversationHistory,
+      }),
+    });
+  }
+
+  // AI Doctor Consultation (Legacy)
   async aiDoctorConsultation(data) {
     return this.request('/api/patients/ai-consultation', {
       method: 'POST',
