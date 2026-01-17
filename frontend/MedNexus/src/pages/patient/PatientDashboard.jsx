@@ -62,6 +62,46 @@ const fallbackConcerns = [
   'Rhinoviruses',
 ];
 
+// Static notifications - moved outside component to prevent recreation on every render
+const staticNotifications = [
+  {
+    id: 1,
+    type: 'appointment',
+    title: 'Appointment Reminder',
+    message: 'Your appointment with Dr. Sarah Wilson is tomorrow at 10:00 AM',
+    time: '2 hours ago',
+    read: false,
+    icon: Calendar,
+  },
+  {
+    id: 2,
+    type: 'prescription',
+    title: 'New Prescription',
+    message: 'Dr. James Chen has uploaded a new prescription for you',
+    time: '5 hours ago',
+    read: false,
+    icon: Pill,
+  },
+  {
+    id: 3,
+    type: 'report',
+    title: 'Lab Report Ready',
+    message: 'Your blood test results are now available',
+    time: '1 day ago',
+    read: true,
+    icon: FileText,
+  },
+  {
+    id: 4,
+    type: 'reminder',
+    title: 'Health Checkup',
+    message: 'Time for your monthly health checkup',
+    time: '2 days ago',
+    read: true,
+    icon: Heart,
+  },
+];
+
 const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -85,45 +125,8 @@ const PatientDashboard = () => {
   const carouselIntervalRef = useRef(null);
   const carouselPausedRef = useRef(false);
 
-  // Sample notifications
-  const notifications = [
-    {
-      id: 1,
-      type: 'appointment',
-      title: 'Appointment Reminder',
-      message: 'Your appointment with Dr. Sarah Wilson is tomorrow at 10:00 AM',
-      time: '2 hours ago',
-      read: false,
-      icon: Calendar,
-    },
-    {
-      id: 2,
-      type: 'prescription',
-      title: 'New Prescription',
-      message: 'Dr. James Chen has uploaded a new prescription for you',
-      time: '5 hours ago',
-      read: false,
-      icon: Pill,
-    },
-    {
-      id: 3,
-      type: 'report',
-      title: 'Lab Report Ready',
-      message: 'Your blood test results are now available',
-      time: '1 day ago',
-      read: true,
-      icon: FileText,
-    },
-    {
-      id: 4,
-      type: 'reminder',
-      title: 'Health Checkup',
-      message: 'Time for your monthly health checkup',
-      time: '2 days ago',
-      read: true,
-      icon: Heart,
-    },
-  ];
+  // Use static notifications from outside component
+  const notifications = staticNotifications;
 
   // Greeting based on time of day
   const greeting = useMemo(() => {
@@ -133,68 +136,76 @@ const PatientDashboard = () => {
     return 'Good evening';
   }, []);
 
-  // Load initial data
+  // Load initial data - ALL API calls in parallel for faster loading
   useEffect(() => {
     let mounted = true;
+    const controller = new AbortController();
+    
     (async () => {
       try {
         setLoading(true);
-
-        // Load doctors and appointments from backend
         setLoadingDoctors(true);
-        try {
-          const [doctorsData, appointmentsData] = await Promise.all([
-            apiService.getPublicDoctors(),
-            apiService.getPatientAppointments(),
-          ]);
 
-          if (mounted) {
-            setDoctors(doctorsData || []);
-            setAppointments(appointmentsData || []);
-            setLoadingDoctors(false);
-          }
-        } catch (e) {
-          console.warn('Failed to load doctors or appointments from API.', e);
-          if (mounted) {
-            setLoadingDoctors(false);
-          }
+        // Fetch ALL data in parallel for maximum speed
+        const [doctorsResult, appointmentsResult, symptomsResult] = await Promise.allSettled([
+          apiService.getPublicDoctors(),
+          apiService.getPatientAppointments(),
+          apiService.getAllSymptoms(),
+        ]);
+
+        if (!mounted) return;
+
+        // Handle doctors
+        if (doctorsResult.status === 'fulfilled') {
+          setDoctors(doctorsResult.value || []);
+        } else {
+          console.warn('Failed to load doctors:', doctorsResult.reason);
         }
 
-        // Load symptoms from backend
-        try {
-          const symptomsData = await apiService.getAllSymptoms();
-          if (mounted && Array.isArray(symptomsData) && symptomsData.length > 0) {
+        // Handle appointments
+        if (appointmentsResult.status === 'fulfilled') {
+          setAppointments(appointmentsResult.value || []);
+        } else {
+          console.warn('Failed to load appointments:', appointmentsResult.reason);
+        }
+
+        // Handle symptoms
+        if (symptomsResult.status === 'fulfilled') {
+          const symptomsData = symptomsResult.value;
+          if (Array.isArray(symptomsData) && symptomsData.length > 0) {
             const activeSymptoms = symptomsData.filter((s) => s.is_active);
-            setSymptoms(activeSymptoms); // Store full symptom objects
-            setConcerns(activeSymptoms.map((s) => s.name)); // Store names for display
+            setSymptoms(activeSymptoms);
+            setConcerns(activeSymptoms.map((s) => s.name));
           }
-        } catch (e) {
-          console.warn('Failed to load symptoms from API, using fallback list.', e);
+        } else {
+          console.warn('Failed to load symptoms, using fallback:', symptomsResult.reason);
         }
 
+        setLoadingDoctors(false);
         setError('');
       } catch (e) {
         console.error(e);
-        setError('Failed to load data.');
+        if (mounted) setError('Failed to load data.');
       } finally {
         if (mounted) setLoading(false);
       }
     })();
+
     return () => {
       mounted = false;
+      controller.abort();
     };
   }, []);
 
-  // Auto carousel for Available Doctors
+  // Auto carousel for Available Doctors - Optimized version
   useEffect(() => {
-    if (loadingDoctors) return;
-    if (!doctors || doctors.length <= 1) return;
+    if (loadingDoctors || !doctors || doctors.length <= 1) return;
 
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    // Skip carousel for users who prefer reduced motion
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const el = doctorsCarouselRef.current;
+    if (!el) return;
 
     // Clear any existing interval
     if (carouselIntervalRef.current) {
@@ -204,124 +215,70 @@ const PatientDashboard = () => {
 
     carouselPausedRef.current = false;
     let scrollTimeout = null;
-    let startDelayId = null;
-    let pauseCarouselFn = null;
-    let resumeCarouselFn = null;
-    let handleScrollFn = null;
 
-    // Setup carousel function
-    const setupCarousel = (el) => {
-      const getStep = () => {
-        const firstCard = el.querySelector('[data-carousel-item="doctor"]');
-        if (!firstCard) return 0;
-        const cardWidth = firstCard.getBoundingClientRect().width;
-        const styles = window.getComputedStyle(el);
-        const gapRaw = styles.columnGap || styles.gap || '0px';
-        const gap = Number.parseFloat(gapRaw) || 0;
-        return Math.round(cardWidth + gap);
-      };
-
-      const tick = () => {
-        if (carouselPausedRef.current || !el) return;
-        
-        const step = getStep();
-        if (!step) return;
-        
-        const scrollLeft = el.scrollLeft;
-        const scrollWidth = el.scrollWidth;
-        const clientWidth = el.clientWidth;
-        const nearEnd = scrollLeft + clientWidth >= scrollWidth - 20;
-        
-        if (nearEnd) {
-          el.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          el.scrollBy({ left: step, behavior: 'smooth' });
-        }
-      };
-
-      pauseCarouselFn = () => {
-        carouselPausedRef.current = true;
-      };
-
-      resumeCarouselFn = () => {
-        carouselPausedRef.current = false;
-      };
-
-      handleScrollFn = () => {
-        carouselPausedRef.current = true;
-        if (scrollTimeout) clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-          carouselPausedRef.current = false;
-        }, 5000);
-      };
-
-      // Start carousel
-      console.log('Carousel: Starting...');
-      startDelayId = setTimeout(() => {
-        console.log('Carousel: Interval started');
-        carouselIntervalRef.current = window.setInterval(tick, 3000);
-        // Also trigger first tick immediately
-        setTimeout(tick, 500);
-      }, 500);
-
-      // Event listeners
-      el.addEventListener('mouseenter', pauseCarouselFn);
-      el.addEventListener('mouseleave', resumeCarouselFn);
-      el.addEventListener('scroll', handleScrollFn, { passive: true });
+    const getStep = () => {
+      const firstCard = el.querySelector('[data-carousel-item="doctor"]');
+      if (!firstCard) return 0;
+      const cardWidth = firstCard.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(el).gap) || 16;
+      return Math.round(cardWidth + gap);
     };
 
-    // Retry mechanism to wait for element
-    let retryCount = 0;
-    const maxRetries = 15;
-    let retryTimeoutId = null;
+    const tick = () => {
+      if (carouselPausedRef.current || !el) return;
+      
+      const step = getStep();
+      if (!step) return;
+      
+      const nearEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 20;
+      
+      if (nearEnd) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    };
+
+    const pauseCarousel = () => { carouselPausedRef.current = true; };
+    const resumeCarousel = () => { carouselPausedRef.current = false; };
     
-    const tryInit = () => {
-      const el = doctorsCarouselRef.current;
-      if (!el) {
-        retryCount++;
-        if (retryCount < maxRetries) {
-          retryTimeoutId = setTimeout(tryInit, 200);
-        } else {
-          console.log('Carousel: Element not found after retries');
-        }
-        return;
-      }
-
-      // Check if scrolling is needed
-      const needsScroll = el.scrollWidth > el.clientWidth;
-      console.log('Carousel check:', {
-        scrollWidth: el.scrollWidth,
-        clientWidth: el.clientWidth,
-        needsScroll,
-        doctorsCount: doctors.length
-      });
-
-      if (!needsScroll) {
-        console.log('Carousel: No scroll needed, content fits');
-        return;
-      }
-
-      // Setup carousel
-      setupCarousel(el);
+    const handleScroll = () => {
+      carouselPausedRef.current = true;
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => { carouselPausedRef.current = false; }, 5000);
     };
 
-    // Start trying to initialize after a short delay
-    retryTimeoutId = setTimeout(tryInit, 500);
+    // Check if scrolling is needed (defer to next frame for proper measurement)
+    requestAnimationFrame(() => {
+      if (el.scrollWidth <= el.clientWidth) return;
+      
+      // Start carousel after short delay
+      const startDelay = setTimeout(() => {
+        carouselIntervalRef.current = setInterval(tick, 3000);
+      }, 1000);
+
+      el.addEventListener('mouseenter', pauseCarousel);
+      el.addEventListener('mouseleave', resumeCarousel);
+      el.addEventListener('scroll', handleScroll, { passive: true });
+
+      // Store cleanup ref
+      el._carouselCleanup = () => {
+        clearTimeout(startDelay);
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        el.removeEventListener('mouseenter', pauseCarousel);
+        el.removeEventListener('mouseleave', resumeCarousel);
+        el.removeEventListener('scroll', handleScroll);
+      };
+    });
 
     return () => {
-      if (retryTimeoutId) clearTimeout(retryTimeoutId);
-      if (startDelayId) clearTimeout(startDelayId);
       if (carouselIntervalRef.current) {
         clearInterval(carouselIntervalRef.current);
         carouselIntervalRef.current = null;
       }
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      
-      const el = doctorsCarouselRef.current;
-      if (el && pauseCarouselFn && resumeCarouselFn && handleScrollFn) {
-        el.removeEventListener('mouseenter', pauseCarouselFn);
-        el.removeEventListener('mouseleave', resumeCarouselFn);
-        el.removeEventListener('scroll', handleScrollFn);
+      if (el?._carouselCleanup) {
+        el._carouselCleanup();
+        delete el._carouselCleanup;
       }
     };
   }, [doctors, loadingDoctors]);
@@ -702,6 +659,8 @@ const PatientDashboard = () => {
                     <img
                       src={getImageUrl(todayAppointment.doctor.profile_picture_url || todayAppointment.doctor.profile_picture)}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <User />
@@ -815,7 +774,12 @@ const PatientDashboard = () => {
                     <div className="patient-dashboard-doctor-photo-wrap">
                       <div className="patient-dashboard-doctor-photo">
                         {doctor.profile_picture ? (
-                          <img src={getImageUrl(doctor.profile_picture)} alt="" />
+                          <img 
+                            src={getImageUrl(doctor.profile_picture)} 
+                            alt="" 
+                            loading="lazy"
+                            decoding="async"
+                          />
                         ) : (
                           <User />
                         )}
