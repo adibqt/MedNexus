@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Heart,
   Calendar,
@@ -106,19 +107,12 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { initiateCall } = useVideoCall();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   
-  // State management
+  // State management for UI
   const [selected, setSelected] = useState([]);
   const [suggesting, setSuggesting] = useState(false);
   const [suggestion, setSuggestion] = useState(null);
-  const [concerns, setConcerns] = useState(fallbackConcerns);
-  const [symptoms, setSymptoms] = useState([]); // Store full symptom objects with specialization
   const [showNotifications, setShowNotifications] = useState(false);
-  const [doctors, setDoctors] = useState([]);
-  const [loadingDoctors, setLoadingDoctors] = useState(false);
-  const [appointments, setAppointments] = useState([]);
   const [showAppointments, setShowAppointments] = useState(false);
 
   const doctorsCarouselRef = useRef(null);
@@ -128,73 +122,60 @@ const PatientDashboard = () => {
   // Use static notifications from outside component
   const notifications = staticNotifications;
 
+  // React Query hooks - data is cached and shared across components
+  const { 
+    data: doctors = [], 
+    isLoading: loadingDoctors,
+    error: doctorsError 
+  } = useQuery({
+    queryKey: ['publicDoctors'],
+    queryFn: () => apiService.getPublicDoctors(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { 
+    data: appointments = [], 
+    isLoading: loadingAppointments,
+    error: appointmentsError 
+  } = useQuery({
+    queryKey: ['patientAppointments'],
+    queryFn: () => apiService.getPatientAppointments(),
+    staleTime: 2 * 60 * 1000, // 2 minutes - appointments change more frequently
+  });
+
+  const { 
+    data: symptomsData = [], 
+    isLoading: loadingSymptoms,
+    error: symptomsError 
+  } = useQuery({
+    queryKey: ['symptoms'],
+    queryFn: () => apiService.getAllSymptoms(),
+    staleTime: 10 * 60 * 1000, // 10 minutes - symptoms rarely change
+  });
+
+  // Derive concerns from symptoms data
+  const symptoms = useMemo(() => {
+    if (!Array.isArray(symptomsData) || symptomsData.length === 0) return [];
+    return symptomsData.filter((s) => s.is_active);
+  }, [symptomsData]);
+
+  const concerns = useMemo(() => {
+    if (symptoms.length === 0) return fallbackConcerns;
+    return symptoms.map((s) => s.name);
+  }, [symptoms]);
+
+  // Combined loading and error states
+  const loading = loadingDoctors && loadingAppointments && loadingSymptoms;
+  const error = doctorsError || appointmentsError || symptomsError 
+    ? 'Failed to load some data. Please refresh.' 
+    : '';
+
   // Greeting based on time of day
   const greeting = useMemo(() => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
     if (h < 18) return 'Good afternoon';
     return 'Good evening';
-  }, []);
-
-  // Load initial data - ALL API calls in parallel for faster loading
-  useEffect(() => {
-    let mounted = true;
-    const controller = new AbortController();
-    
-    (async () => {
-      try {
-        setLoading(true);
-        setLoadingDoctors(true);
-
-        // Fetch ALL data in parallel for maximum speed
-        const [doctorsResult, appointmentsResult, symptomsResult] = await Promise.allSettled([
-          apiService.getPublicDoctors(),
-          apiService.getPatientAppointments(),
-          apiService.getAllSymptoms(),
-        ]);
-
-        if (!mounted) return;
-
-        // Handle doctors
-        if (doctorsResult.status === 'fulfilled') {
-          setDoctors(doctorsResult.value || []);
-        } else {
-          console.warn('Failed to load doctors:', doctorsResult.reason);
-        }
-
-        // Handle appointments
-        if (appointmentsResult.status === 'fulfilled') {
-          setAppointments(appointmentsResult.value || []);
-        } else {
-          console.warn('Failed to load appointments:', appointmentsResult.reason);
-        }
-
-        // Handle symptoms
-        if (symptomsResult.status === 'fulfilled') {
-          const symptomsData = symptomsResult.value;
-          if (Array.isArray(symptomsData) && symptomsData.length > 0) {
-            const activeSymptoms = symptomsData.filter((s) => s.is_active);
-            setSymptoms(activeSymptoms);
-            setConcerns(activeSymptoms.map((s) => s.name));
-          }
-        } else {
-          console.warn('Failed to load symptoms, using fallback:', symptomsResult.reason);
-        }
-
-        setLoadingDoctors(false);
-        setError('');
-      } catch (e) {
-        console.error(e);
-        if (mounted) setError('Failed to load data.');
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-      controller.abort();
-    };
   }, []);
 
   // Auto carousel for Available Doctors - Optimized version
