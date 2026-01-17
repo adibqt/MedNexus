@@ -10,6 +10,13 @@ from app.schemas.patient import (
 )
 from app.schemas.doctor import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken
 from app.schemas.appointment import AppointmentOut
+from app.schemas.ai_doctor import (
+    AIConsultationRequest,
+    AIConsultationResponse,
+    DoctorSuggestion,
+    SymptomInfo,
+    SpecializationMatch,
+)
 
 __all__ = [
     "PatientSignUp",
@@ -25,4 +32,9 @@ __all__ = [
     "DoctorResponse",
     "DoctorToken",
     "AppointmentOut",
+    "AIConsultationRequest",
+    "AIConsultationResponse",
+    "DoctorSuggestion",
+    "SymptomInfo",
+    "SpecializationMatch",
 ]

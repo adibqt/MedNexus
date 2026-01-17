@@ -17,6 +17,7 @@ import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
 import PatientDashboard from './pages/patient/PatientDashboard.jsx';
 import EditProfile from './pages/patient/EditProfile.jsx';
 import BookAppointment from './pages/patient/BookAppointment.jsx';
+import AIConsultationPage from './pages/patient/AIConsultationPage.jsx';
 import DoctorSignUp from './pages/doctor/DoctorSignUp.jsx';
 import DoctorSignIn from './pages/doctor/DoctorSignIn.jsx';
 import DoctorSchedule from './pages/doctor/DoctorSchedule.jsx';
@@ -181,6 +182,16 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <BookAppointment />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patient/ai-consultation"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <PatientVideoCallWrapper>
+              <AIConsultationPage />
+            </PatientVideoCallWrapper>
           </ProtectedRoute>
         }
       />

@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 import os
 import uuid
 from pathlib import Path
+from typing import List
 
 from app.db import get_db
-from app.models import Patient, Appointment, Doctor
+from app.models import Patient, Appointment, Doctor, Symptom, Specialization
 from app.schemas import (
     PatientSignUp,
     PatientSignIn,
@@ -16,12 +17,17 @@ from app.schemas import (
     PatientResponse,
     MessageResponse,
     AppointmentOut,
+    AIConsultationRequest,
+    AIConsultationResponse,
+    DoctorSuggestion,
+    SymptomInfo,
 )
 from app.services import (
     verify_password,
     get_password_hash,
     create_access_token,
     get_current_patient,
+    ai_service,
 )
 from app.core.config import settings
 
@@ -312,3 +318,94 @@ async def get_patient_appointments(
             )
         )
     return results
+
+
+# ============ AI Doctor Consultation ============
+
+@router.post("/ai-consultation", response_model=AIConsultationResponse)
+async def ai_doctor_consultation(
+    request: AIConsultationRequest,
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    AI-powered doctor consultation based on patient's symptom description.
+    Analyzes symptoms and suggests appropriate doctors from the database.
+    """
+    try:
+        # Get all active specializations
+        specializations = db.query(Specialization).filter(
+            Specialization.is_active == True
+        ).all()
+        available_specs = [s.name for s in specializations]
+        
+        # Get all active symptoms with their specializations
+        symptoms = db.query(Symptom).filter(Symptom.is_active == True).all()
+        symptom_data = [
+            {
+                "name": s.name,
+                "description": s.description or "",
+                "specialization": s.specialization or "General"
+            }
+            for s in symptoms
+        ]
+        
+        # Analyze patient's description using AI
+        analysis = ai_service.analyze_symptoms(
+            patient_description=request.description,
+            available_specializations=available_specs,
+            available_symptoms=symptom_data
+        )
+        
+        # Find matching doctors based on recommended specializations
+        suggested_doctors = []
+        if analysis["recommended_specializations"]:
+            # Query doctors with matching specializations who are approved and active
+            doctors = db.query(Doctor).filter(
+                Doctor.specialization.in_(analysis["recommended_specializations"]),
+                Doctor.is_approved == True,
+                Doctor.is_active == True
+            ).limit(10).all()
+            
+            suggested_doctors = [
+                DoctorSuggestion(
+                    id=doc.id,
+                    name=doc.name,
+                    specialization=doc.specialization,
+                    phone=doc.phone,
+                    profile_picture=doc.profile_picture,
+                    schedule=doc.schedule
+                )
+                for doc in doctors
+            ]
+        
+        # Generate health advice if symptoms detected and not emergency
+        health_advice = None
+        if analysis["detected_symptoms"] and not analysis["emergency_warning"]:
+            health_advice = ai_service.generate_health_advice(
+                symptoms=analysis["detected_symptoms"],
+                severity=analysis["severity"]
+            )
+        
+        # Build response
+        response = AIConsultationResponse(
+            detected_symptoms=analysis["detected_symptoms"],
+            symptom_analysis=analysis["symptom_analysis"],
+            recommended_specializations=analysis["recommended_specializations"],
+            severity=analysis["severity"],
+            confidence=analysis["confidence"],
+            additional_notes=analysis["additional_notes"],
+            emergency_warning=analysis["emergency_warning"],
+            suggested_doctors=suggested_doctors,
+            health_advice=health_advice,
+            has_matching_doctors=len(suggested_doctors) > 0
+        )
+        
+        return response
+        
+    except Exception as e:
+        print(f"AI consultation error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process AI consultation: {str(e)}"
+        )

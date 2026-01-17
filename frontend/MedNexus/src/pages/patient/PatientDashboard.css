@@ -1171,6 +1171,11 @@
   margin-bottom: 8px;
 }
 
+.patient-dashboard-activity-icon--ai {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
 .patient-dashboard-activity-icon--pill {
   background: #e0f2fe;
   color: #2563eb;
@@ -1209,6 +1214,19 @@
 
 .patient-dashboard-activity-card--primary .patient-dashboard-activity-text {
   color: rgba(248, 250, 252, 0.87);
+}
+
+.patient-dashboard-activity-card--ai:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.patient-dashboard-activity-card--ai .patient-dashboard-activity-title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Appointments modal */

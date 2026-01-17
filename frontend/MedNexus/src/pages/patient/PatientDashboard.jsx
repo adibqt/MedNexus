@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
+import AIDoctorConsultation from '../../components/patient/AIDoctorConsultation';
 import './PatientDashboard.css';
 
 const API_URL = 'http://localhost:8000';
@@ -80,6 +81,7 @@ const PatientDashboard = () => {
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [showAppointments, setShowAppointments] = useState(false);
+  const [showAIDoctor, setShowAIDoctor] = useState(false);
 
   const doctorsCarouselRef = useRef(null);
   const carouselIntervalRef = useRef(null);
@@ -863,6 +865,20 @@ const PatientDashboard = () => {
             <div className="patient-dashboard-activities-grid">
               <button
                 type="button"
+                onClick={() => setShowAIDoctor(true)}
+                className="patient-dashboard-activity-card patient-dashboard-activity-card--ai"
+              >
+                <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--ai">
+                  <Bot />
+                </div>
+                <h3 className="patient-dashboard-activity-title">AI Doctor</h3>
+                <p className="patient-dashboard-activity-text">
+                  Get instant consultation
+                </p>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => navigate('/view-prescription')}
                 className="patient-dashboard-activity-card"
               >
@@ -1051,6 +1067,9 @@ const PatientDashboard = () => {
           </div>
         </>
       )}
+
+      {/* AI Doctor Consultation Modal */}
+      {showAIDoctor && <AIDoctorConsultation onClose={() => setShowAIDoctor(false)} />}
     </div>
   );
 };

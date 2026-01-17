@@ -389,6 +389,14 @@ class ApiService {
       isDoctor: isDoctor, // Pass flag to request method for correct token
     });
   }
+
+  // AI Doctor Consultation
+  async aiDoctorConsultation(data) {
+    return this.request('/api/patients/ai-consultation', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiService = new ApiService();
