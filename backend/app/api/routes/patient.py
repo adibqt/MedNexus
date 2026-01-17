@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 import os
@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 from app.db import get_db
-from app.models import Patient, Appointment, Doctor, Symptom, Specialization
+from app.models import Patient, Appointment, Doctor, Symptom, Specialization, AIConsultation
 from app.schemas import (
     PatientSignUp,
     PatientSignIn,
@@ -21,6 +21,8 @@ from app.schemas import (
     AIConsultationResponse,
     DoctorSuggestion,
     SymptomInfo,
+    AIConsultationHistoryItem,
+    AIConsultationHistoryResponse,
 )
 from app.services import (
     verify_password,
@@ -423,6 +425,42 @@ async def ai_doctor_consultation(
             has_matching_doctors=len(suggested_doctors) > 0
         )
         
+        # Save consultation to history
+        try:
+            consultation_record = AIConsultation(
+                patient_id=current_patient.id,
+                description=request.description,
+                detected_symptoms=analysis["detected_symptoms"],
+                symptom_analysis=analysis["symptom_analysis"],
+                recommended_specializations=[
+                    {"name": k, "match_percentage": v["percentage"], "reason": v["reason"]}
+                    for k, v in spec_match_map.items()
+                ],
+                severity=analysis["severity"],
+                confidence=analysis["confidence"],
+                additional_notes=analysis["additional_notes"],
+                emergency_warning=analysis["emergency_warning"],
+                health_advice=health_advice,
+                suggested_doctors=[
+                    {
+                        "id": doc.id,
+                        "name": doc.name,
+                        "specialization": doc.specialization,
+                        "phone": doc.phone,
+                        "profile_picture": doc.profile_picture,
+                        "match_percentage": doc.match_percentage,
+                        "match_reason": doc.match_reason,
+                    }
+                    for doc in suggested_doctors
+                ],
+                has_matching_doctors=len(suggested_doctors) > 0,
+            )
+            db.add(consultation_record)
+            db.commit()
+        except Exception as save_error:
+            print(f"Failed to save consultation history: {save_error}")
+            # Don't fail the request if saving history fails
+        
         return response
         
     except Exception as e:
@@ -431,3 +469,170 @@ async def ai_doctor_consultation(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to process AI consultation: {str(e)}"
         )
+
+
+@router.get("/ai-consultation/history", response_model=AIConsultationHistoryResponse)
+async def get_ai_consultation_history(
+    limit: int = Query(default=20, ge=1, le=100, description="Number of consultations to retrieve"),
+    offset: int = Query(default=0, ge=0, description="Number of consultations to skip"),
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    Get the patient's AI consultation history.
+    Returns a list of previous consultations ordered by date (newest first).
+    """
+    try:
+        # Get total count
+        total = db.query(AIConsultation).filter(
+            AIConsultation.patient_id == current_patient.id
+        ).count()
+        
+        # Get consultations with pagination
+        consultations = db.query(AIConsultation).filter(
+            AIConsultation.patient_id == current_patient.id
+        ).order_by(
+            AIConsultation.created_at.desc()
+        ).offset(offset).limit(limit).all()
+        
+        # Transform to response format
+        history_items = []
+        for c in consultations:
+            # Parse recommended_specializations from JSON
+            specs = []
+            if c.recommended_specializations:
+                for spec in c.recommended_specializations:
+                    specs.append({
+                        "name": spec.get("name", ""),
+                        "match_percentage": spec.get("match_percentage", 0),
+                        "reason": spec.get("reason", ""),
+                    })
+            
+            # Parse suggested_doctors from JSON
+            doctors = []
+            if c.suggested_doctors:
+                for doc in c.suggested_doctors:
+                    doctors.append(DoctorSuggestion(
+                        id=doc.get("id", 0),
+                        name=doc.get("name", ""),
+                        specialization=doc.get("specialization", ""),
+                        phone=doc.get("phone", ""),
+                        profile_picture=doc.get("profile_picture"),
+                        match_percentage=doc.get("match_percentage", 0),
+                        match_reason=doc.get("match_reason", ""),
+                    ))
+            
+            history_items.append(AIConsultationHistoryItem(
+                id=c.id,
+                description=c.description,
+                detected_symptoms=c.detected_symptoms or [],
+                symptom_analysis=c.symptom_analysis,
+                recommended_specializations=specs,
+                severity=c.severity,
+                confidence=c.confidence,
+                additional_notes=c.additional_notes,
+                emergency_warning=c.emergency_warning or False,
+                health_advice=c.health_advice,
+                suggested_doctors=doctors,
+                has_matching_doctors=c.has_matching_doctors or False,
+                created_at=c.created_at,
+            ))
+        
+        return AIConsultationHistoryResponse(
+            total=total,
+            consultations=history_items
+        )
+        
+    except Exception as e:
+        print(f"Error fetching consultation history: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve consultation history: {str(e)}"
+        )
+
+
+@router.get("/ai-consultation/history/{consultation_id}", response_model=AIConsultationHistoryItem)
+async def get_ai_consultation_detail(
+    consultation_id: int,
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    Get a specific AI consultation by ID.
+    """
+    consultation = db.query(AIConsultation).filter(
+        AIConsultation.id == consultation_id,
+        AIConsultation.patient_id == current_patient.id
+    ).first()
+    
+    if not consultation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Consultation not found"
+        )
+    
+    # Parse recommended_specializations from JSON
+    specs = []
+    if consultation.recommended_specializations:
+        for spec in consultation.recommended_specializations:
+            specs.append({
+                "name": spec.get("name", ""),
+                "match_percentage": spec.get("match_percentage", 0),
+                "reason": spec.get("reason", ""),
+            })
+    
+    # Parse suggested_doctors from JSON
+    doctors = []
+    if consultation.suggested_doctors:
+        for doc in consultation.suggested_doctors:
+            doctors.append(DoctorSuggestion(
+                id=doc.get("id", 0),
+                name=doc.get("name", ""),
+                specialization=doc.get("specialization", ""),
+                phone=doc.get("phone", ""),
+                profile_picture=doc.get("profile_picture"),
+                match_percentage=doc.get("match_percentage", 0),
+                match_reason=doc.get("match_reason", ""),
+            ))
+    
+    return AIConsultationHistoryItem(
+        id=consultation.id,
+        description=consultation.description,
+        detected_symptoms=consultation.detected_symptoms or [],
+        symptom_analysis=consultation.symptom_analysis,
+        recommended_specializations=specs,
+        severity=consultation.severity,
+        confidence=consultation.confidence,
+        additional_notes=consultation.additional_notes,
+        emergency_warning=consultation.emergency_warning or False,
+        health_advice=consultation.health_advice,
+        suggested_doctors=doctors,
+        has_matching_doctors=consultation.has_matching_doctors or False,
+        created_at=consultation.created_at,
+    )
+
+
+@router.delete("/ai-consultation/history/{consultation_id}", response_model=MessageResponse)
+async def delete_ai_consultation(
+    consultation_id: int,
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a specific AI consultation from history.
+    """
+    consultation = db.query(AIConsultation).filter(
+        AIConsultation.id == consultation_id,
+        AIConsultation.patient_id == current_patient.id
+    ).first()
+    
+    if not consultation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Consultation not found"
+        )
+    
+    db.delete(consultation)
+    db.commit()
+    
+    return MessageResponse(message="Consultation deleted successfully")

@@ -16,6 +16,8 @@ from app.schemas.ai_doctor import (
     DoctorSuggestion,
     SymptomInfo,
     SpecializationMatch,
+    AIConsultationHistoryItem,
+    AIConsultationHistoryResponse,
 )
 
 __all__ = [
@@ -37,4 +39,6 @@ __all__ = [
     "DoctorSuggestion",
     "SymptomInfo",
     "SpecializationMatch",
+    "AIConsultationHistoryItem",
+    "AIConsultationHistoryResponse",
 ]

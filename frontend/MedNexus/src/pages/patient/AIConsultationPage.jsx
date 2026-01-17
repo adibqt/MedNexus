@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -14,6 +14,11 @@ import {
   Lightbulb,
   RefreshCw,
   TrendingUp,
+  History,
+  Clock,
+  ChevronRight,
+  Trash2,
+  X,
 } from 'lucide-react';
 import apiService from '../../services/api';
 import './AIConsultationPage.css';
@@ -34,6 +39,29 @@ const AIConsultationPage = () => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  
+  // History state
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+
+  // Load history on mount
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  const loadHistory = async () => {
+    try {
+      setHistoryLoading(true);
+      const response = await apiService.getAIConsultationHistory(20, 0);
+      setHistory(response.consultations || []);
+    } catch (err) {
+      console.error('Failed to load history:', err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!description.trim() || description.trim().length < 10) {
@@ -44,12 +72,15 @@ const AIConsultationPage = () => {
     setError('');
     setLoading(true);
     setResults(null);
+    setSelectedHistoryItem(null);
 
     try {
       const response = await apiService.aiDoctorConsultation({
         description: description.trim(),
       });
       setResults(response);
+      // Reload history to include the new consultation
+      loadHistory();
     } catch (err) {
       console.error('AI consultation error:', err);
       setError(
@@ -70,6 +101,41 @@ const AIConsultationPage = () => {
     setResults(null);
     setDescription('');
     setError('');
+    setSelectedHistoryItem(null);
+  };
+
+  const handleViewHistoryItem = (item) => {
+    setSelectedHistoryItem(item);
+    setResults(item);
+    setDescription(item.description);
+    setShowHistory(false);
+  };
+
+  const handleDeleteHistoryItem = async (e, consultationId) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this consultation?')) {
+      return;
+    }
+    try {
+      await apiService.deleteAIConsultation(consultationId);
+      setHistory(history.filter(h => h.id !== consultationId));
+      if (selectedHistoryItem?.id === consultationId) {
+        handleNewConsultation();
+      }
+    } catch (err) {
+      console.error('Failed to delete consultation:', err);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const getSeverityClass = (severity) => {
@@ -103,21 +169,99 @@ const AIConsultationPage = () => {
       <div className="ai-consultation-container">
         {/* Header */}
         <header className="ai-header">
-          <button className="ai-back-btn" onClick={() => navigate('/patient/dashboard')}>
-            <ArrowLeft size={18} />
-            <span>Back to Dashboard</span>
-          </button>
+          <div className="ai-header-left">
+            <button className="ai-back-btn" onClick={() => navigate('/patient/dashboard')}>
+              <ArrowLeft size={18} />
+              <span>Back to Dashboard</span>
+            </button>
+          </div>
 
-          <div className="ai-header-title">
-            <div className="ai-logo">
-              <Bot />
-            </div>
-            <div className="ai-header-text">
-              <h1>AI Health Assistant</h1>
-              <p>Describe your symptoms and get personalized doctor recommendations</p>
+          <div className="ai-header-center">
+            <div className="ai-header-title">
+              <div className="ai-logo">
+                <Bot />
+              </div>
+              <div className="ai-header-text">
+                <h1>AI Health Assistant</h1>
+                <p>Describe your symptoms and get personalized doctor recommendations</p>
+              </div>
             </div>
           </div>
+
+          <div className="ai-header-right">
+            <button 
+              className="ai-history-btn" 
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <History size={18} />
+              <span>History</span>
+              {history.length > 0 && (
+                <span className="ai-history-count">{history.length}</span>
+              )}
+            </button>
+          </div>
         </header>
+
+        {/* History Sidebar */}
+        {showHistory && (
+          <div className="ai-history-overlay" onClick={() => setShowHistory(false)}>
+            <div className="ai-history-sidebar" onClick={(e) => e.stopPropagation()}>
+              <div className="ai-history-header">
+                <h3>
+                  <History size={20} />
+                  Consultation History
+                </h3>
+                <button className="ai-history-close" onClick={() => setShowHistory(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="ai-history-list">
+                {historyLoading ? (
+                  <div className="ai-history-loading">Loading history...</div>
+                ) : history.length === 0 ? (
+                  <div className="ai-history-empty">
+                    <Clock size={40} />
+                    <p>No previous consultations</p>
+                  </div>
+                ) : (
+                  history.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`ai-history-item ${selectedHistoryItem?.id === item.id ? 'active' : ''}`}
+                      onClick={() => handleViewHistoryItem(item)}
+                    >
+                      <div className="ai-history-item-content">
+                        <p className="ai-history-description">
+                          {item.description.length > 80 
+                            ? item.description.substring(0, 80) + '...' 
+                            : item.description}
+                        </p>
+                        <div className="ai-history-meta">
+                          <span className={`ai-history-severity ${getSeverityClass(item.severity)}`}>
+                            {item.severity}
+                          </span>
+                          <span className="ai-history-date">
+                            {formatDate(item.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ai-history-actions">
+                        <ChevronRight size={18} />
+                        <button 
+                          className="ai-history-delete"
+                          onClick={(e) => handleDeleteHistoryItem(e, item.id)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Main Content Grid */}
         <div className="ai-main-grid">
@@ -133,13 +277,21 @@ const AIConsultationPage = () => {
               </div>
             </div>
 
+            {selectedHistoryItem && (
+              <div className="ai-viewing-history-banner">
+                <Clock size={16} />
+                <span>Viewing consultation from {formatDate(selectedHistoryItem.created_at)}</span>
+                <button onClick={handleNewConsultation}>New Consultation</button>
+              </div>
+            )}
+
             <div className="ai-textarea-wrapper">
               <textarea
                 className="ai-textarea"
                 placeholder="Example: I've been experiencing severe headaches for the past 3 days, along with fever and body aches. The pain is mostly on the right side of my head and gets worse in bright light. I also feel nauseous sometimes..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={loading}
+                disabled={loading || selectedHistoryItem}
                 maxLength={2000}
               />
               <div className="ai-char-count">{description.length}/2000 characters</div>
@@ -147,26 +299,37 @@ const AIConsultationPage = () => {
 
             {error && (
               <div style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                border: '1px solid #fecaca',
                 borderRadius: '12px',
-                padding: '14px',
+                padding: '14px 16px',
                 marginBottom: '16px',
-                color: '#f87171',
+                color: '#b91c1c',
                 fontSize: '14px',
+                fontWeight: '500',
               }}>
                 {error}
               </div>
             )}
 
-            <button
-              className="ai-analyze-btn"
-              onClick={handleAnalyze}
-              disabled={loading || !description.trim()}
-            >
-              <Sparkles size={20} />
-              {loading ? 'Analyzing Your Symptoms...' : 'Analyze & Find Doctors'}
-            </button>
+            {selectedHistoryItem ? (
+              <button
+                className="ai-new-consultation-btn"
+                onClick={handleNewConsultation}
+              >
+                <RefreshCw size={18} />
+                Start New Consultation
+              </button>
+            ) : (
+              <button
+                className="ai-analyze-btn"
+                onClick={handleAnalyze}
+                disabled={loading || !description.trim()}
+              >
+                <Sparkles size={20} />
+                {loading ? 'Analyzing Your Symptoms...' : 'Analyze & Find Doctors'}
+              </button>
+            )}
           </div>
 
           {/* Right Panel - Results Section */}

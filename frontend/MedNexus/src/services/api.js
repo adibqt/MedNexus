@@ -397,6 +397,21 @@ class ApiService {
       body: JSON.stringify(data),
     });
   }
+
+  // AI Consultation History
+  async getAIConsultationHistory(limit = 20, offset = 0) {
+    return this.request(`/api/patients/ai-consultation/history?limit=${limit}&offset=${offset}`);
+  }
+
+  async getAIConsultationDetail(consultationId) {
+    return this.request(`/api/patients/ai-consultation/history/${consultationId}`);
+  }
+
+  async deleteAIConsultation(consultationId) {
+    return this.request(`/api/patients/ai-consultation/history/${consultationId}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const apiService = new ApiService();

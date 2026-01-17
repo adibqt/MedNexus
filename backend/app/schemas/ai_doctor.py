@@ -3,6 +3,7 @@ Schemas for AI Doctor Consultation
 """
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from datetime import datetime
 
 
 class AIConsultationRequest(BaseModel):
@@ -54,3 +55,29 @@ class SymptomInfo(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+class AIConsultationHistoryItem(BaseModel):
+    """Schema for a single consultation history item"""
+    id: int
+    description: str
+    detected_symptoms: List[str] = Field(default_factory=list)
+    symptom_analysis: Optional[str] = None
+    recommended_specializations: List[SpecializationMatch] = Field(default_factory=list)
+    severity: Optional[str] = None
+    confidence: Optional[str] = None
+    additional_notes: Optional[str] = None
+    emergency_warning: bool = False
+    health_advice: Optional[str] = None
+    suggested_doctors: List[DoctorSuggestion] = Field(default_factory=list)
+    has_matching_doctors: bool = False
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class AIConsultationHistoryResponse(BaseModel):
+    """Response schema for consultation history"""
+    total: int
+    consultations: List[AIConsultationHistoryItem] = Field(default_factory=list)
