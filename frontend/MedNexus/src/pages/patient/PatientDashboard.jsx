@@ -490,7 +490,7 @@ const PatientDashboard = () => {
           <div className="patient-dashboard-header-actions">
             <button
               type="button"
-              onClick={() => navigate('/ai-consultation')}
+              onClick={() => navigate('/patient/ai-consultation')}
               className="patient-dashboard-ai-button"
             >
               <Bot />
@@ -863,6 +863,20 @@ const PatientDashboard = () => {
             <div className="patient-dashboard-activities-grid">
               <button
                 type="button"
+                onClick={() => navigate('/patient/ai-consultation')}
+                className="patient-dashboard-activity-card patient-dashboard-activity-card--ai"
+              >
+                <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--ai">
+                  <Bot />
+                </div>
+                <h3 className="patient-dashboard-activity-title">AI Doctor</h3>
+                <p className="patient-dashboard-activity-text">
+                  Get instant consultation
+                </p>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => navigate('/view-prescription')}
                 className="patient-dashboard-activity-card"
               >
@@ -901,7 +915,7 @@ const PatientDashboard = () => {
 
               <button
                 type="button"
-                onClick={() => navigate('/ai-consultation')}
+                onClick={() => navigate('/patient/ai-consultation')}
                 className="patient-dashboard-activity-card patient-dashboard-activity-card--primary"
               >
                 <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--primary">
