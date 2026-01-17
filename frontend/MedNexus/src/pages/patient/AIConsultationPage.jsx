@@ -139,10 +139,12 @@ const AIConsultationPage = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // If symptom analysis, store it for doctor display
+      // If symptom analysis, store it for doctor display and reload history
       if (response.should_show_doctors && response.suggested_doctors?.length > 0) {
         setCurrentAnalysis(response);
         setShowDoctors(true);
+        // Reload history to show the newly saved consultation
+        loadHistory();
       }
     } catch (err) {
       console.error('AI chat error:', err);
@@ -183,6 +185,56 @@ const AIConsultationPage = () => {
     setShowDoctors(false);
     setError('');
     setInputValue('');
+  };
+
+  const handleViewHistoryItem = (item) => {
+    // Create a simulated conversation from the history item
+    const userMessage = {
+      id: `user-history-${item.id}`,
+      role: 'user',
+      content: item.description,
+      timestamp: new Date(item.created_at),
+    };
+
+    const assistantMessage = {
+      id: `assistant-history-${item.id}`,
+      role: 'assistant',
+      content: item.symptom_analysis || 'Analysis of your symptoms...',
+      timestamp: new Date(item.created_at),
+      analysis: {
+        response_type: 'symptom_analysis',
+        detected_symptoms: item.detected_symptoms || [],
+        symptom_analysis: item.symptom_analysis,
+        recommended_specializations: item.recommended_specializations || [],
+        severity: item.severity,
+        confidence: item.confidence,
+        emergency_warning: item.emergency_warning,
+        health_advice: item.health_advice,
+        suggested_doctors: item.suggested_doctors || [],
+      },
+    };
+
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: "Hello! I'm your AI Health Assistant. 👋\n\nI'm here to help you understand your health concerns and connect you with the right specialists. You can tell me about any symptoms you're experiencing, ask health-related questions, or simply chat with me.\n\nHow can I help you today?",
+        timestamp: new Date(),
+      },
+      userMessage,
+      assistantMessage,
+    ]);
+
+    // Set the analysis for doctor display
+    if (item.has_matching_doctors && item.suggested_doctors?.length > 0) {
+      setCurrentAnalysis({
+        suggested_doctors: item.suggested_doctors,
+        health_advice: item.health_advice,
+      });
+      setShowDoctors(true);
+    }
+
+    setShowHistory(false);
   };
 
   const handleBookAppointment = (doctorId) => {
@@ -309,7 +361,12 @@ const AIConsultationPage = () => {
                   </div>
                 ) : (
                   history.map((item) => (
-                    <div key={item.id} className="ai-history-item">
+                    <div 
+                      key={item.id} 
+                      className="ai-history-item"
+                      onClick={() => handleViewHistoryItem(item)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div className="ai-history-item-content">
                         <p className="ai-history-description">
                           {item.description.length > 80

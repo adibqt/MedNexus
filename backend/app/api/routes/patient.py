@@ -434,6 +434,43 @@ async def ai_chat(
             has_matching_doctors=len(suggested_doctors) > 0
         )
         
+        # Save to history if it's a symptom analysis
+        if ai_result.get("response_type") == "symptom_analysis" and ai_result.get("detected_symptoms"):
+            try:
+                consultation_record = AIConsultation(
+                    patient_id=current_patient.id,
+                    description=request.message,
+                    detected_symptoms=ai_result.get("detected_symptoms", []),
+                    symptom_analysis=ai_result.get("symptom_analysis"),
+                    recommended_specializations=[
+                        {"name": k, "match_percentage": v["percentage"], "reason": v["reason"]}
+                        for k, v in spec_match_map.items()
+                    ],
+                    severity=ai_result.get("severity"),
+                    confidence=ai_result.get("confidence"),
+                    additional_notes=ai_result.get("additional_notes"),
+                    emergency_warning=ai_result.get("emergency_warning", False),
+                    health_advice=health_advice,
+                    suggested_doctors=[
+                        {
+                            "id": doc.id,
+                            "name": doc.name,
+                            "specialization": doc.specialization,
+                            "phone": doc.phone,
+                            "profile_picture": doc.profile_picture,
+                            "match_percentage": doc.match_percentage,
+                            "match_reason": doc.match_reason,
+                        }
+                        for doc in suggested_doctors
+                    ],
+                    has_matching_doctors=len(suggested_doctors) > 0,
+                )
+                db.add(consultation_record)
+                db.commit()
+            except Exception as save_error:
+                print(f"Failed to save chat consultation history: {save_error}")
+                # Don't fail the request if saving history fails
+        
         return response
         
     except Exception as e:

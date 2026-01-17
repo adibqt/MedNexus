@@ -490,7 +490,7 @@ const PatientDashboard = () => {
           <div className="patient-dashboard-header-actions">
             <button
               type="button"
-              onClick={() => navigate('/ai-consultation')}
+              onClick={() => navigate('/patient/ai-consultation')}
               className="patient-dashboard-ai-button"
             >
               <Bot />
@@ -915,7 +915,7 @@ const PatientDashboard = () => {
 
               <button
                 type="button"
-                onClick={() => navigate('/ai-consultation')}
+                onClick={() => navigate('/patient/ai-consultation')}
                 className="patient-dashboard-activity-card patient-dashboard-activity-card--primary"
               >
                 <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--primary">
