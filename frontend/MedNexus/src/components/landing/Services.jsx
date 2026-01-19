@@ -100,16 +100,16 @@ const Services = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-6 py-3 bg-emerald-100 text-emerald-700 rounded-full text-base font-semibold mb-6">
             Our Services
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Comprehensive Healthcare
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">
+            <span className="text-emerald-500">
               {' '}at Your Fingertips
             </span>
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-base text-gray-600" style={{ lineHeight: '1.8' }}>
             Experience the future of healthcare with our wide range of telemedicine 
             services designed to meet all your medical needs.
           </p>
@@ -164,10 +164,10 @@ const Services = () => {
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors">
+              <h3 className="text-xl font-bold mb-3 group-hover:text-emerald-600 transition-colors" style={{ color: '#10b981' }}>
                 {service.title}
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-sm" style={{ lineHeight: '1.6', display: 'block' }}>
                 {service.description}
               </p>
 

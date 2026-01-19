@@ -79,37 +79,37 @@ const Testimonials = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl shadow-gray-100 border border-gray-100"
+              className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl shadow-gray-100 border border-gray-100"
             >
               {/* Quote Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-8">
-                <Quote className="w-8 h-8 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6">
+                <Quote className="w-6 h-6 text-white" />
               </div>
 
               {/* Rating */}
-              <div className="flex gap-1 mb-6">
+              <div className="flex gap-1 mb-4">
                 {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
 
               {/* Text */}
-              <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8">
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
                 "{testimonials[currentIndex].text}"
               </p>
 
               {/* Author */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <img
                   src={testimonials[currentIndex].image}
                   alt={testimonials[currentIndex].name}
-                  className="w-14 h-14 rounded-full object-cover"
+                  className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="font-bold text-gray-900">
+                  <h4 className="font-bold text-gray-900 text-sm">
                     {testimonials[currentIndex].name}
                   </h4>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 text-xs">
                     {testimonials[currentIndex].role}
                   </p>
                 </div>

@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, UserPlus, LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CTA = () => {
+  const navigate = useNavigate();
+
   const features = [
     'Free first consultation',
     'No credit card required',
@@ -10,7 +13,7 @@ const CTA = () => {
   ];
 
   return (
-    <section className="py-24 w-full bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 relative overflow-hidden">
+    <section id="free-trial" className="py-24 w-full bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
@@ -61,6 +64,7 @@ const CTA = () => {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)' }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/auth?mode=signup')}
                 className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-poppins font-semibold rounded-full shadow-xl flex items-center justify-center gap-2"
               >
                 <span>Get Started Free</span>
@@ -69,14 +73,15 @@ const CTA = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/auth?mode=signin')}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-full border border-white/20 hover:bg-white/20 transition-all"
               >
-                Schedule Demo
+                Sign In
               </motion.button>
             </div>
           </motion.div>
 
-          {/* Right Content - Stats Card */}
+          {/* Right Content - Auth Cards Preview */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -84,48 +89,55 @@ const CTA = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative"
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 shadow-2xl border border-emerald-100">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-white mb-2">Start Your Free Trial</h3>
-                <p className="text-gray-400">No commitments. Cancel anytime.</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Join MedNexus Today</h3>
+                <p className="text-gray-600">Start your health journey in seconds</p>
               </div>
 
-              {/* Form */}
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
-                />
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/25 transition-shadow"
-                >
-                  Create Free Account
-                </motion.button>
-              </div>
+              {/* Sign Up Card */}
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                onClick={() => navigate('/auth?mode=signup')}
+                className="bg-white rounded-2xl p-6 mb-4 border border-gray-100 shadow-lg cursor-pointer hover:shadow-xl transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <UserPlus className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-900 text-lg">Create Account</h4>
+                    <p className="text-gray-500 text-sm">New to MedNexus? Sign up for free</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-emerald-500" />
+                </div>
+              </motion.div>
+
+              {/* Sign In Card */}
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                onClick={() => navigate('/auth?mode=signin')}
+                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-lg cursor-pointer hover:shadow-xl transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center">
+                    <LogIn className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-900 text-lg">Sign In</h4>
+                    <p className="text-gray-500 text-sm">Already have an account? Welcome back</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-gray-500" />
+                </div>
+              </motion.div>
 
               <p className="text-center text-gray-500 text-sm mt-6">
-                By signing up, you agree to our{' '}
-                <a href="#" className="text-emerald-400 hover:underline">Terms of Service</a>
+                By continuing, you agree to our{' '}
+                <a href="#" className="text-emerald-600 hover:underline">Terms</a>
                 {' '}and{' '}
-                <a href="#" className="text-emerald-400 hover:underline">Privacy Policy</a>
+                <a href="#" className="text-emerald-600 hover:underline">Privacy Policy</a>
               </p>
             </div>
-
-            {/* Floating Element */}
-           
           </motion.div>
         </div>
       </div>

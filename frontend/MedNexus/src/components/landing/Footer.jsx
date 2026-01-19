@@ -1,38 +1,41 @@
 import { motion } from 'framer-motion';
 import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   const footerLinks = {
     Services: [
-      'Video Consultation',
-      'Chat with Doctor',
-      'AI Symptom Checker',
-      'Medicine Delivery',
-      'Health Records',
-      'Lab Tests',
+      { name: 'Video Consultation', path: '/services' },
+      { name: 'Chat with Doctor', path: '/services' },
+      { name: 'AI Symptom Checker', path: '/services' },
+      { name: 'Medicine Delivery', path: '/services' },
+      { name: 'Health Records', path: '/services' },
+      { name: 'Lab Tests', path: '/services' },
     ],
     Company: [
-      'About Us',
-      'Careers',
-      'Press',
-      'Blog',
-      'Partners',
-      'Contact',
+      { name: 'About Us', path: '/about' },
+      { name: 'Careers', path: '/careers' },
+      { name: 'Press', path: '/press' },
+      { name: 'Blog', path: '/blog' },
+      { name: 'Partners', path: '/partners' },
+      { name: 'Contact', path: '/contact' },
     ],
     Support: [
-      'Help Center',
-      'Safety Center',
-      'Community Guidelines',
-      'Accessibility',
-      'FAQs',
-      'Feedback',
+      { name: 'Help Center', path: '/help' },
+      { name: 'Safety Center', path: '/safety' },
+      { name: 'Community Guidelines', path: '/guidelines' },
+      { name: 'Accessibility', path: '/accessibility' },
+      { name: 'FAQs', path: '/faqs' },
+      { name: 'Feedback', path: '/feedback' },
     ],
     Legal: [
-      'Terms of Service',
-      'Privacy Policy',
-      'Cookie Policy',
-      'HIPAA Compliance',
-      'Disclaimer',
+      { name: 'Terms of Service', path: '/terms' },
+      { name: 'Privacy Policy', path: '/privacy' },
+      { name: 'Cookie Policy', path: '/cookies' },
+      { name: 'HIPAA Compliance', path: '/hipaa' },
+      { name: 'Disclaimer', path: '/disclaimer' },
     ],
   };
 
@@ -80,7 +83,7 @@ const Footer = () => {
               </a>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5" />
-                <span>San Francisco, CA</span>
+                <span>Dhaka, Bangladesh</span>
               </div>
             </div>
           </div>
@@ -91,12 +94,15 @@ const Footer = () => {
               <h4 className="text-white font-semibold mb-4">{title}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.name}>
                     <a
-                      href="#"
-                      className="text-gray-400 hover:text-emerald-400 transition-colors text-sm"
+                      href={link.path}
+                      onClick={(e) => { e.preventDefault(); navigate(link.path); }}
+                      style={{ cursor: 'pointer', color: '#9ca3af' }}
+                      onMouseOver={(e) => e.target.style.color = '#10b981'}
+                      onMouseOut={(e) => e.target.style.color = '#9ca3af'}
                     >
-                      {link}
+                      {link.name}
                     </a>
                   </li>
                 ))}
@@ -107,23 +113,23 @@ const Footer = () => {
       </div>
 
       {/* Newsletter Section */}
-      <div className="border-t border-gray-800">
+      <div className="bg-gradient-to-r from-emerald-500 to-teal-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h4 className="text-white font-semibold mb-1">Subscribe to our newsletter</h4>
-              <p className="text-gray-400 text-sm">Get health tips and updates delivered to your inbox.</p>
+              <h4 className="text-gray-900 font-bold text-lg mb-1">Subscribe to our newsletter</h4>
+              <p className="text-gray-800 text-sm">Get health tips and updates delivered to your inbox.</p>
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 md:w-72 px-5 py-3 bg-gray-800 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="flex-1 md:w-72 px-5 py-3 bg-white border border-white rounded-full text-gray-900 placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-full"
+                className="px-6 py-3 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors shadow-lg"
               >
                 Subscribe
               </motion.button>

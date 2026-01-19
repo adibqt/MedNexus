@@ -52,12 +52,12 @@ const Doctors = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-6 py-3 bg-emerald-100 text-emerald-700 rounded-full text-base font-semibold mb-6">
             Our Doctors
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Meet Our Expert
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">
+            <span className="text-emerald-500">
               {' '}Medical Team
             </span>
           </h2>
@@ -140,7 +140,7 @@ const Doctors = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors"
+            className="px-6 py-3 bg-emerald-100 text-emerald-700 text-base font-semibold rounded-full hover:bg-emerald-200 transition-colors"
           >
             View All Doctors
           </motion.button>

@@ -1,137 +1,96 @@
-import { useState, useEffect } from 'react';
-import { Menu, X, Heart } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { name: 'Services', href: '#services' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Doctors', href: '#doctors' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Contact', href: '#contact' },
-  ];
-
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <motion.a
-            href="#"
-            className="flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-6 h-6 text-white" />
+    <>
+      {/* Header Top Bar */}
+      <div className="header-top-bar">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <ul className="top-bar-info list-inline-item pl-0 mb-0">
+                <li className="list-inline-item" style={{ color: '#000', fontSize: '16px' }}>
+                  <a href="mailto:support@mednexus.com" style={{ color: '#000', fontSize: '16px' }}>
+                    <i className="icofont-support-faq mr-2"></i>support@mednexus.com
+                  </a>
+                </li>
+                <li className="list-inline-item" style={{ color: '#000', fontSize: '16px' }}>
+                  <i className="icofont-location-pin mr-2"></i>Available Worldwide
+                </li>
+              </ul>
             </div>
-            <span className={`text-2xl font-bold ${scrolled ? 'text-gray-900' : 'text-white'}`}>
-              Med<span className="text-emerald-500">Nexus</span>
-            </span>
-          </motion.a>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                style={{ color: scrolled ? '#10b981' : '#10b981' }}
-                className="text-sm font-medium transition-colors hover:opacity-80"
-                whileHover={{ y: -2 }}
-              >
-                {link.name}
-              </motion.a>
-            ))}
+            <div className="col-lg-6">
+              <div className="text-lg-right top-right-bar mt-2 mt-lg-0">
+                <a href="tel:+1-800-123-4567" style={{ color: '#000', fontSize: '16px' }}>
+                  <span>Call Now : </span>
+                  <span>+1-800-123-4567</span>
+                </a>
+              </div>
+            </div>
           </div>
-
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05,boxShadow: '0 10px 40px rgba(175, 235, 215, 0.3)' }}
-              whileTap={{ scale: 0.95 }}
-              style={{ color: '#10b981' }}
-              className="px-5 py-2.5 text-sm font-medium transition-colors"
-              onClick={() => navigate('/sign-in')}
-            >
-              Sign In
-            </motion.button>
-            
-          </div>
-
-          {/* Mobile Menu Button */}
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2 rounded-lg ${
-              scrolled ? 'text-gray-700' : 'text-white'
-            }`}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </motion.button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t"
+      {/* Main Navigation */}
+      <nav className="navbar navbar-expand-lg navigation" id="navbar">
+        <div className="container">
+          <a className="navbar-brand" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+            <Heart style={{ color: '#10b981', marginRight: '10px', display: 'inline' }} size={40} />
+            <span style={{ fontFamily: 'Exo, sans-serif', fontWeight: 700, fontSize: '28px' }}>
+              Med<span style={{ color: '#10b981' }}>Nexus</span>
+            </span>
+          </a>
+
+          <button 
+            className="navbar-toggler collapsed" 
+            type="button" 
+            data-toggle="collapse" 
+            data-target="#navbarmain"
+            onClick={() => setIsOpen(!isOpen)}
           >
-            <div className="px-4 py-6 space-y-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="block text-gray-600 hover:text-emerald-600 font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <div className="pt-4 space-y-3">
-                <button
-                  className="w-full py-3 text-gray-700 font-medium rounded-full border border-gray-200 hover:border-emerald-500 transition-colors"
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate('/sign-in');
-                  }}
+            <i className="icofont-navigation-menu"></i>
+          </button>
+
+          <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarmain">
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item active">
+                <a className="nav-link" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Home</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/services" onClick={(e) => { e.preventDefault(); navigate('/services'); }}>Services</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/how-it-works" onClick={(e) => { e.preventDefault(); navigate('/how-it-works'); }}>How It Works</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/doctors" onClick={(e) => { e.preventDefault(); navigate('/doctors'); }}>Doctors</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/testimonials" onClick={(e) => { e.preventDefault(); navigate('/testimonials'); }}>Testimonials</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/contact" onClick={(e) => { e.preventDefault(); navigate('/contact'); }}>Contact</a>
+              </li>
+              <li className="nav-item">
+                <a 
+                  className="nav-link btn btn-main btn-round-full ml-3"
+                  href="/sign-in"
+                  onClick={(e) => { e.preventDefault(); navigate('/sign-in'); }}
+                  style={{ color: '#fff', padding: '8px 20px' }}
                 >
                   Sign In
-                </button>
-                <button className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-full">
-                  Get Started
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 };
 

@@ -1,32 +1,397 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Exo:500,600,700|Roboto&display=swap");
+
+/* ========== BASE STYLES FROM NOVENA ========== */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  line-height: 1.6;
+  font-family: "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  color: #6F8BA4;
+  font-weight: 400;
+}
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+  font-family: "Exo", sans-serif;
+  font-weight: 700;
+  color: #222;
+}
+
+h1, .h1 {
+  font-size: 2.5rem;
+}
+
+h2, .h2 {
+  font-size: 44px;
+}
+
+p {
+  line-height: 30px;
+}
+
+a {
+  color: #222;
+  text-decoration: none;
+  transition: all .35s ease;
+}
+
+a:focus, a:hover {
+  color: #10b981;
+  text-decoration: none;
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  padding: .75rem 2rem;
+  font-family: "Exo", sans-serif;
+  text-transform: uppercase;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: all .35s ease;
+}
+
+.btn-main {
+  background: #10b981;
+  color: #fff;
+  border-color: #10b981;
+}
+
+.btn-main:hover {
+  background: #0ea5e9;
+  border-color: #0ea5e9;
+  color: #fff;
+}
+
+.btn-main-2 {
+  background: #0ea5e9;
+  color: #fff;
+  border-color: #0ea5e9;
+}
+
+.btn-main-2:hover {
+  background: #10b981;
+  color: #fff;
+  border-color: #10b981;
+}
+
+.btn-round-full {
+  border-radius: 50px;
+}
+
+.btn-icon i {
+  border-left: 1px solid rgba(255, 255, 255, 0.09);
+  padding-left: 15px;
+}
+
+/* ========== HEADER TOP BAR ========== */
+.header-top-bar {
+  background: #10b981;
+  font-size: 14px;
+  padding: 10px 0px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #fff;
+}
+
+.top-bar-info li a {
+  color: #fff;
+  margin-right: 20px;
+}
+
+.top-right-bar a span {
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.top-right-bar a i {
+  color: #fff;
+  margin-right: 10px;
+}
+
+/* ========== NAVIGATION ========== */
+.navigation {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+#navbarmain {
+  padding: 20px 0px;
+}
+
+#navbarmain .nav-link {
+  font-weight: 600;
+  padding: 10px 15px;
+  color: #222;
+  font-family: "Exo", sans-serif;
+  text-transform: capitalize;
+  font-size: 16px;
+  transition: all .25s ease;
+}
+
+#navbarmain .nav-link:hover {
+  color: #10b981;
+}
+
+.navbar-brand {
+  margin-top: 10px;
+}
+
+/* ========== BANNER ========== */
+.banner {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 550px;
+}
+
+.banner .block {
+  padding: 80px 0px 160px;
+}
+
+.banner .block h1 {
+  font-size: 60px;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+  text-transform: capitalize;
+  color: #10b981;
+}
+
+.letter-spacing {
+  letter-spacing: 2px;
+}
+
+.text-color {
+  color: #10b981;
+}
+
+.divider {
+  width: 40px;
+  height: 5px;
+  background: #10b981;
+}
+
+.title-color {
+  color: #10b981;
+}
+
+/* ========== FEATURES SECTION ========== */
+.features {
+  margin-top: 0;
+  position: relative;
+  z-index: 100;
+  padding: 60px 0;
+}
+
+.feature-block {
+  display: flex;
+}
+
+.feature-item {
+  flex-basis: 33.33%;
+  margin: 0px 10px;
+  padding: 40px 30px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 42, 106, 0.1);
+}
+
+.feature-item .feature-icon i {
+  font-size: 50px;
+  color: #10b981;
+}
+
+.feature-item h4 {
+  color: #10b981;
+}
+
+.feature-item p {
+  font-size: 14px;
+}
+
+.feature-item span {
+  color: #6F8BA4;
+}
+
+.w-hours li {
+  padding: 6px 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ========== SECTION ========== */
+.section {
+  padding: 100px 0;
+}
+
+.section-title {
+  margin-bottom: 70px;
+}
+
+.section-title h2 {
+  color: #10b981;
+}
+
+.gray-bg {
+  background: #f4f9fc;
+}
+
+/* ========== APPOINTMENT SECTION ========== */
+.appoinment {
+  background: #f4f9fc;
+}
+
+.appoinment-content {
+  position: relative;
+}
+
+.appoinment-content img {
+  width: 85%;
+  border-radius: 5px;
+}
+
+.appoinment-content .emergency {
+  position: absolute;
+  right: 10px;
+  bottom: 20px;
+  background: #10b981;
+  padding: 48px;
+}
+
+.appoinment-content .emergency h2 {
+  color: #fff;
+}
+
+.appoinment-content .emergency i {
+  margin-right: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.appoinment-wrap h2 {
+  color: #10b981;
+}
+
+.appoinment-form {
+  margin-top: 40px;
+}
+
+.appoinment-form .form-control {
+  background: #fff;
+  height: 55px;
+  border-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+}
+
+.appoinment-form textarea.form-control {
+  height: auto;
+}
+
+/* ========== SERVICE SECTION ========== */
+.service-block {
+  padding: 20px;
+  margin-top: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 0 38px rgba(21, 40, 82, 0.07);
+  background: #fff;
+  border-radius: 5px;
+}
+
+.service-block .icon {
+  margin-bottom: 20px;
+}
+
+.service-block i {
+  font-size: 40px;
+  color: #0ea5e9;
+}
+
+.service-block h4 {
+  color: #10b981;
+}
+
+/* ========== ABOUT SECTION ========== */
+.about-img img {
+  border-radius: 5px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 42, 106, 0.1);
+}
+
+/* ========== TESTIMONIAL ========== */
+.testimonial-block {
+  background: #f4f9fc;
+  padding: 30px;
+  border-radius: 5px;
+}
+
+.testimonial-block .client-info h4 {
+  color: #10b981;
+}
+
+.testimonial-block .client-info span {
+  color: #0ea5e9;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  background: #0f172a;
+  padding: 70px 0px 40px;
+}
+
+.footer-widget h4 {
+  color: #fff;
+}
+
+.footer-widget ul li a {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-widget ul li a:hover {
+  color: #10b981;
+}
+
+.footer-btm {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .banner .block h1 {
+    font-size: 40px;
+    line-height: 50px;
+  }
+  .banner {
+    background: #fff !important;
+    min-height: auto;
+  }
+  .feature-block {
+    flex-direction: column;
+  }
+  .feature-item {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner .block h1 {
+    font-size: 32px;
+    line-height: 42px;
+  }
+  h2, .h2 {
+    font-size: 1.5rem;
+  }
+}
 
 .landing-page {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  background:
-    radial-gradient(circle at 0% 0%, #ecfdf5 0, transparent 45%),
-    radial-gradient(circle at 100% 0%, #e0f2fe 0, transparent 45%),
-    linear-gradient(180deg, #f9fafb 0%, #eff6ff 55%, #f9fafb 100%);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #020617;
-}
-
-.landing-main {
-  width: 100%;
-  padding-top: 0;
-}
-
-.landing-section-spacer {
-  height: 2rem;
-}
-
-@media (min-width: 640px) {
-  .landing-section-spacer {
-    height: 2.5rem;
-  }
 }
 
 

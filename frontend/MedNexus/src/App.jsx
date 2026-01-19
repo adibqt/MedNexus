@@ -11,6 +11,7 @@ import {
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 import SignIn from './pages/SignIn.jsx';
+import Auth from './pages/Auth.jsx';
 import PatientSignUp from './pages/patient/PatientSignUp.jsx';
 import PatientSignIn from './pages/patient/PatientSignIn.jsx';
 import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
@@ -119,6 +120,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
