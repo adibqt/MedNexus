@@ -1,5 +1,6 @@
 """
 AI Service for symptom analysis and doctor recommendation using Google Gemini
+Enhanced with RAG (Retrieval-Augmented Generation) for better medical knowledge
 """
 import os
 import json
@@ -7,17 +8,26 @@ import re
 from typing import List, Dict, Optional
 import google.generativeai as genai
 from app.core.config import settings
+from app.services.rag_service import rag_service
 
 
 class AIService:
     def __init__(self):
-        """Initialize Gemini AI with API key"""
+        """Initialize Gemini AI with API key and RAG service"""
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-2.5-flash')
+        self.rag = rag_service  # RAG service for medical knowledge retrieval
+        
+        # Log RAG status
+        stats = self.rag.get_stats()
+        print(f"✓ AI Service initialized with RAG")
+        print(f"  → Medical knowledge base: {stats['total_documents']} mappings")
+        print(f"  → Specializations covered: {stats['unique_categories']}")
+
     
     def chat_response(
         self,
@@ -168,7 +178,7 @@ Respond helpfully. If greeting, greet back and offer health assistance. Return o
         available_symptoms: List[Dict[str, str]]
     ) -> Dict:
         """
-        Full symptom analysis with complete context
+        Full symptom analysis with RAG-enhanced context
         """
         # Build conversation context (reduced to 5 messages)
         history_text = ""
@@ -176,15 +186,23 @@ Respond helpfully. If greeting, greet back and offer health assistance. Return o
             role = "Patient" if msg["role"] == "user" else "Health Assistant"
             history_text += f"{role}: {msg['content']}\n"
         
-        # Reduced symptom context (top 20 most common)
-        symptom_context = "\n".join([
-            f"- {s['name']}: {s.get('description', 'N/A')}"
-            for s in available_symptoms[:20]
-        ])
+        # RAG: Retrieve relevant medical knowledge
+        rag_context = self.rag.retrieve_context(user_message, n_results=5)
+        medical_knowledge = rag_context['context_text']
         
-        spec_context = ", ".join(available_specializations[:10])  # Limit specs too
+        # Get unique specializations from RAG results
+        rag_specializations = list(set(rag_context['categories']))
+        
+        # Combine available specializations with RAG-suggested ones
+        spec_context = ", ".join(available_specializations[:10])
         
         prompt = f"""You are an AI Health Assistant for MedNexus. Analyze symptoms and suggest specialists.
+
+MEDICAL KNOWLEDGE BASE (Retrieved from comprehensive database):
+{medical_knowledge}
+
+AVAILABLE SPECIALIZATIONS IN OUR SYSTEM:
+{spec_context}
 
 Examples:
 Input: "I have a severe headache and feel dizzy"
@@ -205,19 +223,21 @@ Output: {{
     "should_show_doctors": true
 }}
 
-History:
+CONVERSATION HISTORY:
 {history_text}
 
-Current: "{user_message}"
+CURRENT PATIENT MESSAGE: "{user_message}"
 
-Specializations: {spec_context}
-
-Symptoms: {symptom_context}
+INSTRUCTIONS:
+1. Use the Medical Knowledge Base to understand symptoms and map to specializations
+2. Recommend ONLY specializations that exist in our AVAILABLE SPECIALIZATIONS list
+3. Provide empathetic, clear responses
+4. Be specific about why you're recommending each specialization
 
 Return JSON:
 {{
     "response_type": "symptom_analysis",
-    "message": "empathetic response",
+    "message": "empathetic response acknowledging symptoms",
     "detected_symptoms": ["symptom1"],
     "recommended_specializations": [{{"name": "spec", "match_percentage": 80, "reason": "why"}}],
     "should_show_doctors": true
@@ -270,20 +290,22 @@ Return JSON:
         available_symptoms: List[Dict[str, str]]
     ) -> Dict:
         """
-        Analyze patient's natural language description and extract symptoms
-        Optimized version with reduced token usage
+        Analyze patient's natural language description with RAG enhancement
         """
         try:
-            # Reduced symptom context (top 15 symptoms only)
-            symptom_context = "\n".join([
-                f"- {s['name']}"
-                for s in available_symptoms[:15]
-            ])
+            # RAG: Retrieve relevant medical knowledge
+            rag_context = self.rag.retrieve_context(patient_description, n_results=5)
+            medical_knowledge = rag_context['context_text']
             
             spec_context = ", ".join(available_specializations[:8])
             
-            # Shorter, more efficient prompt with few-shot examples
-            prompt = f"""Analyze symptoms and recommend specialists.
+            # RAG-enhanced prompt with few-shot examples
+            prompt = f"""Analyze symptoms using medical knowledge and recommend specialists.
+
+MEDICAL KNOWLEDGE BASE:
+{medical_knowledge}
+
+AVAILABLE SPECIALIZATIONS: {spec_context}
 
 Examples:
 Patient: "I have stomach pain and nausea"
@@ -300,12 +322,9 @@ Patient: "I have chest pain and shortness of breath"
     "severity": "high"
 }}
 
-Patient: "{patient_description}"
+PATIENT DESCRIPTION: "{patient_description}"
 
-Symptoms: {symptom_context}
-Specializations: {spec_context}
-
-Return JSON:
+Use the Medical Knowledge Base to inform your analysis. Return JSON:
 {{
     "detected_symptoms": ["symptom1"],
     "recommended_specializations": [{{"name": "spec", "match_percentage": 80}}],
