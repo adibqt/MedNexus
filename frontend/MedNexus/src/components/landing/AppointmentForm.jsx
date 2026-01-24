@@ -1,11 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import apiService from '../../services/api';
 
 const AppointmentForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [doctors, setDoctors] = useState([]);
   const [formData, setFormData] = useState({
     department: '',
     doctor: '',
+    doctor_id: '',
     date: '',
     time: '',
     fullName: '',
@@ -13,6 +18,21 @@ const AppointmentForm = () => {
     message: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  // Load doctors from API on mount
+  useEffect(() => {
+    const loadDoctors = async () => {
+      try {
+        const doctorsData = await apiService.getPublicDoctors();
+        setDoctors(doctorsData || []);
+      } catch (err) {
+        console.warn('Failed to load doctors:', err);
+      }
+    };
+    loadDoctors();
+  }, []);
 
   const toLocalDate = (value) => {
     if (!value) return null;
@@ -75,15 +95,30 @@ const AppointmentForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'doctor') {
+      const selectedDoctor = doctors.find(d => d.id.toString() === value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        doctor_id: selectedDoctor ? selectedDoctor.id : ''
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
+
+    if (!formData.doctor_id) {
+      setError('Please select a doctor.');
+      return;
+    }
 
     if (!formData.date) {
       setError('Please select a date.');
@@ -105,7 +140,53 @@ const AppointmentForm = () => {
       return;
     }
 
-    navigate('/sign-in');
+    if (!user) {
+      navigate('/sign-in');
+      return;
+    }
+
+    // User is logged in, proceed with appointment booking
+    try {
+      setLoading(true);
+      
+      // Prepare appointment data in the format backend expects
+      const appointmentData = {
+        doctor_id: formData.doctor_id,
+        appointment_date: formData.date,
+        appointment_time: formData.time,
+        reason: formData.message || null,
+        symptoms: null,
+      };
+
+      // Call backend API to book appointment
+      const result = await apiService.bookAppointment(appointmentData);
+      console.log('Appointment booked:', result);
+
+      // Show success message
+      setSuccess(true);
+      
+      // Reset form
+      setFormData({
+        department: '',
+        doctor: '',
+        doctor_id: '',
+        date: '',
+        time: '',
+        fullName: '',
+        phone: '',
+        message: '',
+      });
+
+      // Navigate to dashboard after 800ms
+      setTimeout(() => {
+        navigate('/patient/dashboard');
+      }, 800);
+    } catch (err) {
+      console.error('Error booking appointment:', err);
+      setError(err.message || 'Failed to book appointment. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -140,7 +221,6 @@ const AppointmentForm = () => {
                 <h3 style={{ fontSize: '22px', fontWeight: '700' }}>+1-800-456-7890</h3>
               </div>
             </div>
-
           </div>
 
           {/* Right Side - Form */}
@@ -155,69 +235,81 @@ const AppointmentForm = () => {
               <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#111827', marginBottom: '10px' }}>
                 Book an Appointment
               </h2>
-              <p style={{ color: '#6b7280', marginBottom: '18px' }}>Select a department, doctor, and an available slot.</p>
+              <p style={{ color: '#6b7280', marginBottom: '18px' }}>Select a doctor and an available slot.</p>
 
               <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '14px' }}>
-              {/* Department */}
-              <div>
-                <select
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '13px 16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    fontFamily: 'inherit',
-                    backgroundColor: '#fff'
-                  }}
-                >
-                  <option value="">Select Department</option>
-                  <option value="cardiology">Cardiology</option>
-                  <option value="neurology">Neurology</option>
-                  <option value="orthopedics">Orthopedics</option>
-                  <option value="dental">Dental</option>
-                  <option value="general">General Medicine</option>
-                </select>
-              </div>
+                {/* Doctor Selection */}
+                <div>
+                  <select
+                    name="doctor"
+                    value={formData.doctor}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '13px 16px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      backgroundColor: '#fff'
+                    }}
+                  >
+                    <option value="">Select Doctor</option>
+                    {doctors.map((doc) => (
+                      <option key={doc.id} value={doc.id}>
+                        {doc.name} - {doc.specialization}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Doctor Selection */}
-              <div>
-                <select
-                  name="doctor"
-                  value={formData.doctor}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '13px 16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    fontFamily: 'inherit',
-                    backgroundColor: '#fff'
-                  }}
-                >
-                  <option value="">Select Doctor</option>
-                  <option value="dr-ahmed">Dr. Ahmed Karim</option>
-                  <option value="dr-fatima">Dr. Fatima Khan</option>
-                  <option value="dr-ali">Dr. Ali Hassan</option>
-                  <option value="dr-sara">Dr. Sara Ibrahim</option>
-                </select>
-              </div>
+                {/* Date and Time Row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <input
+                    type="date"
+                    name="date"
+                    min={todayIso}
+                    value={formData.date}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setFormData(prev => ({ ...prev, time: '' }));
+                    }}
+                    style={{
+                      padding: '13px 16px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit'
+                    }}
+                  />
+                  <select
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    disabled={!dayWindow}
+                    style={{
+                      padding: '13px 16px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      backgroundColor: '#fff'
+                    }}
+                  >
+                    <option value="" disabled>{dayWindow ? 'Select time' : 'Pick a date first'}</option>
+                    {timeOptions.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Date and Time Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                {/* Full Name */}
                 <input
-                  type="date"
-                  name="date"
-                  min={todayIso}
-                  value={formData.date}
-                  onChange={(e) => {
-                    handleChange(e);
-                    setFormData(prev => ({ ...prev, time: '' }));
-                  }}
+                  type="text"
+                  name="fullName"
+                  placeholder="Full Name"
+                  value={formData.fullName}
+                  onChange={handleChange}
                   style={{
                     padding: '13px 16px',
                     border: '1px solid #e5e7eb',
@@ -226,101 +318,71 @@ const AppointmentForm = () => {
                     fontFamily: 'inherit'
                   }}
                 />
-                <select
-                  name="time"
-                  value={formData.time}
+
+                {/* Phone Number */}
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone Number"
+                  value={formData.phone}
                   onChange={handleChange}
-                  disabled={!dayWindow}
+                  style={{
+                    padding: '13px 16px',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    fontFamily: 'inherit'
+                  }}
+                />
+
+                {/* Message */}
+                <textarea
+                  name="message"
+                  placeholder="Message (optional)"
+                  rows="4"
+                  value={formData.message}
+                  onChange={handleChange}
                   style={{
                     padding: '13px 16px',
                     border: '1px solid #e5e7eb',
                     borderRadius: '10px',
                     fontSize: '14px',
                     fontFamily: 'inherit',
-                    backgroundColor: '#fff'
+                    resize: 'vertical'
                   }}
+                ></textarea>
+
+                {error && (
+                  <div style={{ color: '#b91c1c', fontSize: '13px', fontWeight: '600', padding: '10px', backgroundColor: '#fee2e2', borderRadius: '8px' }}>{error}</div>
+                )}
+
+                {success && (
+                  <div style={{ color: '#059669', fontSize: '13px', fontWeight: '600', padding: '10px', backgroundColor: '#d1fae5', borderRadius: '8px' }}>✓ Appointment booked successfully! Redirecting to dashboard...</div>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading || success}
+                  style={{
+                    backgroundColor: loading || success ? '#9ca3af' : '#10b981',
+                    color: 'white',
+                    padding: '14px 18px',
+                    border: 'none',
+                    borderRadius: '12px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: loading || success ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.3s ease',
+                    boxShadow: '0 12px 30px rgba(16, 185, 129, 0.28)',
+                    opacity: loading || success ? 0.7 : 1
+                  }}
+                  onMouseEnter={(e) => !loading && !success && (e.target.style.backgroundColor = '#0d9970')}
+                  onMouseLeave={(e) => !loading && !success && (e.target.style.backgroundColor = '#10b981')}
                 >
-                  <option value="" disabled>{dayWindow ? 'Select time' : 'Pick a date first'}</option>
-                  {timeOptions.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Full Name */}
-              <input
-                type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
-                onChange={handleChange}
-                style={{
-                  padding: '13px 16px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontFamily: 'inherit'
-                }}
-              />
-
-              {/* Phone Number */}
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
-                style={{
-                  padding: '13px 16px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontFamily: 'inherit'
-                }}
-              />
-
-              {/* Message */}
-              <textarea
-                name="message"
-                placeholder="Message"
-                rows="4"
-                value={formData.message}
-                onChange={handleChange}
-                style={{
-                  padding: '13px 16px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
-              ></textarea>
-
-              {error && (
-                <div style={{ color: '#b91c1c', fontSize: '13px', fontWeight: '600' }}>{error}</div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                style={{
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  padding: '14px 18px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease',
-                  boxShadow: '0 12px 30px rgba(16, 185, 129, 0.28)'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#0d9970'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-              >
-                Make Appointment
-              </button>
-            </form>
+                  {loading ? 'Booking...' : success ? 'Appointment Booked!' : 'Make Appointment'}
+                </button>
+              </form>
             </div>
           </div>
         </div>

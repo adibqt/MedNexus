@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/landing/Navbar';
 import Footer from '../components/landing/Footer';
+import { useAuth } from '../context/AuthContext';
 import './Services.css';
 
 const serviceCards = [
@@ -37,6 +39,25 @@ const serviceCards = [
 ];
 
 const Services = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetAppointment = () => {
+    if (user) {
+      // Logged in: navigate to home page then scroll to appointment form
+      navigate('/');
+      // Small delay to allow page to load before scrolling
+      setTimeout(() => {
+        const appointmentSection = document.getElementById('appointment');
+        if (appointmentSection) {
+          appointmentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
+    } else {
+      // Not logged in: go to sign-in
+      navigate('/sign-in');
+    }
+  };
   return (
     <div className="services-page">
       <Navbar />
@@ -77,9 +98,34 @@ const Services = () => {
                 We are pleased to offer you the{' '}
                 <span className="services-cta__highlight">chance to have the healthy</span>
               </h2>
-              <a href="/sign-in" className="services-cta__btn">
+              <button 
+                onClick={handleGetAppointment}
+                className="services-cta__btn"
+                style={{ 
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  padding: '14px 32px',
+                  border: 'none',
+                  borderRadius: '25px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#0d9488';
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 12px 32px rgba(16, 185, 129, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#10b981';
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.3)';
+                }}
+              >
                 Get appointment →
-              </a>
+              </button>
             </div>
           </div>
         </section>

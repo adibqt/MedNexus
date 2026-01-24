@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Heart,
   Calendar,
@@ -64,6 +64,7 @@ const fallbackConcerns = [
 
 const PatientDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut } = useAuth();
   const { initiateCall } = useVideoCall();
   const [loading, setLoading] = useState(true);
@@ -182,6 +183,37 @@ const PatientDashboard = () => {
     })();
     return () => {
       mounted = false;
+    };
+  }, []);
+
+  // Refetch appointments when page becomes visible or receives focus
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          const appointmentsData = await apiService.getPatientAppointments();
+          setAppointments(appointmentsData || []);
+        } catch (e) {
+          console.warn('Failed to refresh appointments', e);
+        }
+      }
+    };
+
+    const handleFocus = async () => {
+      try {
+        const appointmentsData = await apiService.getPatientAppointments();
+        setAppointments(appointmentsData || []);
+      } catch (e) {
+        console.warn('Failed to refresh appointments on focus', e);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
@@ -775,11 +807,15 @@ const PatientDashboard = () => {
                 </p>
                 <button
                   type="button"
-                  onClick={() =>
-                    document
-                      .querySelector('.patient-dashboard-doctors-body')
-                      ?.scrollIntoView({ behavior: 'smooth' })
-                  }
+                  onClick={() => {
+                    navigate('/');
+                    setTimeout(() => {
+                      const appointmentSection = document.getElementById('appointment');
+                      if (appointmentSection) {
+                        appointmentSection.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }, 100);
+                  }}
                   className="patient-dashboard-appointment-empty-cta"
                 >
                   Book an Appointment

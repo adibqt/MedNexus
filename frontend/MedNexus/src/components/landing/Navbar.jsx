@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Heart, ChevronDown } from 'lucide-react';
+import { Heart, ChevronDown, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   return (
     <header>
@@ -123,13 +125,36 @@ const Navbar = () => {
 
               <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">Contact</a>
               
-              <button
-                style={{ backgroundColor: '#10b981', color: '#fff' }}
-                className="px-6 py-2 rounded-full font-medium hover:opacity-90"
-                onClick={() => navigate('/sign-in')}
-              >
-                Sign In
-              </button>
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <button
+                    style={{ backgroundColor: '#10b981', color: '#fff' }}
+                    className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                    onClick={() => navigate('/patient/dashboard')}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    style={{ color: '#10b981', border: '2px solid #10b981' }}
+                    className="px-6 py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center gap-2"
+                    onClick={() => {
+                      logout();
+                      navigate('/');
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  style={{ backgroundColor: '#10b981', color: '#fff' }}
+                  className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                  onClick={() => navigate('/sign-in')}
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
 
@@ -201,16 +226,43 @@ const Navbar = () => {
               )}
 
               <a href="/#contact" className="block py-2 text-gray-700 hover:text-emerald-600">Contact</a>
-              <button
-                style={{ backgroundColor: '#10b981', color: '#fff' }}
-                className="w-full mt-4 py-2 rounded-full font-medium hover:opacity-90"
-                onClick={() => {
-                  navigate('/sign-in');
-                  setIsOpen(false);
-                }}
-              >
-                Sign In
-              </button>
+              {user ? (
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    style={{ backgroundColor: '#10b981', color: '#fff' }}
+                    className="w-full py-2 rounded-full font-medium hover:opacity-90"
+                    onClick={() => {
+                      navigate('/patient/dashboard');
+                      setIsOpen(false);
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    style={{ color: '#10b981', border: '2px solid #10b981' }}
+                    className="w-full py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      logout();
+                      navigate('/');
+                      setIsOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  style={{ backgroundColor: '#10b981', color: '#fff' }}
+                  className="w-full mt-4 py-2 rounded-full font-medium hover:opacity-90"
+                  onClick={() => {
+                    navigate('/sign-in');
+                    setIsOpen(false);
+                  }}
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           )}
         </div>
