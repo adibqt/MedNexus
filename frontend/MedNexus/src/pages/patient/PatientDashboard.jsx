@@ -470,7 +470,7 @@ const PatientDashboard = () => {
         <div className="patient-dashboard-header-inner">
           {/* Logo & greeting */}
           <div className="patient-dashboard-header-left">
-            <div className="patient-dashboard-logo">
+            <div className="patient-dashboard-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
               <div className="patient-dashboard-logo-icon">
                 <Heart />
               </div>
