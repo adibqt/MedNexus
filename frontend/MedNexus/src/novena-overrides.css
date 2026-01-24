@@ -1,0 +1,105 @@
+:root {
+  --med-primary: #0f766e;
+  --med-primary-dark: #0b5d56;
+  --med-accent: #10b981;
+}
+
+/* Brand mark/text to keep existing logo feel */
+.med-brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.med-brand-text {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+/* Primary buttons/colors aligned to MedNexus palette */
+.btn-main,
+.navigation .navbar-nav .nav-link.active,
+.navigation .navbar-nav .nav-link:focus {
+  background: var(--med-primary);
+  border-color: var(--med-primary);
+  color: #fff;
+}
+
+.btn-main:hover,
+.btn-main:focus,
+.btn-main:active {
+  background: var(--med-primary-dark);
+  border-color: var(--med-primary-dark);
+  color: #fff;
+}
+
+.btn-main-2 {
+  background: var(--med-accent);
+  border-color: var(--med-accent);
+  color: #fff;
+}
+
+.btn-main-2:hover,
+.btn-main-2:focus,
+.btn-main-2:active {
+  background: var(--med-primary-dark);
+  border-color: var(--med-primary-dark);
+  color: #fff;
+}
+
+.navigation .navbar-nav .nav-link {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.navigation .navbar-nav .nav-link:hover,
+.navigation .navbar-nav .nav-link:focus {
+  color: var(--med-accent);
+}
+
+.header-top-bar {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.header-top-bar a {
+  color: #e5e7eb;
+}
+
+.header-top-bar a:hover {
+  color: #a7f3d0;
+}
+
+.feature-icon i,
+.counter-stat i,
+.footer .icon i {
+  color: var(--med-accent);
+}
+
+.footer .btn-main-2 {
+  background: var(--med-accent);
+  border-color: var(--med-accent);
+}
+
+/* Show dropdown on hover to avoid bootstrap JS dependency */
+.navigation .dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+/* Ensure dropdown aligns nicely */
+.navigation .dropdown-menu {
+  margin-top: 0.5rem;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}

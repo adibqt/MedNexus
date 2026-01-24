@@ -1,96 +1,221 @@
 import { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
 
   return (
-    <>
+    <header>
       {/* Header Top Bar */}
-      <div className="header-top-bar">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6">
-              <ul className="top-bar-info list-inline-item pl-0 mb-0">
-                <li className="list-inline-item" style={{ color: '#000', fontSize: '16px' }}>
-                  <a href="mailto:support@mednexus.com" style={{ color: '#000', fontSize: '16px' }}>
-                    <i className="icofont-support-faq mr-2"></i>support@mednexus.com
-                  </a>
-                </li>
-                <li className="list-inline-item" style={{ color: '#000', fontSize: '16px' }}>
-                  <i className="icofont-location-pin mr-2"></i>Available Worldwide
-                </li>
-              </ul>
+      <div style={{ 
+        background: 'linear-gradient(135deg, #0d9488 0%, #10b981 100%)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+      }}>
+        <div className="container mx-auto px-4">
+          <div className="py-5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 text-sm">
+              <a href="mailto:support@mednexus.com" className="text-white hover:text-emerald-100 flex items-center gap-2 font-medium">
+                <span>📧</span> support@mednexus.com
+              </a>
+              <span className="text-white flex items-center gap-2 font-medium">
+                <span>📍</span> Address: Medical Plaza, New York, USA
+              </span>
             </div>
-            <div className="col-lg-6">
-              <div className="text-lg-right top-right-bar mt-2 mt-lg-0">
-                <a href="tel:+1-800-123-4567" style={{ color: '#000', fontSize: '16px' }}>
-                  <span>Call Now : </span>
-                  <span>+1-800-123-4567</span>
-                </a>
-              </div>
+            <div className="text-white">
+              <a href="tel:+18234565134" className="hover:text-emerald-100 font-semibold">
+                📞 Call: +1-823-456-5134
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="navbar navbar-expand-lg navigation" id="navbar">
-        <div className="container">
-          <a className="navbar-brand" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
-            <Heart style={{ color: '#10b981', marginRight: '10px', display: 'inline' }} size={40} />
-            <span style={{ fontFamily: 'Exo, sans-serif', fontWeight: 700, fontSize: '28px' }}>
-              Med<span style={{ color: '#10b981' }}>Nexus</span>
-            </span>
-          </a>
+      {/* Navigation Bar */}
+      <nav style={{ borderBottom: '1px solid #e9ecef', backgroundColor: '#fff' }}>
+        <div className="container mx-auto px-4">
+          <div className="py-4 flex items-center justify-between">
+            {/* Logo */}
+            <a href="/" className="flex items-center gap-3 z-50">
+              <div style={{ width: '55px', height: '55px', backgroundColor: '#10b981', borderRadius: '8px' }} className="flex items-center justify-center shadow-lg">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold text-gray-900">
+                Med<span style={{ color: '#10b981' }}>Nexus</span>
+              </span>
+            </a>
 
-          <button 
-            className="navbar-toggler collapsed" 
-            type="button" 
-            data-toggle="collapse" 
-            data-target="#navbarmain"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <i className="icofont-navigation-menu"></i>
-          </button>
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-gray-700 hover:text-emerald-600"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+              </svg>
+            </button>
 
-          <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarmain">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item active">
-                <a className="nav-link" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Home</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/services" onClick={(e) => { e.preventDefault(); navigate('/services'); }}>Services</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/how-it-works" onClick={(e) => { e.preventDefault(); navigate('/how-it-works'); }}>How It Works</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/doctors" onClick={(e) => { e.preventDefault(); navigate('/doctors'); }}>Doctors</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/testimonials" onClick={(e) => { e.preventDefault(); navigate('/testimonials'); }}>Testimonials</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/contact" onClick={(e) => { e.preventDefault(); navigate('/contact'); }}>Contact</a>
-              </li>
-              <li className="nav-item">
-                <a 
-                  className="nav-link btn btn-main btn-round-full ml-3"
-                  href="/sign-in"
-                  onClick={(e) => { e.preventDefault(); navigate('/sign-in'); }}
-                  style={{ color: '#fff', padding: '8px 20px' }}
-                >
-                  Sign In
-                </a>
-              </li>
-            </ul>
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="/" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">Home</a>
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/about');
+                }}
+                style={{ color: '#222' }}
+                className="font-medium hover:text-emerald-600"
+              >
+                About
+              </a>
+              <a
+                href="/services"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/services');
+                }}
+                style={{ color: '#222' }}
+                className="font-medium hover:text-emerald-600"
+              >
+                Services
+              </a>
+              
+              {/* Department Dropdown */}
+              <div className="relative group">
+                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
+                  Department <ChevronDown className="w-4 h-4" />
+                </button>
+                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="h-1 w-full bg-emerald-500" />
+                  <a href="/#department" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Department</a>
+                  <a href="/#department-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Department Single</a>
+                </div>
+              </div>
+
+              {/* Doctors Dropdown */}
+              <div className="relative group">
+                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
+                  Doctors <ChevronDown className="w-4 h-4" />
+                </button>
+                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="h-1 w-full bg-emerald-500" />
+                  <a href="/#doctors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Doctors</a>
+                  <a href="/#doctor-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Doctor Single</a>
+                  <a href="/#appointment" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Appointments</a>
+                </div>
+              </div>
+
+              {/* Blog Dropdown */}
+              <div className="relative group">
+                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
+                  Blog <ChevronDown className="w-4 h-4" />
+                </button>
+                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="h-1 w-full bg-emerald-500" />
+                  <a href="/#blog-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Blog Single</a>
+                  <a href="/#blog-sidebar" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Blog Sidebar</a>
+                </div>
+              </div>
+
+              <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">Contact</a>
+              
+              <button
+                style={{ backgroundColor: '#10b981', color: '#fff' }}
+                className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                onClick={() => navigate('/sign-in')}
+              >
+                Sign In
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden pb-4 border-t border-gray-200">
+              <a href="/" className="block py-2 text-gray-700 hover:text-emerald-600">Home</a>
+              <a
+                href="/about"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/about');
+                  setIsOpen(false);
+                }}
+              >
+                About
+              </a>
+              <a
+                href="/services"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/services');
+                  setIsOpen(false);
+                }}
+              >
+                Services
+              </a>
+              
+              <button 
+                onClick={() => setOpenDropdown(openDropdown === 'department' ? null : 'department')}
+                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
+              >
+                Department <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'department' ? 'rotate-180' : ''}`} />
+              </button>
+              {openDropdown === 'department' && (
+                <div className="bg-gray-50 pl-4">
+                  <a href="/#department" className="block py-2 text-gray-600 hover:text-emerald-600">Department</a>
+                  <a href="/#department-single" className="block py-2 text-gray-600 hover:text-emerald-600">Department Single</a>
+                </div>
+              )}
+
+              <button 
+                onClick={() => setOpenDropdown(openDropdown === 'doctors' ? null : 'doctors')}
+                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
+              >
+                Doctors <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'doctors' ? 'rotate-180' : ''}`} />
+              </button>
+              {openDropdown === 'doctors' && (
+                <div className="bg-gray-50 pl-4">
+                  <a href="/#doctors" className="block py-2 text-gray-600 hover:text-emerald-600">Doctors</a>
+                  <a href="/#doctor-single" className="block py-2 text-gray-600 hover:text-emerald-600">Doctor Single</a>
+                  <a href="/#appointment" className="block py-2 text-gray-600 hover:text-emerald-600">Appointments</a>
+                </div>
+              )}
+
+              <button 
+                onClick={() => setOpenDropdown(openDropdown === 'blog' ? null : 'blog')}
+                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
+              >
+                Blog <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'blog' ? 'rotate-180' : ''}`} />
+              </button>
+              {openDropdown === 'blog' && (
+                <div className="bg-gray-50 pl-4">
+                  <a href="/#blog-single" className="block py-2 text-gray-600 hover:text-emerald-600">Blog Single</a>
+                  <a href="/#blog-sidebar" className="block py-2 text-gray-600 hover:text-emerald-600">Blog Sidebar</a>
+                </div>
+              )}
+
+              <a href="/#contact" className="block py-2 text-gray-700 hover:text-emerald-600">Contact</a>
+              <button
+                style={{ backgroundColor: '#10b981', color: '#fff' }}
+                className="w-full mt-4 py-2 rounded-full font-medium hover:opacity-90"
+                onClick={() => {
+                  navigate('/sign-in');
+                  setIsOpen(false);
+                }}
+              >
+                Sign In
+              </button>
+            </div>
+          )}
         </div>
       </nav>
-    </>
+    </header>
   );
 };
 

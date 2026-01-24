@@ -2,9 +2,10 @@ import {
   Navbar,
   Hero,
   Services,
+  AppointmentForm,
   HowItWorks,
-  Doctors,
   Testimonials,
+  Partners,
   CTA,
   Footer,
 } from './components/landing';
@@ -24,6 +25,8 @@ import DoctorSchedule from './pages/doctor/DoctorSchedule.jsx';
 import DoctorDashboard from './pages/doctor/DoctorDashboard.jsx';
 import DoctorEditProfile from './pages/doctor/DoctorEditProfile.jsx';
 import DoctorAppointments from './pages/doctor/DoctorAppointments.jsx';
+import About from './pages/About.jsx';
+import ServicesPage from './pages/Services.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -38,12 +41,13 @@ const Landing = () => (
     <main className="landing-main">
       <Hero />
       <Services />
+      <AppointmentForm />
       <div className="landing-section-spacer" />
       <HowItWorks />
       <div className="landing-section-spacer" />
-      <Doctors />
-      <div className="landing-section-spacer" />
+      {/* Doctors component removed - will be created as separate page later */}
       <Testimonials />
+      <Partners />
       <div className="landing-section-spacer" />
       <CTA />
     </main>
@@ -120,7 +124,9 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/auth" element={<Auth />} />
+  <Route path="/auth" element={<Auth />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/services" element={<ServicesPage />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
