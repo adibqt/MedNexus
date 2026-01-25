@@ -126,21 +126,17 @@ const DoctorSingle = () => {
                 <h2 className="text-md">About {doctor.name}</h2>
                 <div className="divider my-4"></div>
                 <p>
-                  Dr. {doctor.name} is a highly experienced{" "}
-                  {doctor.specialization} with years of dedication to providing
-                  exceptional patient care. With expertise in various aspects of
-                  medical treatment, Dr. {doctor.name} is committed to
-                  delivering the best healthcare services to patients.
+                  {doctor.name} is board-certified in {doctor.specialization.toLowerCase()} 
+                  and specializes in evidence-based treatment and personalized care plans. 
+                  With a patient-first approach, {doctor.name} combines clinical expertise 
+                  with modern tools to deliver effective outcomes.
                 </p>
                 <p>
-                  Known for a compassionate approach and state-of-the-art
-                  treatment methods, Dr. {doctor.name} has helped countless
-                  patients achieve better health outcomes. The combination of
-                  professional excellence and personal care makes Dr.{" "}
-                  {doctor.name}a trusted healthcare provider.
+                  Available for video consultations, in-clinic visits, and follow-up chat, 
+                  {doctor.name} is committed to accessible, compassionate healthcare.
                 </p>
 
-                <h3 className="mt-4 mb-3">Specialization</h3>
+                <h3 className="mt-4 mb-3">Expertise</h3>
                 <div className="divider my-4"></div>
                 <ul className="list-unstyled department-service">
                   <li>
@@ -148,16 +144,13 @@ const DoctorSingle = () => {
                     {doctor.specialization}
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Patient Care
-                    Excellence
+                    <i className="icofont-check mr-2"></i>Video & In-Person Consultations
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Advanced Treatment
-                    Methods
+                    <i className="icofont-check mr-2"></i>Diagnosis & Treatment Planning
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Comprehensive Health
-                    Solutions
+                    <i className="icofont-check mr-2"></i>Follow-Up Care & Chat Support
                   </li>
                 </ul>
 
