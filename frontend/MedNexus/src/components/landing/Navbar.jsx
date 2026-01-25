@@ -138,38 +138,56 @@ const Navbar = () => {
               </div>
 
               {/* Doctors Dropdown */}
-              <div className="relative group">
-                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown('desktop-doctors')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  type="button"
+                  style={{ color: '#222' }}
+                  className="font-medium hover:text-emerald-600 flex items-center gap-1"
+                >
                   Doctors <ChevronDown className="w-4 h-4" />
                 </button>
-                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
-                  <div className="h-1 w-full bg-emerald-500" />
-                  <a href="/#doctors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
-                    Doctors
-                  </a>
-                  <a href="/#doctor-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
-                    Doctor Single
-                  </a>
-                  <a href="/#appointment" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
-                    Appointments
-                  </a>
-                </div>
-              </div>
-
-              {/* Blog Dropdown */}
-              <div className="relative group">
-                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
-                  Blog <ChevronDown className="w-4 h-4" />
-                </button>
-                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
-                  <div className="h-1 w-full bg-emerald-500" />
-                  <a href="/#blog-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
-                    Blog Single
-                  </a>
-                  <a href="/#blog-sidebar" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
-                    Blog Sidebar
-                  </a>
-                </div>
+                {openDropdown === 'desktop-doctors' && (
+                  <div
+                    className="absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100"
+                    onMouseEnter={() => setOpenDropdown('desktop-doctors')}
+                  >
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/doctors');
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctors
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/doctors/1');
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctor Single
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/appointments');
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Appointments
+                    </button>
+                  </div>
+                )}
               </div>
 
               <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">
@@ -283,34 +301,39 @@ const Navbar = () => {
               </button>
               {openDropdown === 'doctors' && (
                 <div className="bg-gray-50 pl-4">
-                  <a href="/#doctors" className="block py-2 text-gray-600 hover:text-emerald-600">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/doctors');
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
                     Doctors
-                  </a>
-                  <a href="/#doctor-single" className="block py-2 text-gray-600 hover:text-emerald-600">
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/doctors/1');
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
                     Doctor Single
-                  </a>
-                  <a href="/#appointment" className="block py-2 text-gray-600 hover:text-emerald-600">
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/appointments');
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
                     Appointments
-                  </a>
-                </div>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setOpenDropdown(openDropdown === 'blog' ? null : 'blog')}
-                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
-              >
-                Blog{' '}
-                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'blog' ? 'rotate-180' : ''}`} />
-              </button>
-              {openDropdown === 'blog' && (
-                <div className="bg-gray-50 pl-4">
-                  <a href="/#blog-single" className="block py-2 text-gray-600 hover:text-emerald-600">
-                    Blog Single
-                  </a>
-                  <a href="/#blog-sidebar" className="block py-2 text-gray-600 hover:text-emerald-600">
-                    Blog Sidebar
-                  </a>
+                  </button>
                 </div>
               )}
 
