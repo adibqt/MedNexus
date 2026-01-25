@@ -21,7 +21,7 @@ const Hero = () => {
           overflow: "hidden",
         }}
       >
-        {/* Light overlay so background stays visible */}
+        {/* Dark overlay for better text contrast */}
         <div
           style={{
             position: "absolute",
@@ -29,7 +29,7 @@ const Hero = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(255, 255, 255, 0.12)",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
             zIndex: 1,
           }}
         ></div>
@@ -50,7 +50,7 @@ const Hero = () => {
               ></div>
               <span
                 style={{
-                  color: "#0d2b55",
+                  color: "#ffffff",
                   fontWeight: "700",
                   letterSpacing: "1.5px",
                   fontSize: "13px",
@@ -64,7 +64,7 @@ const Hero = () => {
                   fontSize: "52px",
                   fontWeight: "700",
                   lineHeight: "1.2",
-                  color: "#0d2b55",
+                  color: "#ffffff",
                   marginTop: "15px",
                   marginBottom: "22px",
                 }}
@@ -75,7 +75,7 @@ const Hero = () => {
               </h1>
               <p
                 style={{
-                  color: "#3d4a5f",
+                  color: "#ffffff",
                   lineHeight: "1.7",
                   fontSize: "16px",
                   marginBottom: "32px",

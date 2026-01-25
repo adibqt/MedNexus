@@ -1,7 +1,7 @@
 const Partners = () => {
   const partners = [
-    { name: "German Medical Award", image: "/novena/images/about/1.png" },
-    { name: "Mochaccino Health", image: "/novena/images/about/2.png" },
+    { name: "Medical Award", image: "/novena/images/about/1.png" },
+    { name: "Health Award", image: "/novena/images/about/2.png" },
     { name: "Authentic Care", image: "/novena/images/about/3.png" },
     { name: "Retrodesign Labs", image: "/novena/images/about/4.png" },
     { name: "Health Partners Inc", image: "/novena/images/about/5.png" },
