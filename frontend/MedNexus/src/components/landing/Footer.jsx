@@ -144,7 +144,16 @@ const Footer = () => {
 
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} style={{ paddingTop: "30px" }}>
-              <h4 style={{ color: "#fff", fontSize: "16px", fontWeight: "700", marginBottom: "15px" }}>{title}</h4>
+              <h4
+                style={{
+                  color: "#fff",
+                  fontSize: "16px",
+                  fontWeight: "700",
+                  marginBottom: "15px",
+                }}
+              >
+                {title}
+              </h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
