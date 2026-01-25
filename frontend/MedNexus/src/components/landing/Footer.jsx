@@ -169,58 +169,6 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h4 className="text-gray-900 font-bold text-lg mb-1">
-                Subscribe to our newsletter
-              </h4>
-              <p className="text-gray-800 text-sm">
-                Get health tips and updates delivered to your inbox.
-              </p>
-            </div>
-            <div className="flex w-full md:w-auto gap-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 md:w-72 px-5 py-3 bg-white border border-white rounded-full text-gray-900 placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors shadow-lg"
-              >
-                Subscribe
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">
-              © 2025 MedNexus. All rights reserved.
-            </p>
-
-            <div className="flex gap-4">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"
-                >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {showScrollTop && (
         <button
           onClick={scrollToTop}
