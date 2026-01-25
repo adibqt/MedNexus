@@ -6,6 +6,7 @@ from app.services.auth import (
     get_current_patient,
     get_current_doctor,
 )
+from app.services.ai_service import ai_service, AIService
 
 __all__ = [
     "verify_password",
@@ -14,4 +15,6 @@ __all__ = [
     "decode_token",
     "get_current_patient",
     "get_current_doctor",
+    "ai_service",
+    "AIService",
 ]
