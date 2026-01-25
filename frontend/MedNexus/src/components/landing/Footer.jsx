@@ -71,10 +71,13 @@ const Footer = () => {
   };
 
   return (
-    <footer id="contact" style={{ backgroundColor: "#1a1a1a", color: "#999" }}>
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
-          <div>
+    <footer
+      id="contact"
+      style={{ backgroundColor: "#1a1a1a", color: "#999", marginTop: "-40px" }}
+    >
+      <div className="container mx-auto px-4 py-32">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-16 mb-12 items-start">
+          <div style={{ paddingTop: "20px" }}>
             <div className="flex items-center gap-2 mb-6">
               <div
                 style={{
@@ -88,14 +91,14 @@ const Footer = () => {
                 <Heart className="w-6 h-6 text-white" />
               </div>
               <span
-                style={{ color: "#fff", fontSize: "22px", fontWeight: "700" }}
+                style={{ color: "#fff", fontSize: "16px", fontWeight: "700" }}
               >
                 MedNexus
               </span>
             </div>
             <p
               style={{
-                fontSize: "14px",
+                fontSize: "12px",
                 lineHeight: "1.6",
                 marginBottom: "15px",
               }}
@@ -140,8 +143,8 @@ const Footer = () => {
           </div>
 
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="text-white font-semibold mb-4">{title}</h4>
+            <div key={title} style={{ paddingTop: "30px" }}>
+              <h4 style={{ color: "#fff", fontSize: "16px", fontWeight: "700", marginBottom: "15px" }}>{title}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
