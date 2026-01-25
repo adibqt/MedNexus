@@ -53,9 +53,9 @@ const Doctors = () => {
                 <h2>Doctors</h2>
                 <div className="divider mx-auto my-4"></div>
                 <p>
-                  We provide a wide range of creative services lorem Ipsum is
-                  simply dummy text of the printing and typesetting industry.
-                  When an unknown printer took a galley of standard.
+                  Meet verified specialists across internal medicine, pediatrics,
+                  cardiology, dermatology, and more. Filter by department and pick
+                  a doctor whose expertise and schedule fit your needs.
                 </p>
               </div>
             </div>

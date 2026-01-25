@@ -78,9 +78,9 @@ const About = () => {
             </div>
             <div className="about-intro__body">
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Incidunt, quod laborum alias. Vitae dolorum,
-                officia sit! Saepe ullam facere at, consequatur incidunt, quae esse, quis ut reprehenderit dignissimos,
-                libero delectus.
+                MedNexus connects patients with trusted clinicians through secure video visits, in-clinic care, and
+                coordinated follow-ups. Our team blends medical expertise with modern technology so you can book,
+                consult, and manage your health from anywhere.
               </p>
               <img src="/novena/images/about/sign.png" alt="Signature" className="about-intro__signature" />
             </div>

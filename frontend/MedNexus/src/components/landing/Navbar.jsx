@@ -210,8 +210,8 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  style={{ backgroundColor: "#10b981", color: "#fff" }}
-                  className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                  style={{ backgroundColor: "#10b981", color: "#fff", borderRadius: "9999px" }}
+                  className="px-5 py-2 rounded-full font-medium hover:opacity-90"
                   onClick={() => navigate("/sign-in")}
                 >
                   Sign In
@@ -376,8 +376,8 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  style={{ backgroundColor: "#10b981", color: "#fff" }}
-                  className="w-full mt-4 py-2 rounded-full font-medium hover:opacity-90"
+                  style={{ backgroundColor: "#10b981", color: "#fff", borderRadius: "9999px" }}
+                  className="w-full mt-4 px-5 py-2 rounded-full font-medium hover:opacity-90"
                   onClick={() => {
                     navigate("/sign-in");
                     setIsOpen(false);
