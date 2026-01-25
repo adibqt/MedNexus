@@ -409,6 +409,50 @@ class ApiService {
     });
   }
 
+  // Voice to Text for AI Consultation
+  async voiceToText(formData) {
+    const url = `${this.baseUrl}/api/patients/voice-to-text`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Voice to text error:', data);
+      throw new Error(data.detail || 'Failed to process voice input');
+    }
+
+    return data;
+  }
+
+  // Voice Chat - Send audio directly to Gemini AI
+  async voiceChat(formData, conversationHistory = []) {
+    const url = `${this.baseUrl}/api/patients/voice-chat?conversation_history=${encodeURIComponent(JSON.stringify(conversationHistory))}`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Voice chat error:', data);
+      throw new Error(data.detail || 'Failed to process voice message');
+    }
+
+    return data;
+  }
+
   // AI Consultation History
   async getAIConsultationHistory(limit = 20, offset = 0) {
     return this.request(`/api/patients/ai-consultation/history?limit=${limit}&offset=${offset}`);

@@ -22,6 +22,9 @@ import {
   Plus,
   ChevronDown,
   ChevronUp,
+  Mic,
+  MicOff,
+  StopCircle,
 } from 'lucide-react';
 import apiService from '../../services/api';
 import './AIConsultationPage.css';
@@ -56,6 +59,15 @@ const AIConsultationPage = () => {
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   
+  // Voice recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+  const streamRef = useRef(null);
+  
   // Track if initial load is done
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -86,6 +98,127 @@ const AIConsultationPage = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopRecording();
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await processVoiceInput(audioBlob);
+        
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      setError('');
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime(prev => {
+          const newTime = prev + 1;
+          if (newTime >= 120) {
+            stopRecording();
+          }
+          return newTime;
+        });
+      }, 1000);
+
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      setError('Could not access microphone. Please grant permission and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+    }
+  };
+
+  const processVoiceInput = async (audioBlob) => {
+    setIsProcessingVoice(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      // Build conversation history
+      const conversationHistory = messages
+        .filter((m) => m.id !== 'welcome')
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+
+      // Send audio directly to Gemini AI
+      const response = await apiService.voiceChat(formData, conversationHistory);
+
+      // Create assistant message with AI analysis
+      const assistantMessage = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: response.message,
+        timestamp: new Date(),
+        analysis: response.response_type === 'symptom_analysis' ? response : null,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      // Show doctor recommendations if available
+      if (response.should_show_doctors && response.suggested_doctors?.length > 0) {
+        setCurrentAnalysis(response);
+        setShowDoctors(true);
+      }
+
+    } catch (err) {
+      console.error('Voice processing error:', err);
+      setError('Failed to process voice input. Please try again or type your message.');
+    } finally {
+      setIsProcessingVoice(false);
+    }
+  };
+
+  const formatRecordingTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const loadHistory = async () => {
@@ -561,7 +694,41 @@ const AIConsultationPage = () => {
 
           {/* Input Area */}
           <div className="ai-input-container">
+            {/* Voice Recording Controls */}
+            {(isRecording || isProcessingVoice) && (
+              <div className="voice-status-bar">
+                {isRecording && (
+                  <>
+                    <div className="recording-pulse-dot"></div>
+                    <span className="recording-text">Recording: {formatRecordingTime(recordingTime)}</span>
+                    <button
+                      className="voice-stop-btn-small"
+                      onClick={stopRecording}
+                      title="Stop recording"
+                    >
+                      <StopCircle size={16} />
+                      Stop
+                    </button>
+                  </>
+                )}
+                {isProcessingVoice && (
+                  <>
+                    <Loader2 size={16} className="ai-spin" />
+                    <span>AI is analyzing your voice...</span>
+                  </>
+                )}
+              </div>
+            )}
+            
             <div className="ai-input-wrapper">
+              <button
+                className={`voice-btn ${isRecording ? 'recording' : ''}`}
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={loading || isProcessingVoice}
+                title={isRecording ? "Stop recording" : "Record voice"}
+              >
+                {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
+              </button>
               <textarea
                 ref={inputRef}
                 className="ai-input"
@@ -569,7 +736,7 @@ const AIConsultationPage = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                disabled={loading}
+                disabled={loading || isRecording || isProcessingVoice}
                 rows={1}
               />
               <button
