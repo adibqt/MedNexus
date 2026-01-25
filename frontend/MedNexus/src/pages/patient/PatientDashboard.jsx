@@ -17,6 +17,7 @@ import {
   X,
   Stethoscope,
   Bot,
+  Filter,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useVideoCall } from '../../context/VideoCallContext';
@@ -114,6 +115,7 @@ const PatientDashboard = () => {
   const [suggestion, setSuggestion] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAppointments, setShowAppointments] = useState(false);
+  const [selectedSpecialization, setSelectedSpecialization] = useState('all');
 
   const doctorsCarouselRef = useRef(null);
   const carouselIntervalRef = useRef(null);
@@ -153,6 +155,16 @@ const PatientDashboard = () => {
     staleTime: 10 * 60 * 1000, // 10 minutes - symptoms rarely change
   });
 
+  const { 
+    data: specializations = [], 
+    isLoading: loadingSpecializations,
+    error: specializationsError 
+  } = useQuery({
+    queryKey: ['specializations'],
+    queryFn: () => apiService.getSpecializations(),
+    staleTime: 10 * 60 * 1000, // 10 minutes - specializations rarely change
+  });
+
   // Derive concerns from symptoms data
   const symptoms = useMemo(() => {
     if (!Array.isArray(symptomsData) || symptomsData.length === 0) return [];
@@ -163,6 +175,12 @@ const PatientDashboard = () => {
     if (symptoms.length === 0) return fallbackConcerns;
     return symptoms.map((s) => s.name);
   }, [symptoms]);
+
+  // Filter doctors based on selected specialization
+  const filteredDoctors = useMemo(() => {
+    if (selectedSpecialization === 'all') return doctors;
+    return doctors.filter(doctor => doctor.specialization === selectedSpecialization);
+  }, [doctors, selectedSpecialization]);
 
   // Combined loading and error states
   const loading = loadingDoctors && loadingAppointments && loadingSymptoms;
@@ -180,7 +198,7 @@ const PatientDashboard = () => {
 
   // Auto carousel for Available Doctors - Optimized version
   useEffect(() => {
-    if (loadingDoctors || !doctors || doctors.length <= 1) return;
+    if (loadingDoctors || !filteredDoctors || filteredDoctors.length <= 1) return;
 
     // Skip carousel for users who prefer reduced motion
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
@@ -262,7 +280,7 @@ const PatientDashboard = () => {
         delete el._carouselCleanup;
       }
     };
-  }, [doctors, loadingDoctors]);
+  }, [filteredDoctors, loadingDoctors]);
 
   // Toggle concern selection
   const toggleConcern = (c) => {
@@ -735,18 +753,35 @@ const PatientDashboard = () => {
         <section className="patient-dashboard-card">
           <div className="patient-dashboard-card-header">
             <h2 className="patient-dashboard-card-title">Available Doctors</h2>
+            <div className="patient-dashboard-doctor-filter">
+              <Filter size={16} />
+              <select
+                value={selectedSpecialization}
+                onChange={(e) => setSelectedSpecialization(e.target.value)}
+                className="patient-dashboard-filter-select"
+              >
+                <option value="all">All Specializations</option>
+                {specializations
+                  .filter(spec => spec.is_active)
+                  .map((spec) => (
+                    <option key={spec.id} value={spec.name}>
+                      {spec.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
           <div className="patient-dashboard-doctors-body">
             {loadingDoctors ? (
               <div className="patient-dashboard-doctors-loading">
                 <div className="patient-dashboard-spinner-md" />
               </div>
-            ) : doctors.length > 0 ? (
+            ) : filteredDoctors.length > 0 ? (
               <div
                 ref={doctorsCarouselRef}
                 className="patient-dashboard-doctors-scroll"
               >
-                {doctors.map((doctor) => (
+                {filteredDoctors.map((doctor) => (
                   <div
                     key={doctor.id}
                     data-carousel-item="doctor"
@@ -856,18 +891,6 @@ const PatientDashboard = () => {
                 </div>
                 <h3 className="patient-dashboard-activity-title">Records</h3>
                 <p className="patient-dashboard-activity-text">Medical documents</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate('/patient/ai-consultation')}
-                className="patient-dashboard-activity-card patient-dashboard-activity-card--primary"
-              >
-                <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--primary">
-                  <Bot />
-                </div>
-                <h3 className="patient-dashboard-activity-title">AI Doctor</h3>
-                <p className="patient-dashboard-activity-text">Get instant advice</p>
               </button>
             </div>
           </div>
