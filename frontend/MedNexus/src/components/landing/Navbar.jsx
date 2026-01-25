@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Heart, ChevronDown, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useState } from "react";
+import { Heart, ChevronDown, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,9 +14,9 @@ const Navbar = () => {
       {/* Header Top Bar */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0d9488 0%, #10b981 100%)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+          background: "linear-gradient(135deg, #0d9488 0%, #10b981 100%)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
         }}
       >
         <div className="container mx-auto px-4">
@@ -33,7 +33,10 @@ const Navbar = () => {
               </span>
             </div>
             <div className="text-white">
-              <a href="tel:+18234565134" className="hover:text-emerald-100 font-semibold">
+              <a
+                href="tel:+18234565134"
+                className="hover:text-emerald-100 font-semibold"
+              >
                 📞 Call: +1-823-456-5134
               </a>
             </div>
@@ -41,43 +44,67 @@ const Navbar = () => {
         </div>
       </div>
       {/* Navigation Bar */}
-      <nav style={{ borderBottom: '1px solid #e9ecef', backgroundColor: '#fff' }}>
+      <nav
+        style={{ borderBottom: "1px solid #e9ecef", backgroundColor: "#fff" }}
+      >
         <div className="container mx-auto px-4">
           <div className="py-4 flex items-center justify-between">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 z-50">
-              <div style={{ width: '55px', height: '55px', backgroundColor: '#10b981', borderRadius: '8px' }} className="flex items-center justify-center shadow-lg">
+              <div
+                style={{
+                  width: "55px",
+                  height: "55px",
+                  backgroundColor: "#10b981",
+                  borderRadius: "8px",
+                }}
+                className="flex items-center justify-center shadow-lg"
+              >
                 <Heart className="w-8 h-8 text-white" />
               </div>
               <span className="text-3xl font-bold text-gray-900">
-                Med<span style={{ color: '#10b981' }}>Nexus</span>
+                Med<span style={{ color: "#10b981" }}>Nexus</span>
               </span>
             </a>
 
             {/* Mobile Toggle */}
-            <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-gray-700 hover:text-emerald-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-gray-700 hover:text-emerald-600"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                  d={
+                    isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
+                  }
                 />
               </svg>
             </button>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="/" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">
+              <a
+                href="/"
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
                 Home
               </a>
               <a
                 href="/about"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/about');
+                  navigate("/about");
                 }}
-                style={{ color: '#222' }}
+                style={{ color: "#222" }}
                 className="font-medium hover:text-emerald-600"
               >
                 About
@@ -86,9 +113,9 @@ const Navbar = () => {
                 href="/services"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/services');
+                  navigate("/services");
                 }}
-                style={{ color: '#222' }}
+                style={{ color: "#222" }}
                 className="font-medium hover:text-emerald-600"
               >
                 Services
@@ -97,26 +124,26 @@ const Navbar = () => {
               {/* Department Dropdown */}
               <div
                 className="relative"
-                onMouseEnter={() => setOpenDropdown('desktop-department')}
+                onMouseEnter={() => setOpenDropdown("desktop-department")}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <button
                   type="button"
-                  style={{ color: '#222' }}
+                  style={{ color: "#222" }}
                   className="font-medium hover:text-emerald-600 flex items-center gap-1"
                 >
                   Department <ChevronDown className="w-4 h-4" />
                 </button>
-                {openDropdown === 'desktop-department' && (
+                {openDropdown === "desktop-department" && (
                   <div
                     className="absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100"
-                    onMouseEnter={() => setOpenDropdown('desktop-department')}
+                    onMouseEnter={() => setOpenDropdown("desktop-department")}
                   >
                     <div className="h-1 w-full bg-emerald-500" />
                     <button
                       type="button"
                       onClick={() => {
-                        navigate('/departments');
+                        navigate("/departments");
                         setOpenDropdown(null);
                       }}
                       className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -126,7 +153,7 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        navigate('/departments/1');
+                        navigate("/departments/1");
                         setOpenDropdown(null);
                       }}
                       className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -140,26 +167,26 @@ const Navbar = () => {
               {/* Doctors Dropdown */}
               <div
                 className="relative"
-                onMouseEnter={() => setOpenDropdown('desktop-doctors')}
+                onMouseEnter={() => setOpenDropdown("desktop-doctors")}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <button
                   type="button"
-                  style={{ color: '#222' }}
+                  style={{ color: "#222" }}
                   className="font-medium hover:text-emerald-600 flex items-center gap-1"
                 >
                   Doctors <ChevronDown className="w-4 h-4" />
                 </button>
-                {openDropdown === 'desktop-doctors' && (
+                {openDropdown === "desktop-doctors" && (
                   <div
                     className="absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100"
-                    onMouseEnter={() => setOpenDropdown('desktop-doctors')}
+                    onMouseEnter={() => setOpenDropdown("desktop-doctors")}
                   >
                     <div className="h-1 w-full bg-emerald-500" />
                     <button
                       type="button"
                       onClick={() => {
-                        navigate('/doctors');
+                        navigate("/doctors");
                         setOpenDropdown(null);
                       }}
                       className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -169,7 +196,7 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        navigate('/doctors/1');
+                        navigate("/doctors/1");
                         setOpenDropdown(null);
                       }}
                       className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -179,7 +206,7 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        navigate('/appointments');
+                        navigate("/appointments");
                         setOpenDropdown(null);
                       }}
                       className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -190,25 +217,29 @@ const Navbar = () => {
                 )}
               </div>
 
-              <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">
+              <a
+                href="/#contact"
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
                 Contact
               </a>
 
               {user ? (
                 <div className="flex items-center gap-3">
                   <button
-                    style={{ backgroundColor: '#10b981', color: '#fff' }}
+                    style={{ backgroundColor: "#10b981", color: "#fff" }}
                     className="px-6 py-2 rounded-full font-medium hover:opacity-90"
-                    onClick={() => navigate('/patient/dashboard')}
+                    onClick={() => navigate("/patient/dashboard")}
                   >
                     Dashboard
                   </button>
                   <button
-                    style={{ color: '#10b981', border: '2px solid #10b981' }}
+                    style={{ color: "#10b981", border: "2px solid #10b981" }}
                     className="px-6 py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center gap-2"
                     onClick={() => {
                       logout();
-                      navigate('/');
+                      navigate("/");
                     }}
                   >
                     <LogOut className="w-4 h-4" />
@@ -217,9 +248,9 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  style={{ backgroundColor: '#10b981', color: '#fff' }}
+                  style={{ backgroundColor: "#10b981", color: "#fff" }}
                   className="px-6 py-2 rounded-full font-medium hover:opacity-90"
-                  onClick={() => navigate('/sign-in')}
+                  onClick={() => navigate("/sign-in")}
                 >
                   Sign In
                 </button>
@@ -230,7 +261,10 @@ const Navbar = () => {
           {/* Mobile Menu */}
           {isOpen && (
             <div className="md:hidden pb-4 border-t border-gray-200">
-              <a href="/" className="block py-2 text-gray-700 hover:text-emerald-600">
+              <a
+                href="/"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+              >
                 Home
               </a>
               <a
@@ -238,7 +272,7 @@ const Navbar = () => {
                 className="block py-2 text-gray-700 hover:text-emerald-600"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/about');
+                  navigate("/about");
                   setIsOpen(false);
                 }}
               >
@@ -249,7 +283,7 @@ const Navbar = () => {
                 className="block py-2 text-gray-700 hover:text-emerald-600"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/services');
+                  navigate("/services");
                   setIsOpen(false);
                 }}
               >
@@ -258,18 +292,24 @@ const Navbar = () => {
 
               <button
                 type="button"
-                onClick={() => setOpenDropdown(openDropdown === 'department' ? null : 'department')}
+                onClick={() =>
+                  setOpenDropdown(
+                    openDropdown === "department" ? null : "department",
+                  )
+                }
                 className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
               >
-                Department{' '}
-                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'department' ? 'rotate-180' : ''}`} />
+                Department{" "}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${openDropdown === "department" ? "rotate-180" : ""}`}
+                />
               </button>
-              {openDropdown === 'department' && (
+              {openDropdown === "department" && (
                 <div className="bg-gray-50 pl-4">
                   <button
                     type="button"
                     onClick={() => {
-                      navigate('/departments');
+                      navigate("/departments");
                       setIsOpen(false);
                       setOpenDropdown(null);
                     }}
@@ -280,7 +320,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      navigate('/departments/1');
+                      navigate("/departments/1");
                       setIsOpen(false);
                       setOpenDropdown(null);
                     }}
@@ -293,18 +333,22 @@ const Navbar = () => {
 
               <button
                 type="button"
-                onClick={() => setOpenDropdown(openDropdown === 'doctors' ? null : 'doctors')}
+                onClick={() =>
+                  setOpenDropdown(openDropdown === "doctors" ? null : "doctors")
+                }
                 className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
               >
-                Doctors{' '}
-                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'doctors' ? 'rotate-180' : ''}`} />
+                Doctors{" "}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${openDropdown === "doctors" ? "rotate-180" : ""}`}
+                />
               </button>
-              {openDropdown === 'doctors' && (
+              {openDropdown === "doctors" && (
                 <div className="bg-gray-50 pl-4">
                   <button
                     type="button"
                     onClick={() => {
-                      navigate('/doctors');
+                      navigate("/doctors");
                       setIsOpen(false);
                       setOpenDropdown(null);
                     }}
@@ -315,7 +359,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      navigate('/doctors/1');
+                      navigate("/doctors/1");
                       setIsOpen(false);
                       setOpenDropdown(null);
                     }}
@@ -326,7 +370,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      navigate('/appointments');
+                      navigate("/appointments");
                       setIsOpen(false);
                       setOpenDropdown(null);
                     }}
@@ -337,27 +381,30 @@ const Navbar = () => {
                 </div>
               )}
 
-              <a href="/#contact" className="block py-2 text-gray-700 hover:text-emerald-600">
+              <a
+                href="/#contact"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+              >
                 Contact
               </a>
               {user ? (
                 <div className="flex flex-col gap-2 pt-2">
                   <button
-                    style={{ backgroundColor: '#10b981', color: '#fff' }}
+                    style={{ backgroundColor: "#10b981", color: "#fff" }}
                     className="w-full py-2 rounded-full font-medium hover:opacity-90"
                     onClick={() => {
-                      navigate('/patient/dashboard');
+                      navigate("/patient/dashboard");
                       setIsOpen(false);
                     }}
                   >
                     Dashboard
                   </button>
                   <button
-                    style={{ color: '#10b981', border: '2px solid #10b981' }}
+                    style={{ color: "#10b981", border: "2px solid #10b981" }}
                     className="w-full py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center justify-center gap-2"
                     onClick={() => {
                       logout();
-                      navigate('/');
+                      navigate("/");
                       setIsOpen(false);
                     }}
                   >
@@ -367,10 +414,10 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  style={{ backgroundColor: '#10b981', color: '#fff' }}
+                  style={{ backgroundColor: "#10b981", color: "#fff" }}
                   className="w-full mt-4 py-2 rounded-full font-medium hover:opacity-90"
                   onClick={() => {
-                    navigate('/sign-in');
+                    navigate("/sign-in");
                     setIsOpen(false);
                   }}
                 >

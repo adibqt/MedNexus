@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import {
   ArrowUp,
   Facebook,
@@ -10,49 +10,49 @@ import {
   Phone,
   Twitter,
   Youtube,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const footerLinks = {
   Services: [
-    { name: 'Video Consultation', path: '/services' },
-    { name: 'Chat with Doctor', path: '/services' },
-    { name: 'AI Symptom Checker', path: '/services' },
-    { name: 'Medicine Delivery', path: '/services' },
-    { name: 'Health Records', path: '/services' },
-    { name: 'Lab Tests', path: '/services' },
+    { name: "Video Consultation", path: "/services" },
+    { name: "Chat with Doctor", path: "/services" },
+    { name: "AI Symptom Checker", path: "/services" },
+    { name: "Medicine Delivery", path: "/services" },
+    { name: "Health Records", path: "/services" },
+    { name: "Lab Tests", path: "/services" },
   ],
   Company: [
-    { name: 'About Us', path: '/about' },
-    { name: 'Careers', path: '/careers' },
-    { name: 'Press', path: '/press' },
-    { name: 'Partners', path: '/partners' },
-    { name: 'Contact', path: '/contact' },
+    { name: "About Us", path: "/about" },
+    { name: "Careers", path: "/careers" },
+    { name: "Press", path: "/press" },
+    { name: "Partners", path: "/partners" },
+    { name: "Contact", path: "/contact" },
   ],
   Support: [
-    { name: 'Help Center', path: '/help' },
-    { name: 'Safety Center', path: '/safety' },
-    { name: 'Community Guidelines', path: '/guidelines' },
-    { name: 'Accessibility', path: '/accessibility' },
-    { name: 'FAQs', path: '/faqs' },
-    { name: 'Feedback', path: '/feedback' },
+    { name: "Help Center", path: "/help" },
+    { name: "Safety Center", path: "/safety" },
+    { name: "Community Guidelines", path: "/guidelines" },
+    { name: "Accessibility", path: "/accessibility" },
+    { name: "FAQs", path: "/faqs" },
+    { name: "Feedback", path: "/feedback" },
   ],
   Legal: [
-    { name: 'Terms of Service', path: '/terms' },
-    { name: 'Privacy Policy', path: '/privacy' },
-    { name: 'Cookie Policy', path: '/cookies' },
-    { name: 'HIPAA Compliance', path: '/hipaa' },
-    { name: 'Disclaimer', path: '/disclaimer' },
+    { name: "Terms of Service", path: "/terms" },
+    { name: "Privacy Policy", path: "/privacy" },
+    { name: "Cookie Policy", path: "/cookies" },
+    { name: "HIPAA Compliance", path: "/hipaa" },
+    { name: "Disclaimer", path: "/disclaimer" },
   ],
 };
 
 const socialLinks = [
-  { icon: Facebook, href: 'https://facebook.com' },
-  { icon: Twitter, href: 'https://twitter.com' },
-  { icon: Instagram, href: 'https://instagram.com' },
-  { icon: Linkedin, href: 'https://linkedin.com' },
-  { icon: Youtube, href: 'https://youtube.com' },
+  { icon: Facebook, href: "https://facebook.com" },
+  { icon: Twitter, href: "https://twitter.com" },
+  { icon: Instagram, href: "https://instagram.com" },
+  { icon: Linkedin, href: "https://linkedin.com" },
+  { icon: Youtube, href: "https://youtube.com" },
 ];
 
 const Footer = () => {
@@ -62,35 +62,60 @@ const Footer = () => {
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer id="contact" style={{ backgroundColor: '#1a1a1a', color: '#999' }}>
+    <footer id="contact" style={{ backgroundColor: "#1a1a1a", color: "#999" }}>
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           <div>
-                <div className="flex items-center gap-2 mb-6">
-                  <div style={{ width: '45px', height: '45px', backgroundColor: '#10b981', borderRadius: '8px' }} className="flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-white" />
-                  </div>
-                  <span style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>MedNexus</span>
-                </div>
-            <p style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '15px' }}>
-              Your trusted healthcare partner providing world-class medical services.
+            <div className="flex items-center gap-2 mb-6">
+              <div
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  backgroundColor: "#10b981",
+                  borderRadius: "8px",
+                }}
+                className="flex items-center justify-center"
+              >
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <span
+                style={{ color: "#fff", fontSize: "22px", fontWeight: "700" }}
+              >
+                MedNexus
+              </span>
+            </div>
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: "1.6",
+                marginBottom: "15px",
+              }}
+            >
+              Your trusted healthcare partner providing world-class medical
+              services.
             </p>
 
             <div className="space-y-3">
-              <a href="mailto:support@mednexus.com" className="flex items-center gap-3 hover:text-emerald-400 transition-colors">
+              <a
+                href="mailto:support@mednexus.com"
+                className="flex items-center gap-3 hover:text-emerald-400 transition-colors"
+              >
                 <Mail className="w-5 h-5" />
                 <span>support@mednexus.com</span>
               </a>
-              <a href="tel:+1234567890" className="flex items-center gap-3 hover:text-emerald-400 transition-colors">
+              <a
+                href="tel:+1234567890"
+                className="flex items-center gap-3 hover:text-emerald-400 transition-colors"
+              >
                 <Phone className="w-5 h-5" />
                 <span>+1 (234) 567-890</span>
               </a>
@@ -126,12 +151,12 @@ const Footer = () => {
                         e.preventDefault();
                         navigate(link.path);
                       }}
-                      style={{ cursor: 'pointer', color: '#9ca3af' }}
+                      style={{ cursor: "pointer", color: "#9ca3af" }}
                       onMouseOver={(e) => {
-                        e.currentTarget.style.color = '#10b981';
+                        e.currentTarget.style.color = "#10b981";
                       }}
                       onMouseOut={(e) => {
-                        e.currentTarget.style.color = '#9ca3af';
+                        e.currentTarget.style.color = "#9ca3af";
                       }}
                     >
                       {link.name}
@@ -148,8 +173,12 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h4 className="text-gray-900 font-bold text-lg mb-1">Subscribe to our newsletter</h4>
-              <p className="text-gray-800 text-sm">Get health tips and updates delivered to your inbox.</p>
+              <h4 className="text-gray-900 font-bold text-lg mb-1">
+                Subscribe to our newsletter
+              </h4>
+              <p className="text-gray-800 text-sm">
+                Get health tips and updates delivered to your inbox.
+              </p>
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <input
@@ -172,7 +201,9 @@ const Footer = () => {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">© 2025 MedNexus. All rights reserved.</p>
+            <p className="text-gray-500 text-sm">
+              © 2025 MedNexus. All rights reserved.
+            </p>
 
             <div className="flex gap-4">
               {socialLinks.map((social, index) => (
@@ -194,30 +225,32 @@ const Footer = () => {
         <button
           onClick={scrollToTop}
           style={{
-            position: 'fixed',
-            right: '24px',
-            bottom: '24px',
+            position: "fixed",
+            right: "24px",
+            bottom: "24px",
             zIndex: 50,
-            width: '50px',
-            height: '50px',
-            backgroundColor: '#10b981',
-            border: 'none',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-            animation: 'fadeIn 0.3s ease',
+            width: "50px",
+            height: "50px",
+            backgroundColor: "#10b981",
+            border: "none",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+            animation: "fadeIn 0.3s ease",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#0d9488';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(16, 185, 129, 0.4)';
+            e.currentTarget.style.backgroundColor = "#0d9488";
+            e.currentTarget.style.boxShadow =
+              "0 6px 16px rgba(16, 185, 129, 0.4)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#10b981';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+            e.currentTarget.style.backgroundColor = "#10b981";
+            e.currentTarget.style.boxShadow =
+              "0 4px 12px rgba(16, 185, 129, 0.3)";
           }}
           title="Back to top"
         >
