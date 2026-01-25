@@ -8,6 +8,7 @@ import {
   Partners,
   CTA,
   Footer,
+  Doctors as LandingDoctors,
 } from "./components/landing";
 
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -19,7 +20,8 @@ import ProfileCompletion from "./pages/patient/ProfileCompletion.jsx";
 import PatientDashboard from "./pages/patient/PatientDashboard.jsx";
 import EditProfile from "./pages/patient/EditProfile.jsx";
 import BookAppointment from "./pages/patient/BookAppointment.jsx";
-import AIConsultationPage from "./pages/patient/AIConsultationPage.jsx";
+import Doctors from "./pages/Doctors.jsx";
+import DoctorSingle from "./pages/DoctorSingle.jsx";
 import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
 import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
@@ -30,9 +32,6 @@ import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
 import DepartmentSingle from "./pages/DepartmentSingle.jsx";
-import Doctors from "./pages/Doctors.jsx";
-import DoctorSingle from "./pages/DoctorSingle.jsx";
-import Appointments from "./pages/Appointments.jsx";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import {
   AdminAuthProvider,
@@ -54,7 +53,7 @@ const Landing = () => (
       <div className="landing-section-spacer" />
       <HowItWorks />
       <div className="landing-section-spacer" />
-      {/* Doctors component removed - will be created as separate page later */}
+      <LandingDoctors />
       <Testimonials />
       <Partners />
       <div className="landing-section-spacer" />
@@ -140,7 +139,6 @@ function AppRoutes() {
       <Route path="/departments/:id" element={<DepartmentSingle />} />
       <Route path="/doctors" element={<Doctors />} />
       <Route path="/doctors/:id" element={<DoctorSingle />} />
-      <Route path="/appointments" element={<Appointments />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
@@ -203,16 +201,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <BookAppointment />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/patient/ai-consultation"
-        element={
-          <ProtectedRoute requireProfileComplete>
-            <PatientVideoCallWrapper>
-              <AIConsultationPage />
-            </PatientVideoCallWrapper>
           </ProtectedRoute>
         }
       />
