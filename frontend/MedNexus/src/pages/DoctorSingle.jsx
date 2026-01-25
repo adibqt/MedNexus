@@ -126,14 +126,18 @@ const DoctorSingle = () => {
                 <h2 className="text-md">About {doctor.name}</h2>
                 <div className="divider my-4"></div>
                 <p>
-                  {doctor.name} is board-certified in {doctor.specialization.toLowerCase()} 
-                  and specializes in evidence-based treatment and personalized care plans. 
-                  With a patient-first approach, {doctor.name} combines clinical expertise 
-                  with modern tools to deliver effective outcomes.
+                  {doctor.name} is board-certified in{" "}
+                  {doctor.specialization.toLowerCase()}
+                  and specializes in evidence-based treatment and personalized
+                  care plans. With a patient-first approach, {doctor.name}{" "}
+                  combines clinical expertise with modern tools to deliver
+                  effective outcomes.
                 </p>
                 <p>
-                  Available for video consultations, in-clinic visits, and follow-up chat, 
-                  {doctor.name} is committed to accessible, compassionate healthcare.
+                  Available for video consultations, in-clinic visits, and
+                  follow-up chat,
+                  {doctor.name} is committed to accessible, compassionate
+                  healthcare.
                 </p>
 
                 <h3 className="mt-4 mb-3">Expertise</h3>
@@ -144,13 +148,16 @@ const DoctorSingle = () => {
                     {doctor.specialization}
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Video & In-Person Consultations
+                    <i className="icofont-check mr-2"></i>Video & In-Person
+                    Consultations
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Diagnosis & Treatment Planning
+                    <i className="icofont-check mr-2"></i>Diagnosis & Treatment
+                    Planning
                   </li>
                   <li>
-                    <i className="icofont-check mr-2"></i>Follow-Up Care & Chat Support
+                    <i className="icofont-check mr-2"></i>Follow-Up Care & Chat
+                    Support
                   </li>
                 </ul>
 
