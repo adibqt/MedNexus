@@ -25,8 +25,16 @@ const Appointments = () => {
       try {
         const [doctorsRes, departmentsRes] = await Promise.all([
           fetch("http://localhost:8000/api/doctors"),
-          fetch("http://localhost:8000/api/specializations"),
+          // Specializations endpoint is under admin router
+          fetch("http://localhost:8000/api/admin/specializations"),
         ]);
+
+        if (!doctorsRes.ok) {
+          throw new Error(`Doctors fetch failed: ${doctorsRes.status}`);
+        }
+        if (!departmentsRes.ok) {
+          throw new Error(`Departments fetch failed: ${departmentsRes.status}`);
+        }
 
         const doctorsData = await doctorsRes.json();
         const departmentsData = await departmentsRes.json();

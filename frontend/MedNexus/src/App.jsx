@@ -22,6 +22,7 @@ import EditProfile from "./pages/patient/EditProfile.jsx";
 import BookAppointment from "./pages/patient/BookAppointment.jsx";
 import Doctors from "./pages/Doctors.jsx";
 import DoctorSingle from "./pages/DoctorSingle.jsx";
+import Appointments from "./pages/Appointments.jsx";
 import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
 import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
@@ -139,6 +140,7 @@ function AppRoutes() {
       <Route path="/departments/:id" element={<DepartmentSingle />} />
       <Route path="/doctors" element={<Doctors />} />
       <Route path="/doctors/:id" element={<DoctorSingle />} />
+      <Route path="/appointments" element={<Appointments />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
