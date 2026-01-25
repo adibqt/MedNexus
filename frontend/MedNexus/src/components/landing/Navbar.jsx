@@ -122,7 +122,11 @@ const Navbar = () => {
               </a>
 
               {/* Department Dropdown */}
-              <div className="relative group">
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown("dept")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
                 <button
                   type="button"
                   style={{ color: "#222" }}
@@ -130,31 +134,39 @@ const Navbar = () => {
                 >
                   Department <ChevronDown className="w-4 h-4" />
                 </button>
-                <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
-                  <div className="h-1 w-full bg-emerald-500" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate("/departments");
-                    }}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
-                  >
-                    Departments
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate("/departments/1");
-                    }}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
-                  >
-                    Department Single
-                  </button>
-                </div>
+                {openDropdown === "dept" && (
+                  <div className="absolute left-0 top-full mt-0 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/departments");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Departments
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/departments/1");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Department Single
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Doctors Dropdown */}
-              <div className="relative group">
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown("docs")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
                 <button
                   type="button"
                   style={{ color: "#222" }}
@@ -162,36 +174,41 @@ const Navbar = () => {
                 >
                   Doctors <ChevronDown className="w-4 h-4" />
                 </button>
-                <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
-                  <div className="h-1 w-full bg-emerald-500" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate("/doctors");
-                    }}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
-                  >
-                    Doctors
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate("/doctors/1");
-                    }}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
-                  >
-                    Doctor Single
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate("/appointments");
-                    }}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
-                  >
-                    Appointments
-                  </button>
-                </div>
+                {openDropdown === "docs" && (
+                  <div className="absolute left-0 top-full mt-0 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/doctors");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctors
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/doctors/1");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctor Single
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/appointments");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Appointments
+                    </button>
+                  </div>
+                )}
               </div>
 
               <a
