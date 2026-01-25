@@ -11,38 +11,6 @@ const Navbar = () => {
 
   return (
     <header>
-      {/* Header Top Bar */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #0d9488 0%, #10b981 100%)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6 text-sm">
-              <a
-                href="mailto:support@mednexus.com"
-                className="text-white hover:text-emerald-100 flex items-center gap-2 font-medium"
-              >
-                <span>📧</span> support@mednexus.com
-              </a>
-              <span className="text-white flex items-center gap-2 font-medium">
-                <span>📍</span> Address: Medical Plaza, New York, USA
-              </span>
-            </div>
-            <div className="text-white">
-              <a
-                href="tel:+18234565134"
-                className="hover:text-emerald-100 font-semibold"
-              >
-                📞 Call: +1-823-456-5134
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
       {/* Navigation Bar */}
       <nav
         style={{ borderBottom: "1px solid #e9ecef", backgroundColor: "#fff" }}
