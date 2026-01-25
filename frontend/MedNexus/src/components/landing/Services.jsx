@@ -1,8 +1,35 @@
 const Services = () => {
   const services = [
-    { icon: '🧑‍⚕️', title: 'Online Appointment', description: 'Get all time support for emergency. We have introduced the principle of family medicine.' },
-    { icon: '⏰', title: 'Working Hours', description: 'Sun - Wed: 8:00 - 17:00\nThu - Fri: 9:00 - 17:00\nSat - Sun: 10:00 - 17:00' },
-    { icon: '🎧', title: 'Emergency Cases', description: 'Get all time support for emergency. We have introduced the principle of family medicine.' },
+    {
+      icon: '🎥',
+      title: 'Video Consultation',
+      description: 'See a doctor securely from home with HD video and instant notes.',
+    },
+    {
+      icon: '💬',
+      title: 'Chat with Doctor',
+      description: 'Ask questions, share reports, and get follow-up advice in chat.',
+    },
+    {
+      icon: '🤖',
+      title: 'AI Symptom Checker',
+      description: 'Get quick guidance on next steps before booking a visit.',
+    },
+    {
+      icon: '🚚',
+      title: 'Medicine Delivery',
+      description: 'Order prescriptions and have them delivered to your door.',
+    },
+    {
+      icon: '📂',
+      title: 'Health Records',
+      description: 'Store labs, prescriptions, and visit summaries in one secure place.',
+    },
+    {
+      icon: '🧪',
+      title: 'Lab Tests',
+      description: 'Book home sample collection or in-clinic tests with trusted labs.',
+    },
   ];
 
   return (
