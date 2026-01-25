@@ -357,6 +357,7 @@ async def complete_appointment(
 ):
     """
     Mark an appointment as completed (doctor action).
+    Also closes the associated LiveKit room if configured.
     """
     appointment = db.query(Appointment).filter(
         Appointment.id == appointment_id,
@@ -378,6 +379,36 @@ async def complete_appointment(
     appointment.status = "Completed"
     db.commit()
     db.refresh(appointment)
+    
+    # Close LiveKit room if configured
+    try:
+        from app.core.config import settings
+        if settings.LIVEKIT_URL and settings.LIVEKIT_API_KEY and settings.LIVEKIT_API_SECRET:
+            try:
+                from livekit import api
+                
+                # Create LiveKit API client
+                lk_api = api.LiveKitAPI(
+                    settings.LIVEKIT_URL,
+                    settings.LIVEKIT_API_KEY,
+                    settings.LIVEKIT_API_SECRET
+                )
+                
+                room_name = f"appointment_{appointment_id}_consultation"
+                
+                # Delete the room (this will end the call and remove all participants)
+                import asyncio
+                asyncio.create_task(
+                    lk_api.room.delete_room(api.DeleteRoomRequest(room=room_name))
+                )
+                print(f"LiveKit room {room_name} deletion initiated")
+            except ImportError as ie:
+                print(f"LiveKit SDK not available: {ie}")
+            except Exception as lk_error:
+                print(f"Failed to delete LiveKit room: {lk_error}")
+    except Exception as e:
+        print(f"Error during LiveKit room cleanup: {e}")
+        # Don't fail the appointment completion if room deletion fails
     
     patient = db.query(Patient).filter(Patient.id == appointment.patient_id).first()
     return DoctorAppointmentResponse(

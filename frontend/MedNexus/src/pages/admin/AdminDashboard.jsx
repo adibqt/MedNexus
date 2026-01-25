@@ -20,6 +20,8 @@ import {
   User,
   Menu,
   Heart,
+  Trash2,
+  Video,
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import apiService from '../../services/api';
@@ -69,6 +71,8 @@ const AdminDashboard = () => {
   const [activeNav, setActiveNav] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pendingDoctors, setPendingDoctors] = useState(0);
+  const [cleanupLoading, setCleanupLoading] = useState(false);
+  const [cleanupResult, setCleanupResult] = useState(null);
 
   // Load initial pending doctor count for sidebar badge
   useEffect(() => {
@@ -86,6 +90,26 @@ const AdminDashboard = () => {
     loadStats();
   }, []);
 
+  const handleRoomCleanup = async () => {
+    if (!window.confirm('This will delete all LiveKit rooms for completed appointments. Continue?')) {
+      return;
+    }
+
+    try {
+      setCleanupLoading(true);
+      setCleanupResult(null);
+      const result = await apiService.cleanupAllRooms();
+      setCleanupResult(result);
+    } catch (error) {
+      setCleanupResult({
+        success: false,
+        message: error.message || 'Failed to cleanup rooms',
+      });
+    } finally {
+      setCleanupLoading(false);
+    }
+  };
+
   const navItems = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'patients', label: 'Patients', icon: Users },
@@ -94,6 +118,7 @@ const AdminDashboard = () => {
     { id: 'clinics', label: 'Clinics', icon: Building2 },
     { id: 'specializations', label: 'Specializations', icon: Microscope },
     { id: 'symptoms', label: 'Symptoms', icon: FileText },
+    { id: 'system', label: 'System', icon: Cpu },
   ];
 
   return (
@@ -196,6 +221,105 @@ const AdminDashboard = () => {
             <SpecializationManagement />
           ) : activeNav === 'symptoms' ? (
             <SymptomManagement />
+          ) : activeNav === 'system' ? (
+            <div className="admin-system-management">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="admin-chart-card"
+              >
+                <div className="admin-chart-header">
+                  <div className="admin-chart-title">
+                    <h3>LiveKit Room Cleanup</h3>
+                    <p>Delete all video call rooms for completed appointments</p>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '20px' }}>
+                  <button
+                    onClick={handleRoomCleanup}
+                    disabled={cleanupLoading}
+                    className="admin-cleanup-btn"
+                    style={{
+                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '12px 24px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: cleanupLoading ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      opacity: cleanupLoading ? 0.6 : 1,
+                    }}
+                  >
+                    <Video size={18} />
+                    {cleanupLoading ? 'Cleaning up...' : 'Cleanup All Rooms'}
+                  </button>
+
+                  {cleanupResult && (
+                    <div
+                      style={{
+                        marginTop: '20px',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        background: cleanupResult.success ? '#f0fdf4' : '#fef2f2',
+                        border: `1px solid ${cleanupResult.success ? '#86efac' : '#fca5a5'}`,
+                      }}
+                    >
+                      <h4
+                        style={{
+                          margin: '0 0 12px 0',
+                          color: cleanupResult.success ? '#16a34a' : '#dc2626',
+                          fontSize: '16px',
+                          fontWeight: '600',
+                        }}
+                      >
+                        {cleanupResult.message}
+                      </h4>
+                      {cleanupResult.success && (
+                        <div>
+                          <p style={{ margin: '8px 0', fontSize: '14px', color: '#6b7280' }}>
+                            Total processed: {cleanupResult.total_processed} appointments
+                          </p>
+                          {cleanupResult.deleted_rooms && cleanupResult.deleted_rooms.length > 0 && (
+                            <div style={{ marginTop: '12px' }}>
+                              <p style={{ fontWeight: '600', fontSize: '14px', marginBottom: '8px' }}>
+                                Deleted Rooms ({cleanupResult.deleted_rooms.length}):
+                              </p>
+                              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#6b7280' }}>
+                                {cleanupResult.deleted_rooms.slice(0, 10).map((room, idx) => (
+                                  <li key={idx}>{room}</li>
+                                ))}
+                                {cleanupResult.deleted_rooms.length > 10 && (
+                                  <li>... and {cleanupResult.deleted_rooms.length - 10} more</li>
+                                )}
+                              </ul>
+                            </div>
+                          )}
+                          {cleanupResult.failed_rooms && cleanupResult.failed_rooms.length > 0 && (
+                            <div style={{ marginTop: '12px' }}>
+                              <p style={{ fontWeight: '600', fontSize: '14px', marginBottom: '8px', color: '#dc2626' }}>
+                                Failed Rooms ({cleanupResult.failed_rooms.length}):
+                              </p>
+                              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#dc2626' }}>
+                                {cleanupResult.failed_rooms.map((item, idx) => (
+                                  <li key={idx}>
+                                    {item.room}: {item.error}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
           ) : (
             <div className="admin-dashboard-content">
               {/* Stats Grid */}

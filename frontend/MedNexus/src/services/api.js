@@ -193,6 +193,13 @@ class ApiService {
     });
   }
 
+  // LiveKit room cleanup (admin)
+  async cleanupAllRooms() {
+    return this.adminRequest('/api/livekit/rooms/cleanup/all', {
+      method: 'DELETE',
+    });
+  }
+
   // Helper to get full URL for profile pictures
   getProfilePictureUrl(path) {
     if (!path) return null;
