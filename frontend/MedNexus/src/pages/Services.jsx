@@ -7,33 +7,33 @@ import './Services.css';
 
 const serviceCards = [
   {
-    title: 'Child care',
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'Video Consultation',
+    description: 'See a doctor online within minutes—HD video, secure notes, and e-prescriptions.',
     image: '/novena/images/service/service-1.jpg',
   },
   {
-    title: 'Personal Care',
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'Chat with Doctor',
+    description: 'Ask follow-up questions and get care plan checks without another visit.',
     image: '/novena/images/service/service-2.jpg',
   },
   {
-    title: 'CT scan',
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'AI Symptom Checker',
+    description: 'Structured triage that guides you to the right clinician faster.',
     image: '/novena/images/service/service-3.jpg',
   },
   {
-    title: 'Joint replacement',
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'Medicine Delivery',
+    description: 'Order prescriptions and refills with doorstep delivery and status updates.',
     image: '/novena/images/service/service-4.jpg',
   },
   {
-    title: 'Examination & Diagnosis',
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'Health Records',
+    description: 'All consult notes, prescriptions, and labs in one secure place you control.',
     image: '/novena/images/service/service-6.jpg',
   },
   {
-    title: "Alzheimer's disease",
-    description: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.',
+    title: 'Lab Tests',
+    description: 'Schedule home collection or nearby labs with results synced to your doctor.',
     image: '/novena/images/service/service-8.jpg',
   },
 ];
@@ -95,8 +95,8 @@ const Services = () => {
             <div className="services-cta__content">
               <div className="services-cta__divider" />
               <h2>
-                We are pleased to offer you the{' '}
-                <span className="services-cta__highlight">chance to have the healthy</span>
+                Get care in one place—book visits, labs, and medications through{' '}
+                <span className="services-cta__highlight">MedNexus</span>
               </h2>
               <button 
                 onClick={handleGetAppointment}

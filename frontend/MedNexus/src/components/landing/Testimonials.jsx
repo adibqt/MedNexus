@@ -9,13 +9,13 @@ const Testimonials = () => {
       name: 'John Partho',
       role: 'Patient',
       image: '/novena/images/team/1.jpg',
-      text: 'They provide great service facility consectetur adipisicing elit. Itaque rem, praesentium, iure, ipsum magnam deleniti a vel eos adipisci suscipit fugit placeat.'
+      text: 'Fast response and clear guidance during my video visit. Booking and follow-up were effortless.'
     },
     {
       name: 'Mullar Sarth',
       role: 'Patient',
       image: '/novena/images/team/2.jpg',
-      text: 'They provide great service facility consectetur adipisicing elit. Itaque rem, praesentium, iure, ipsum magnam deleniti a vel eos adipisci suscipit fugit placeat.'
+      text: 'Loved the chat follow-up and prescription delivery. Felt cared for from start to finish.'
     },
     {
       name: 'Dr. Sarah Wilson',
@@ -68,7 +68,7 @@ const Testimonials = () => {
           </h2>
           <div style={{ width: '60px', height: '3px', backgroundColor: '#10b981', margin: '20px auto' }}></div>
           <p style={{ color: '#666', fontSize: '16px', lineHeight: '1.6', maxWidth: '600px', margin: '20px auto' }}>
-            Lets know moreel necessitatibus dolor asperiores illum possimus sint voluptates incidunt molestias nostrum laudantium. Maiores porro cumque quaerat.
+            Hear from patients who use MedNexus for video consults, chat follow-ups, and coordinated in-clinic care.
           </p>
         </div>
 

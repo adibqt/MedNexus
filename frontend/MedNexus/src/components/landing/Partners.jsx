@@ -17,7 +17,7 @@ const Partners = () => {
           </h2>
           <div style={{ width: '60px', height: '3px', backgroundColor: '#10b981', margin: '20px auto' }}></div>
           <p style={{ color: '#666', fontSize: '16px', lineHeight: '1.6', maxWidth: '600px', margin: '20px auto' }}>
-            Lets know moreel necessitatibus dolor asperiores illum possimus sint voluptates incidunt molestias nostrum laudantium. Maiores porro cumque quaerat.
+            Trusted by leading hospitals and health networks who rely on MedNexus for secure scheduling, telehealth, and patient engagement.
           </p>
         </div>
 

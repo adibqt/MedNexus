@@ -69,7 +69,7 @@ const Departments = () => {
             <h2 className="departments-main-title">Award Winning Patient Care</h2>
             <div className="departments-divider" />
             <p className="departments-subtitle">
-              Let's know more about our specialized departments dedicated to providing exceptional healthcare services.
+              Explore MedNexus specialties for fast bookings, video consults, and coordinated follow-ups across primary care, cardiology, pediatrics, mental health, and more.
             </p>
           </div>
 

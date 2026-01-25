@@ -136,10 +136,8 @@ const About = () => {
               <div className="about-divider" />
             </div>
             <div className="about-awards__logos">
-              {awardLogos.map((logo) => (
-                <div className="about-awards__logo" key={logo}>
-                  <img src={logo} alt="Award" />
-                </div>
+              {awardLogos.map((logo, index) => (
+                <img key={index} src={logo} alt={`Award ${index + 1}`} />
               ))}
             </div>
           </div>
