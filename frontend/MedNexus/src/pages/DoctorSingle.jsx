@@ -14,14 +14,14 @@ const DoctorSingle = () => {
     const fetchDoctor = async () => {
       try {
         const response = await fetch(`http://localhost:8000/api/doctors/${id}`);
-        
+
         if (!response.ok) {
           console.error("Doctor not found or not available");
           setDoctor(null);
           setLoading(false);
           return;
         }
-        
+
         const data = await response.json();
         setDoctor(data);
       } catch (error) {
