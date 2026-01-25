@@ -1,53 +1,69 @@
-import React, { useState } from 'react';
-import Navbar from '../components/landing/Navbar';
-import Footer from '../components/landing/Footer';
-import './About.css';
+import React, { useState } from "react";
+import Navbar from "../components/landing/Navbar";
+import Footer from "../components/landing/Footer";
+import "./About.css";
 
 const featureCards = [
   {
-    title: 'Healthcare for Kids',
-    copy: 'Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.',
-    image: '/novena/images/about/about-1.jpg',
+    title: "Healthcare for Kids",
+    copy: "Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.",
+    image: "/novena/images/about/about-1.jpg",
   },
   {
-    title: 'Medical Counseling',
-    copy: 'Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.',
-    image: '/novena/images/about/about-2.jpg',
+    title: "Medical Counseling",
+    copy: "Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.",
+    image: "/novena/images/about/about-2.jpg",
   },
   {
-    title: 'Modern Equipments',
-    copy: 'Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.',
-    image: '/novena/images/about/about-3.jpg',
+    title: "Modern Equipments",
+    copy: "Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.",
+    image: "/novena/images/about/about-3.jpg",
   },
   {
-    title: 'Qualified Doctors',
-    copy: 'Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.',
-    image: '/novena/images/about/about-4.jpg',
+    title: "Qualified Doctors",
+    copy: "Voluptate aperiam esse possimus maxime repellendus, nihil quod accusantium.",
+    image: "/novena/images/about/about-4.jpg",
   },
 ];
 
 const awardLogos = [
-  '/novena/images/about/3.png',
-  '/novena/images/about/4.png',
-  '/novena/images/about/1.png',
-  '/novena/images/about/2.png',
-  '/novena/images/about/5.png',
-  '/novena/images/about/6.png',
+  "/novena/images/about/3.png",
+  "/novena/images/about/4.png",
+  "/novena/images/about/1.png",
+  "/novena/images/about/2.png",
+  "/novena/images/about/5.png",
+  "/novena/images/about/6.png",
 ];
 
 const specialists = [
-  { name: 'John Marshal', role: 'Internist, Emergency Physician', image: '/novena/images/team/1.jpg' },
-  { name: 'Marshal Root', role: 'Surgeon, Cardiologist', image: '/novena/images/team/2.jpg' },
-  { name: 'Siamon John', role: 'Internist, General Practitioner', image: '/novena/images/team/3.jpg' },
-  { name: 'Rishat Ahmed', role: 'Orthopedic Surgeon', image: '/novena/images/team/4.jpg' },
+  {
+    name: "John Marshal",
+    role: "Internist, Emergency Physician",
+    image: "/novena/images/team/1.jpg",
+  },
+  {
+    name: "Marshal Root",
+    role: "Surgeon, Cardiologist",
+    image: "/novena/images/team/2.jpg",
+  },
+  {
+    name: "Siamon John",
+    role: "Internist, General Practitioner",
+    image: "/novena/images/team/3.jpg",
+  },
+  {
+    name: "Rishat Ahmed",
+    role: "Orthopedic Surgeon",
+    image: "/novena/images/team/4.jpg",
+  },
 ];
 
 const testimonials = [
-  { title: 'Amazing service!', name: 'John Partho' },
-  { title: 'Expert doctors!', name: 'Mullar Sarth' },
-  { title: 'Good Support!', name: 'Kolis Mullar' },
-  { title: 'Nice Environment!', name: 'Partho Sarothi' },
-  { title: 'Modern Service!', name: 'Kolis Mullar' },
+  { title: "Amazing service!", name: "John Partho" },
+  { title: "Expert doctors!", name: "Mullar Sarth" },
+  { title: "Good Support!", name: "Kolis Mullar" },
+  { title: "Nice Environment!", name: "Partho Sarothi" },
+  { title: "Modern Service!", name: "Kolis Mullar" },
 ];
 
 const About = () => {
@@ -55,7 +71,8 @@ const About = () => {
   const totalSlides = testimonials.length;
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  const prevSlide = () =>
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
 
   return (
     <div className="about-page">
@@ -74,15 +91,22 @@ const About = () => {
         <section className="about-section about-intro">
           <div className="about-container about-intro__grid">
             <div>
-              <h2 className="about-title">Personal care for your healthy living</h2>
+              <h2 className="about-title">
+                Personal care for your healthy living
+              </h2>
             </div>
             <div className="about-intro__body">
               <p>
-                MedNexus connects patients with trusted clinicians through secure video visits, in-clinic care, and
-                coordinated follow-ups. Our team blends medical expertise with modern technology so you can book,
-                consult, and manage your health from anywhere.
+                MedNexus connects patients with trusted clinicians through
+                secure video visits, in-clinic care, and coordinated follow-ups.
+                Our team blends medical expertise with modern technology so you
+                can book, consult, and manage your health from anywhere.
               </p>
-              <img src="/novena/images/about/sign.png" alt="Signature" className="about-intro__signature" />
+              <img
+                src="/novena/images/about/sign.png"
+                alt="Signature"
+                className="about-intro__signature"
+              />
             </div>
           </div>
         </section>
@@ -92,7 +116,11 @@ const About = () => {
             {featureCards.map((card) => (
               <div className="about-card" key={card.title}>
                 <div className="about-card__image-wrap">
-                  <img src={card.image} alt={card.title} className="about-card__image" />
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="about-card__image"
+                  />
                 </div>
                 <h3>{card.title}</h3>
                 <p>{card.copy}</p>
@@ -123,8 +151,9 @@ const About = () => {
               <h2 className="about-title">Meet Our Specialist</h2>
               <div className="about-divider" />
               <p className="about-muted">
-                Today’s users expect effortless experiences. Don’t let essential people and processes stay stuck in the
-                past. Speed it up, skip the hassles.
+                Today’s users expect effortless experiences. Don’t let essential
+                people and processes stay stuck in the past. Speed it up, skip
+                the hassles.
               </p>
             </div>
             <div className="about-team__grid">
@@ -160,9 +189,11 @@ const About = () => {
                       <div className="about-testimonial__body">
                         <h4>{item.title}</h4>
                         <p>
-                          They provide great service facilty consectetur adipisicing elit. Itaque rem, praesentium,
-                          iure, ipsum magnam deleniti a vel eos adipisci suscipit fugit placeat. Quibusdam laboriosam
-                          eveniet nostrum nemo commodi numquam quod.
+                          They provide great service facilty consectetur
+                          adipisicing elit. Itaque rem, praesentium, iure, ipsum
+                          magnam deleniti a vel eos adipisci suscipit fugit
+                          placeat. Quibusdam laboriosam eveniet nostrum nemo
+                          commodi numquam quod.
                         </p>
                         <span className="about-muted">{item.name}</span>
                       </div>
@@ -172,20 +203,28 @@ const About = () => {
               </div>
 
               <div className="about-slider__controls">
-                <button className="about-slider__btn" onClick={prevSlide} aria-label="Previous testimonial">
+                <button
+                  className="about-slider__btn"
+                  onClick={prevSlide}
+                  aria-label="Previous testimonial"
+                >
                   ‹
                 </button>
                 <div className="about-slider__dots">
                   {testimonials.map((item, index) => (
                     <button
                       key={item.title}
-                      className={`about-slider__dot ${index === currentSlide ? 'is-active' : ''}`}
+                      className={`about-slider__dot ${index === currentSlide ? "is-active" : ""}`}
                       onClick={() => setCurrentSlide(index)}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
                   ))}
                 </div>
-                <button className="about-slider__btn" onClick={nextSlide} aria-label="Next testimonial">
+                <button
+                  className="about-slider__btn"
+                  onClick={nextSlide}
+                  aria-label="Next testimonial"
+                >
                   ›
                 </button>
               </div>

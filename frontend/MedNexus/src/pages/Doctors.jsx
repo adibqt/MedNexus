@@ -53,9 +53,10 @@ const Doctors = () => {
                 <h2>Doctors</h2>
                 <div className="divider mx-auto my-4"></div>
                 <p>
-                  Meet verified specialists across internal medicine, pediatrics,
-                  cardiology, dermatology, and more. Filter by department and pick
-                  a doctor whose expertise and schedule fit your needs.
+                  Meet verified specialists across internal medicine,
+                  pediatrics, cardiology, dermatology, and more. Filter by
+                  department and pick a doctor whose expertise and schedule fit
+                  your needs.
                 </p>
               </div>
             </div>
