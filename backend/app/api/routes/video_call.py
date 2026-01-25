@@ -625,3 +625,123 @@ async def get_room_status_doctor(
         "room_name": room_name
     }
 
+
+
+@router.delete("/rooms/{appointment_id}")
+async def delete_room(
+    appointment_id: int,
+    current_doctor: Doctor = Depends(get_current_doctor),
+    db: Session = Depends(get_db),
+):
+    """
+    Manually delete a LiveKit room for a specific appointment.
+    Only the doctor of the appointment can delete the room.
+    """
+    if not settings.LIVEKIT_URL or not settings.LIVEKIT_API_KEY or not settings.LIVEKIT_API_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="LiveKit is not configured"
+        )
+    
+    if not LIVEKIT_AVAILABLE:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="LiveKit SDK not available"
+        )
+    
+    # Verify appointment exists and belongs to this doctor
+    appointment = db.query(Appointment).filter(
+        Appointment.id == appointment_id,
+        Appointment.doctor_id == current_doctor.id
+    ).first()
+    
+    if not appointment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Appointment not found or you don't have permission"
+        )
+    
+    try:
+        lk_api = api.LiveKitAPI(
+            settings.LIVEKIT_URL,
+            settings.LIVEKIT_API_KEY,
+            settings.LIVEKIT_API_SECRET
+        )
+        
+        room_name = f"appointment_{appointment_id}_consultation"
+        
+        # Delete the room
+        await lk_api.room.delete_room(api.DeleteRoomRequest(room=room_name))
+        
+        return {
+            "success": True,
+            "message": f"Room {room_name} deleted successfully",
+            "room_name": room_name,
+            "appointment_id": appointment_id
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete room: {str(e)}"
+        )
+
+
+@router.delete("/rooms/cleanup/all")
+async def cleanup_all_rooms(
+    db: Session = Depends(get_db),
+):
+    """
+    Delete all LiveKit rooms for completed appointments.
+    No authentication required - useful for admin cleanup.
+    """
+    if not settings.LIVEKIT_URL or not settings.LIVEKIT_API_KEY or not settings.LIVEKIT_API_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="LiveKit is not configured"
+        )
+    
+    if not LIVEKIT_AVAILABLE:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="LiveKit SDK not available"
+        )
+    
+    try:
+        lk_api = api.LiveKitAPI(
+            settings.LIVEKIT_URL,
+            settings.LIVEKIT_API_KEY,
+            settings.LIVEKIT_API_SECRET
+        )
+        
+        # Get all completed appointments (no doctor filter)
+        completed_appointments = db.query(Appointment).filter(
+            Appointment.status == "Completed"
+        ).all()
+        
+        deleted_rooms = []
+        failed_rooms = []
+        
+        for appointment in completed_appointments:
+            room_name = f"appointment_{appointment.id}_consultation"
+            try:
+                await lk_api.room.delete_room(api.DeleteRoomRequest(room=room_name))
+                deleted_rooms.append(room_name)
+                print(f"Deleted room: {room_name}")
+            except Exception as e:
+                failed_rooms.append({"room": room_name, "error": str(e)})
+                print(f"Failed to delete room {room_name}: {e}")
+        
+        return {
+            "success": True,
+            "message": f"Cleanup completed. Deleted {len(deleted_rooms)} rooms.",
+            "deleted_rooms": deleted_rooms,
+            "failed_rooms": failed_rooms,
+            "total_processed": len(completed_appointments)
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to cleanup rooms: {str(e)}"
+        )

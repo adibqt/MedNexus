@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -11,6 +11,9 @@ import {
   Phone,
   Calendar,
   Lightbulb,
+  Mic,
+  MicOff,
+  StopCircle,
 } from 'lucide-react';
 import apiService from '../../services/api';
 import './AIDoctorConsultation.css';
@@ -31,6 +34,128 @@ const AIDoctorConsultation = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  
+  // Voice recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+  const streamRef = useRef(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopRecording();
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      // Create MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await processVoiceInput(audioBlob);
+        
+        // Stop all tracks
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+      };
+
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      setError('');
+
+      // Start timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime(prev => {
+          const newTime = prev + 1;
+          // Auto-stop after 2 minutes
+          if (newTime >= 120) {
+            stopRecording();
+          }
+          return newTime;
+        });
+      }, 1000);
+
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      setError('Could not access microphone. Please grant permission and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+    }
+  };
+
+  const processVoiceInput = async (audioBlob) => {
+    setIsProcessingVoice(true);
+    setError('');
+
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      // Send to backend
+      const response = await apiService.voiceToText(formData);
+
+      if (response.success && response.text) {
+        // Append to existing description or replace
+        if (description.trim()) {
+          setDescription(prev => prev + ' ' + response.text);
+        } else {
+          setDescription(response.text);
+        }
+      } else {
+        setError(response.message || 'Could not transcribe audio. Please try again.');
+      }
+    } catch (err) {
+      console.error('Voice processing error:', err);
+      setError('Failed to process voice input. Please try again or type your symptoms.');
+    } finally {
+      setIsProcessingVoice(false);
+    }
+  };
+
+  const formatRecordingTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleAnalyze = async () => {
     if (!description.trim() || description.trim().length < 10) {
@@ -113,16 +238,56 @@ const AIDoctorConsultation = ({ onClose }) => {
                 <Sparkles size={16} style={{ display: 'inline', marginRight: '8px' }} />
                 Tell us how you're feeling
               </label>
+              
+              {/* Voice Recording Controls */}
+              <div className="voice-controls">
+                {!isRecording && !isProcessingVoice && (
+                  <button
+                    className="voice-record-btn"
+                    onClick={startRecording}
+                    disabled={loading}
+                    title="Record voice"
+                  >
+                    <Mic size={20} />
+                    <span>Record Symptoms</span>
+                  </button>
+                )}
+                
+                {isRecording && (
+                  <div className="recording-indicator">
+                    <button
+                      className="voice-stop-btn"
+                      onClick={stopRecording}
+                      title="Stop recording"
+                    >
+                      <StopCircle size={20} />
+                      <span>Stop Recording</span>
+                    </button>
+                    <div className="recording-time">
+                      <div className="recording-pulse"></div>
+                      <span>{formatRecordingTime(recordingTime)}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {isProcessingVoice && (
+                  <div className="processing-voice">
+                    <div className="processing-spinner"></div>
+                    <span>Processing voice...</span>
+                  </div>
+                )}
+              </div>
+              
               <textarea
                 id="symptoms"
                 className="symptom-textarea"
                 placeholder="Example: I've been experiencing severe headaches for the past 3 days, along with fever and body aches. The pain is mostly on the right side of my head and gets worse in bright light..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={loading}
+                disabled={loading || isRecording || isProcessingVoice}
               />
               <p className="input-helper">
-                Please describe your symptoms in detail including duration, severity, and any other relevant information.
+                You can type or use voice input to describe your symptoms in detail.
               </p>
               {error && (
                 <div className="error-message" style={{ 

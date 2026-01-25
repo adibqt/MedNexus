@@ -193,6 +193,13 @@ class ApiService {
     });
   }
 
+  // LiveKit room cleanup (admin)
+  async cleanupAllRooms() {
+    return this.adminRequest('/api/livekit/rooms/cleanup/all', {
+      method: 'DELETE',
+    });
+  }
+
   // Helper to get full URL for profile pictures
   getProfilePictureUrl(path) {
     if (!path) return null;
@@ -407,6 +414,50 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  // Voice to Text for AI Consultation
+  async voiceToText(formData) {
+    const url = `${this.baseUrl}/api/patients/voice-to-text`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Voice to text error:', data);
+      throw new Error(data.detail || 'Failed to process voice input');
+    }
+
+    return data;
+  }
+
+  // Voice Chat - Send audio directly to Gemini AI
+  async voiceChat(formData, conversationHistory = []) {
+    const url = `${this.baseUrl}/api/patients/voice-chat?conversation_history=${encodeURIComponent(JSON.stringify(conversationHistory))}`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Voice chat error:', data);
+      throw new Error(data.detail || 'Failed to process voice message');
+    }
+
+    return data;
   }
 
   // AI Consultation History

@@ -3,8 +3,12 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 import os
 import uuid
+import json
 from pathlib import Path
 from typing import List
+import speech_recognition as sr
+from pydub import AudioSegment
+import tempfile
 
 from app.db import get_db
 from app.models import Patient, Appointment, Doctor, Symptom, Specialization, AIConsultation
@@ -22,6 +26,7 @@ from app.schemas import (
     AIChatRequest,
     AIChatResponse,
     DoctorSuggestion,
+    SpecializationMatch,
     SymptomInfo,
     AIConsultationHistoryItem,
     AIConsultationHistoryResponse,
@@ -478,6 +483,283 @@ async def ai_chat(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to process AI chat: {str(e)}"
+        )
+
+
+@router.post("/voice-to-text")
+async def voice_to_text(
+    audio: UploadFile = File(...),
+    current_patient: Patient = Depends(get_current_patient),
+):
+    """
+    Convert voice audio to text for symptom description.
+    Supports multiple audio formats (WAV, MP3, M4A, WEBM, OGG).
+    """
+    try:
+        # Validate file type
+        allowed_types = ["audio/wav", "audio/x-wav", "audio/mpeg", "audio/mp3", 
+                        "audio/m4a", "audio/webm", "audio/ogg", "audio/x-m4a"]
+        
+        if audio.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid audio format. Supported formats: WAV, MP3, M4A, WEBM, OGG"
+            )
+        
+        # Create temporary files for processing
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(audio.filename)[1]) as temp_input:
+            # Save uploaded file
+            content = await audio.read()
+            temp_input.write(content)
+            temp_input_path = temp_input.name
+        
+        # Convert to WAV if needed
+        temp_wav_path = None
+        try:
+            file_ext = os.path.splitext(audio.filename)[1].lower()
+            
+            if file_ext != '.wav':
+                # Convert to WAV using pydub
+                temp_wav_path = tempfile.NamedTemporaryFile(delete=False, suffix='.wav').name
+                
+                # Load audio file based on format
+                if file_ext in ['.mp3', '.mpeg']:
+                    audio_segment = AudioSegment.from_mp3(temp_input_path)
+                elif file_ext in ['.m4a']:
+                    audio_segment = AudioSegment.from_file(temp_input_path, format='m4a')
+                elif file_ext in ['.webm']:
+                    audio_segment = AudioSegment.from_file(temp_input_path, format='webm')
+                elif file_ext in ['.ogg']:
+                    audio_segment = AudioSegment.from_ogg(temp_input_path)
+                else:
+                    audio_segment = AudioSegment.from_file(temp_input_path)
+                
+                # Export as WAV
+                audio_segment.export(temp_wav_path, format='wav')
+                audio_file_path = temp_wav_path
+            else:
+                audio_file_path = temp_input_path
+            
+            # Perform speech recognition
+            recognizer = sr.Recognizer()
+            
+            with sr.AudioFile(audio_file_path) as source:
+                # Adjust for ambient noise
+                recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                # Record audio
+                audio_data = recognizer.record(source)
+                
+                # Recognize speech using Google Speech Recognition
+                try:
+                    text = recognizer.recognize_google(audio_data)
+                    
+                    if not text or len(text.strip()) < 5:
+                        return {
+                            "success": False,
+                            "text": "",
+                            "message": "Could not understand the audio. Please speak clearly and try again."
+                        }
+                    
+                    return {
+                        "success": True,
+                        "text": text,
+                        "message": "Audio transcribed successfully"
+                    }
+                    
+                except sr.UnknownValueError:
+                    return {
+                        "success": False,
+                        "text": "",
+                        "message": "Could not understand the audio. Please speak clearly and try again."
+                    }
+                except sr.RequestError as e:
+                    print(f"Speech recognition service error: {e}")
+                    raise HTTPException(
+                        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                        detail="Speech recognition service is currently unavailable. Please try again later."
+                    )
+        
+        finally:
+            # Clean up temporary files
+            try:
+                if os.path.exists(temp_input_path):
+                    os.unlink(temp_input_path)
+                if temp_wav_path and os.path.exists(temp_wav_path):
+                    os.unlink(temp_wav_path)
+            except Exception as cleanup_error:
+                print(f"Error cleaning up temp files: {cleanup_error}")
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Voice to text error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process audio: {str(e)}"
+        )
+
+
+@router.post("/voice-chat")
+async def voice_chat(
+    audio: UploadFile = File(...),
+    conversation_history: str = Query("[]"),
+    current_patient: Patient = Depends(get_current_patient),
+    db: Session = Depends(get_db),
+):
+    """
+    Process voice input with AI for symptom analysis.
+    Converts audio to text, then uses Gemini AI to analyze symptoms.
+    """
+    try:
+        # Parse conversation history
+        try:
+            history = json.loads(conversation_history)
+        except:
+            history = []
+        
+        # Validate file type
+        allowed_types = ["audio/wav", "audio/x-wav", "audio/mpeg", "audio/mp3", 
+                        "audio/m4a", "audio/webm", "audio/ogg", "audio/x-m4a"]
+        
+        if audio.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid audio format. Supported formats: WAV, MP3, M4A, WEBM, OGG"
+            )
+        
+        # Save audio to temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(audio.filename)[1]) as temp_input:
+            content = await audio.read()
+            temp_input.write(content)
+            temp_input_path = temp_input.name
+        
+        # Convert to WAV if needed
+        temp_wav_path = None
+        try:
+            file_ext = os.path.splitext(audio.filename)[1].lower()
+            
+            if file_ext != '.wav':
+                temp_wav_path = tempfile.NamedTemporaryFile(delete=False, suffix='.wav').name
+                
+                # Load and convert to WAV
+                if file_ext in ['.mp3', '.mpeg']:
+                    audio_segment = AudioSegment.from_mp3(temp_input_path)
+                elif file_ext in ['.m4a']:
+                    audio_segment = AudioSegment.from_file(temp_input_path, format='m4a')
+                elif file_ext in ['.webm']:
+                    audio_segment = AudioSegment.from_file(temp_input_path, format='webm')
+                elif file_ext in ['.ogg']:
+                    audio_segment = AudioSegment.from_ogg(temp_input_path)
+                else:
+                    audio_segment = AudioSegment.from_file(temp_input_path)
+                
+                audio_segment.export(temp_wav_path, format='wav')
+                audio_file_path = temp_wav_path
+            else:
+                audio_file_path = temp_input_path
+            
+            # Get specializations and symptoms
+            specializations = db.query(Specialization).filter(
+                Specialization.is_active == True
+            ).all()
+            available_specs = [s.name for s in specializations]
+            
+            symptoms = db.query(Symptom).filter(Symptom.is_active == True).all()
+            symptom_data = [
+                {
+                    "name": s.name,
+                    "description": s.description or "",
+                    "specialization": s.specialization or "General"
+                }
+                for s in symptoms
+            ]
+            
+            # Process voice with AI
+            ai_result = ai_service.process_voice_for_symptoms(
+                audio_file_path=audio_file_path,
+                conversation_history=history,
+                available_specializations=available_specs,
+                available_symptoms=symptom_data
+            )
+            
+            # Get suggested doctors if symptoms detected
+            suggested_doctors = []
+            if ai_result.get("should_show_doctors") and ai_result.get("recommended_specializations"):
+                spec_names = [
+                    spec["name"] if isinstance(spec, dict) else spec 
+                    for spec in ai_result.get("recommended_specializations", [])
+                ]
+                
+                if spec_names:
+                    doctors = db.query(Doctor).filter(
+                        Doctor.specialization.in_(spec_names),
+                        Doctor.is_approved == True,
+                        Doctor.is_active == True
+                    ).limit(10).all()
+                    
+                    spec_match_map = {}
+                    for spec_info in ai_result.get("recommended_specializations", []):
+                        if isinstance(spec_info, dict):
+                            spec_match_map[spec_info["name"]] = {
+                                "percentage": spec_info.get("match_percentage", 75),
+                                "reason": spec_info.get("reason", "Based on symptom analysis")
+                            }
+                    
+                    suggested_doctors = [
+                        DoctorSuggestion(
+                            id=doc.id,
+                            name=doc.name,
+                            specialization=doc.specialization,
+                            phone=doc.phone,
+                            profile_picture=doc.profile_picture,
+                            schedule=doc.schedule,
+                            match_percentage=spec_match_map.get(doc.specialization, {}).get("percentage", 75),
+                            match_reason=spec_match_map.get(doc.specialization, {}).get("reason", "Recommended specialist")
+                        )
+                        for doc in doctors
+                    ]
+            
+            # Build response
+            response = AIChatResponse(
+                response_type=ai_result.get("response_type", "conversation"),
+                message=ai_result.get("message", "I processed your voice message."),
+                detected_symptoms=ai_result.get("detected_symptoms", []),
+                symptom_analysis=ai_result.get("symptom_analysis"),
+                recommended_specializations=[
+                    SpecializationMatch(
+                        name=spec["name"] if isinstance(spec, dict) else spec,
+                        match_percentage=spec.get("match_percentage", 75) if isinstance(spec, dict) else 75,
+                        reason=spec.get("reason", "Based on symptom analysis") if isinstance(spec, dict) else "Based on symptom analysis"
+                    )
+                    for spec in ai_result.get("recommended_specializations", [])
+                ],
+                severity=ai_result.get("severity"),
+                confidence=ai_result.get("confidence"),
+                additional_notes=ai_result.get("additional_notes"),
+                emergency_warning=ai_result.get("emergency_warning", False),
+                should_show_doctors=len(suggested_doctors) > 0,
+                suggested_doctors=suggested_doctors
+            )
+            
+            return response
+            
+        finally:
+            # Clean up temporary files
+            try:
+                if os.path.exists(temp_input_path):
+                    os.unlink(temp_input_path)
+                if temp_wav_path and os.path.exists(temp_wav_path):
+                    os.unlink(temp_wav_path)
+            except Exception as cleanup_error:
+                print(f"Error cleaning up temp files: {cleanup_error}")
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Voice chat error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process voice message: {str(e)}"
         )
 
 

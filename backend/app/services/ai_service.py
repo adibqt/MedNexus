@@ -9,6 +9,7 @@ from typing import List, Dict, Optional
 import google.generativeai as genai
 from app.core.config import settings
 from app.services.rag_service import rag_service
+from pathlib import Path
 
 
 class AIService:
@@ -411,6 +412,141 @@ Advice:"""
             print(f"Health advice generation error: {e}")
             return "Please consult a healthcare professional for proper medical advice and diagnosis."
 
+    
+    def process_voice_for_symptoms(
+        self,
+        audio_file_path: str,
+        conversation_history: List[Dict[str, str]],
+        available_specializations: List[str],
+        available_symptoms: List[Dict[str, str]]
+    ) -> Dict:
+        """
+        Process voice audio with Gemini AI to extract symptoms and provide analysis.
+        Uses speech-to-text first, then sends text to Gemini for analysis.
+        
+        Args:
+            audio_file_path: Path to the audio file
+            conversation_history: Previous conversation messages
+            available_specializations: List of available specializations
+            available_symptoms: List of symptom objects
+        
+        Returns:
+            Dict containing AI response with symptom analysis
+        """
+        try:
+            import speech_recognition as sr
+            
+            # Convert audio to text using speech recognition
+            recognizer = sr.Recognizer()
+            
+            with sr.AudioFile(audio_file_path) as source:
+                recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                audio_data = recognizer.record(source)
+                
+                try:
+                    # Auto-detect language - Google will detect the spoken language
+                    transcribed_text = recognizer.recognize_google(audio_data, show_all=False)
+                    detected_language = "auto-detected"
+                except sr.UnknownValueError:
+                    return {
+                        "response_type": "conversation",
+                        "message": "I couldn't understand the audio clearly. Could you please speak more clearly or try typing your symptoms?",
+                        "detected_symptoms": [],
+                        "should_show_doctors": False
+                    }
+                except sr.RequestError:
+                    return {
+                        "response_type": "conversation",
+                        "message": "I'm having trouble processing audio right now. Could you please type your symptoms instead?",
+                        "detected_symptoms": [],
+                        "should_show_doctors": False
+                    }
+            
+            # Build context from conversation history
+            history_text = ""
+            if conversation_history:
+                for msg in conversation_history[-5:]:  # Last 5 messages for context
+                    role = "Patient" if msg["role"] == "user" else "AI Assistant"
+                    history_text += f"{role}: {msg['content']}\n"
+            
+            # Create comprehensive prompt for symptom analysis
+            prompt = f"""You are a medical AI assistant. A patient just sent a voice message that was transcribed to text.
+
+Patient's voice message (transcribed): "{transcribed_text}"
+
+Previous conversation:
+{history_text if history_text else "No previous conversation"}
+
+Available specializations: {', '.join(available_specializations)}
+
+IMPORTANT: Respond in the SAME LANGUAGE as the patient's message. If they spoke in Arabic, respond in Arabic. If they spoke in Spanish, respond in Spanish, etc.
+
+Your task:
+1. Analyze what the patient said about their symptoms
+2. Extract all mentioned symptoms
+3. Determine severity (low/moderate/high)
+4. Recommend appropriate medical specializations
+5. Provide helpful health advice
+
+Respond in this exact JSON format (but translate the message and analysis to the patient's language):
+{{
+  "response_type": "symptom_analysis",
+  "message": "A natural, empathetic response acknowledging you heard their voice message and summarizing the symptoms IN THEIR LANGUAGE",
+  "detected_symptoms": ["symptom1", "symptom2"],
+  "symptom_analysis": "Brief analysis of the symptoms IN THEIR LANGUAGE",
+  "recommended_specializations": [
+    {{"name": "Specialization Name", "match_percentage": 85, "reason": "Why this specialist IN THEIR LANGUAGE"}}
+  ],
+  "severity": "low|moderate|high",
+  "confidence": "low|medium|high",
+  "additional_notes": "Any important notes or warnings IN THEIR LANGUAGE",
+  "emergency_warning": true|false,
+  "should_show_doctors": true|false
+}}
+
+Important: Acknowledge that this was a voice message and be empathetic. Respond entirely in the patient's language."""
+
+            # Generate response with Gemini
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            
+            # Clean up markdown code blocks if present
+            if response_text.startswith('```'):
+                response_text = response_text.split('```')[1]
+                if response_text.startswith('json'):
+                    response_text = response_text[4:]
+                response_text = response_text.strip()
+            
+            # Parse JSON response
+            try:
+                result = json.loads(response_text)
+            except json.JSONDecodeError:
+                # Fallback if JSON parsing fails
+                result = {
+                    "response_type": "conversation",
+                    "message": f"I heard your voice message. You mentioned: {transcribed_text}. " + response_text,
+                    "detected_symptoms": [],
+                    "should_show_doctors": False
+                }
+            
+            # Ensure required fields
+            if "response_type" not in result:
+                result["response_type"] = "symptom_analysis" if result.get("detected_symptoms") else "conversation"
+            if "should_show_doctors" not in result:
+                result["should_show_doctors"] = bool(result.get("detected_symptoms"))
+            
+            return result
+            
+        except Exception as e:
+            print(f"Voice processing error: {e}")
+            return {
+                "response_type": "conversation",
+                "message": "I apologize, but I had trouble processing your voice message. Could you please type your symptoms or try recording again?",
+                "detected_symptoms": [],
+                "should_show_doctors": False
+            }
+
 
 # Create a singleton instance
 ai_service = AIService()
+
