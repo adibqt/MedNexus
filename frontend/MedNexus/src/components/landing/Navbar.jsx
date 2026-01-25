@@ -12,15 +12,20 @@ const Navbar = () => {
   return (
     <header>
       {/* Header Top Bar */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #0d9488 0%, #10b981 100%)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-      }}>
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #0d9488 0%, #10b981 100%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="py-5 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row gap-4 md:gap-6 text-sm">
-              <a href="mailto:support@mednexus.com" className="text-white hover:text-emerald-100 flex items-center gap-2 font-medium">
+              <a
+                href="mailto:support@mednexus.com"
+                className="text-white hover:text-emerald-100 flex items-center gap-2 font-medium"
+              >
                 <span>📧</span> support@mednexus.com
               </a>
               <span className="text-white flex items-center gap-2 font-medium">
@@ -35,7 +40,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
       {/* Navigation Bar */}
       <nav style={{ borderBottom: '1px solid #e9ecef', backgroundColor: '#fff' }}>
         <div className="container mx-auto px-4">
@@ -51,18 +55,22 @@ const Navbar = () => {
             </a>
 
             {/* Mobile Toggle */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-gray-700 hover:text-emerald-600"
-            >
+            <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-gray-700 hover:text-emerald-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                />
               </svg>
             </button>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="/" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">Home</a>
+              <a href="/" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">
+                Home
+              </a>
               <a
                 href="/about"
                 onClick={(e) => {
@@ -85,17 +93,48 @@ const Navbar = () => {
               >
                 Services
               </a>
-              
+
               {/* Department Dropdown */}
-              <div className="relative group">
-                <button style={{ color: '#222' }} className="font-medium hover:text-emerald-600 flex items-center gap-1">
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown('desktop-department')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  type="button"
+                  style={{ color: '#222' }}
+                  className="font-medium hover:text-emerald-600 flex items-center gap-1"
+                >
                   Department <ChevronDown className="w-4 h-4" />
                 </button>
-                <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
-                  <div className="h-1 w-full bg-emerald-500" />
-                  <a href="/#department" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Department</a>
-                  <a href="/#department-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Department Single</a>
-                </div>
+                {openDropdown === 'desktop-department' && (
+                  <div
+                    className="absolute left-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100"
+                    onMouseEnter={() => setOpenDropdown('desktop-department')}
+                  >
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/departments');
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Departments
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/departments/1');
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Department Single
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Doctors Dropdown */}
@@ -105,9 +144,15 @@ const Navbar = () => {
                 </button>
                 <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
                   <div className="h-1 w-full bg-emerald-500" />
-                  <a href="/#doctors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Doctors</a>
-                  <a href="/#doctor-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Doctor Single</a>
-                  <a href="/#appointment" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Appointments</a>
+                  <a href="/#doctors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
+                    Doctors
+                  </a>
+                  <a href="/#doctor-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
+                    Doctor Single
+                  </a>
+                  <a href="/#appointment" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
+                    Appointments
+                  </a>
                 </div>
               </div>
 
@@ -118,13 +163,19 @@ const Navbar = () => {
                 </button>
                 <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 overflow-hidden">
                   <div className="h-1 w-full bg-emerald-500" />
-                  <a href="/#blog-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Blog Single</a>
-                  <a href="/#blog-sidebar" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">Blog Sidebar</a>
+                  <a href="/#blog-single" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
+                    Blog Single
+                  </a>
+                  <a href="/#blog-sidebar" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-emerald-600">
+                    Blog Sidebar
+                  </a>
                 </div>
               </div>
 
-              <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">Contact</a>
-              
+              <a href="/#contact" style={{ color: '#222' }} className="font-medium hover:text-emerald-600">
+                Contact
+              </a>
+
               {user ? (
                 <div className="flex items-center gap-3">
                   <button
@@ -161,7 +212,9 @@ const Navbar = () => {
           {/* Mobile Menu */}
           {isOpen && (
             <div className="md:hidden pb-4 border-t border-gray-200">
-              <a href="/" className="block py-2 text-gray-700 hover:text-emerald-600">Home</a>
+              <a href="/" className="block py-2 text-gray-700 hover:text-emerald-600">
+                Home
+              </a>
               <a
                 href="/about"
                 className="block py-2 text-gray-700 hover:text-emerald-600"
@@ -184,48 +237,86 @@ const Navbar = () => {
               >
                 Services
               </a>
-              
-              <button 
+
+              <button
+                type="button"
                 onClick={() => setOpenDropdown(openDropdown === 'department' ? null : 'department')}
                 className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
               >
-                Department <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'department' ? 'rotate-180' : ''}`} />
+                Department{' '}
+                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'department' ? 'rotate-180' : ''}`} />
               </button>
               {openDropdown === 'department' && (
                 <div className="bg-gray-50 pl-4">
-                  <a href="/#department" className="block py-2 text-gray-600 hover:text-emerald-600">Department</a>
-                  <a href="/#department-single" className="block py-2 text-gray-600 hover:text-emerald-600">Department Single</a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/departments');
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Departments
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/departments/1');
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Department Single
+                  </button>
                 </div>
               )}
 
-              <button 
+              <button
+                type="button"
                 onClick={() => setOpenDropdown(openDropdown === 'doctors' ? null : 'doctors')}
                 className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
               >
-                Doctors <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'doctors' ? 'rotate-180' : ''}`} />
+                Doctors{' '}
+                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'doctors' ? 'rotate-180' : ''}`} />
               </button>
               {openDropdown === 'doctors' && (
                 <div className="bg-gray-50 pl-4">
-                  <a href="/#doctors" className="block py-2 text-gray-600 hover:text-emerald-600">Doctors</a>
-                  <a href="/#doctor-single" className="block py-2 text-gray-600 hover:text-emerald-600">Doctor Single</a>
-                  <a href="/#appointment" className="block py-2 text-gray-600 hover:text-emerald-600">Appointments</a>
+                  <a href="/#doctors" className="block py-2 text-gray-600 hover:text-emerald-600">
+                    Doctors
+                  </a>
+                  <a href="/#doctor-single" className="block py-2 text-gray-600 hover:text-emerald-600">
+                    Doctor Single
+                  </a>
+                  <a href="/#appointment" className="block py-2 text-gray-600 hover:text-emerald-600">
+                    Appointments
+                  </a>
                 </div>
               )}
 
-              <button 
+              <button
+                type="button"
                 onClick={() => setOpenDropdown(openDropdown === 'blog' ? null : 'blog')}
                 className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
               >
-                Blog <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'blog' ? 'rotate-180' : ''}`} />
+                Blog{' '}
+                <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'blog' ? 'rotate-180' : ''}`} />
               </button>
               {openDropdown === 'blog' && (
                 <div className="bg-gray-50 pl-4">
-                  <a href="/#blog-single" className="block py-2 text-gray-600 hover:text-emerald-600">Blog Single</a>
-                  <a href="/#blog-sidebar" className="block py-2 text-gray-600 hover:text-emerald-600">Blog Sidebar</a>
+                  <a href="/#blog-single" className="block py-2 text-gray-600 hover:text-emerald-600">
+                    Blog Single
+                  </a>
+                  <a href="/#blog-sidebar" className="block py-2 text-gray-600 hover:text-emerald-600">
+                    Blog Sidebar
+                  </a>
                 </div>
               )}
 
-              <a href="/#contact" className="block py-2 text-gray-700 hover:text-emerald-600">Contact</a>
+              <a href="/#contact" className="block py-2 text-gray-700 hover:text-emerald-600">
+                Contact
+              </a>
               {user ? (
                 <div className="flex flex-col gap-2 pt-2">
                   <button

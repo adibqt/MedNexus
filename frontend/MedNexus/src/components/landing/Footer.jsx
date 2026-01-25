@@ -76,15 +76,12 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div
-                style={{ width: '45px', height: '45px', backgroundColor: '#10b981', borderRadius: '8px' }}
-                className="flex items-center justify-center"
-              >
-                <Heart className="w-6 h-6 text-white" />
-              </div>
-              <span style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>MedNexus</span>
-            </div>
+                <div className="flex items-center gap-2 mb-6">
+                  <div style={{ width: '45px', height: '45px', backgroundColor: '#10b981', borderRadius: '8px' }} className="flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-white" />
+                  </div>
+                  <span style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>MedNexus</span>
+                </div>
             <p style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '15px' }}>
               Your trusted healthcare partner providing world-class medical services.
             </p>

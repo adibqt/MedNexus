@@ -1,11 +1,8 @@
 const Services = () => {
   const services = [
-    { icon: '🧪', title: 'Laboratory services', description: 'Professional laboratory testing services.' },
-    { icon: '❤️', title: 'Heart Disease', description: 'Specialized cardiac care and treatment.' },
-    { icon: '🦷', title: 'Dental Care', description: 'Complete dental services and treatments.' },
-    { icon: '🏥', title: 'Body Surgery', description: 'Advanced surgical procedures available.' },
-    { icon: '🧠', title: 'Neurology Surgery', description: 'Expert neurological care services.' },
-    { icon: '💊', title: 'Medications', description: 'Prescription and OTC medications.' },
+    { icon: '🧑‍⚕️', title: 'Online Appointment', description: 'Get all time support for emergency. We have introduced the principle of family medicine.' },
+    { icon: '⏰', title: 'Working Hours', description: 'Sun - Wed: 8:00 - 17:00\nThu - Fri: 9:00 - 17:00\nSat - Sun: 10:00 - 17:00' },
+    { icon: '🎧', title: 'Emergency Cases', description: 'Get all time support for emergency. We have introduced the principle of family medicine.' },
   ];
 
   return (
@@ -42,7 +39,7 @@ const Services = () => {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <div style={{ fontSize: '40px', marginBottom: '20px' }}>{service.icon}</div>
+              <div style={{ fontSize: '40px', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>{service.icon}</div>
               <h4 style={{ fontSize: '20px', fontWeight: '700', color: '#222', marginBottom: '15px' }}>
                 {service.title}
               </h4>

@@ -27,6 +27,8 @@ import DoctorEditProfile from './pages/doctor/DoctorEditProfile.jsx';
 import DoctorAppointments from './pages/doctor/DoctorAppointments.jsx';
 import About from './pages/About.jsx';
 import ServicesPage from './pages/Services.jsx';
+import Departments from './pages/Departments.jsx';
+import DepartmentSingle from './pages/DepartmentSingle.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -127,6 +129,8 @@ function AppRoutes() {
   <Route path="/auth" element={<Auth />} />
       <Route path="/about" element={<About />} />
       <Route path="/services" element={<ServicesPage />} />
+      <Route path="/departments" element={<Departments />} />
+      <Route path="/departments/:id" element={<DepartmentSingle />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
