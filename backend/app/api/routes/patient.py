@@ -16,6 +16,8 @@ from app.schemas import (
     PatientSignUp,
     PatientSignIn,
     Token,
+    TokenWithRefresh,
+    RefreshTokenRequest,
     ProfileComplete,
     ProfileUpdate,
     PatientResponse,
@@ -35,6 +37,9 @@ from app.services import (
     verify_password,
     get_password_hash,
     create_access_token,
+    create_refresh_token,
+    validate_refresh_token,
+    revoke_refresh_token,
     get_current_patient,
     ai_service,
 )
@@ -53,7 +58,7 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 # ============ Authentication Routes ============
 
-@router.post("/signup", response_model=Token, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
     # Check if email already exists
@@ -96,14 +101,18 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     
-    return Token(
+    # Create refresh token
+    refresh_token = create_refresh_token(new_patient.id, "patient", db)
+    
+    return TokenWithRefresh(
         access_token=access_token,
+        refresh_token=refresh_token,
         token_type="bearer",
         user=PatientResponse.model_validate(new_patient)
     )
 
 
-@router.post("/signin", response_model=Token)
+@router.post("/signin", response_model=TokenWithRefresh)
 async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     """Sign in a patient"""
     # Find patient by email
@@ -137,8 +146,46 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     
-    return Token(
+    # Create refresh token
+    refresh_token = create_refresh_token(patient.id, "patient", db)
+    
+    return TokenWithRefresh(
         access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        user=PatientResponse.model_validate(patient)
+    )
+
+
+@router.post("/refresh", response_model=TokenWithRefresh)
+async def refresh_access_token(
+    request: RefreshTokenRequest,
+    db: Session = Depends(get_db)
+):
+    """Refresh access token using refresh token"""
+    # Validate refresh token
+    refresh_token_obj = validate_refresh_token(request.refresh_token, db)
+    if not refresh_token_obj:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token"
+        )
+    
+    # Get patient
+    patient = db.query(Patient).filter(Patient.id == refresh_token_obj.user_id).first()
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient not found"
+        )
+    
+    # Create new access token
+    access_token = create_access_token(data={"sub": patient.email, "type": "patient"})
+    
+    # Return same refresh token
+    return TokenWithRefresh(
+        access_token=access_token,
+        refresh_token=request.refresh_token,
         token_type="bearer",
         user=PatientResponse.model_validate(patient)
     )

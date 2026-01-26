@@ -34,6 +34,7 @@ const DoctorSignIn = () => {
         }),
       });
       localStorage.setItem('doctor_access_token', data.access_token);
+      localStorage.setItem('doctor_refresh_token', data.refresh_token);
       localStorage.setItem('doctor_user', JSON.stringify(data.user));
       localStorage.setItem('doctor_id', data.user.id);
       localStorage.setItem('doctor_name', data.user.name);

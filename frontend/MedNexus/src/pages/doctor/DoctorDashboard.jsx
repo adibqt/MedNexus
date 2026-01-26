@@ -130,6 +130,7 @@ const DoctorDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('doctor_access_token');
+    localStorage.removeItem('doctor_refresh_token');
     localStorage.removeItem('doctor_user');
     navigate('/sign-in/doctor', { replace: true });
   };

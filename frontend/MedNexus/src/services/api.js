@@ -3,6 +3,8 @@ const API_BASE_URL = 'http://localhost:8000';
 class ApiService {
   constructor() {
     this.baseUrl = API_BASE_URL;
+    this.isRefreshing = false;
+    this.refreshSubscribers = [];
   }
 
   getAuthHeaders(isDoctor = false) {
@@ -15,6 +17,49 @@ class ApiService {
       console.log('No token found in localStorage');
     }
     return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  async refreshAccessToken(isDoctor = false) {
+    const refreshToken = isDoctor 
+      ? localStorage.getItem('doctor_refresh_token')
+      : localStorage.getItem('refresh_token');
+    
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const endpoint = isDoctor ? '/api/doctors/refresh' : '/api/patients/refresh';
+    
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!response.ok) {
+      // Refresh token invalid, user needs to login again
+      if (isDoctor) {
+        localStorage.removeItem('doctor_access_token');
+        localStorage.removeItem('doctor_refresh_token');
+      } else {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
+      throw new Error('Session expired. Please login again.');
+    }
+
+    const data = await response.json();
+    
+    // Update tokens
+    if (isDoctor) {
+      localStorage.setItem('doctor_access_token', data.access_token);
+    } else {
+      localStorage.setItem('access_token', data.access_token);
+    }
+    
+    return data.access_token;
   }
 
   async request(endpoint, options = {}) {
@@ -38,6 +83,44 @@ class ApiService {
       ...options,
       headers,
     });
+
+    // Handle 401 - token expired, try to refresh
+    if (response.status === 401 && !endpoint.includes('/refresh')) {
+      try {
+        // Refresh the token
+        await this.refreshAccessToken(isDoctor);
+        
+        // Retry the original request with new token
+        const newHeaders = {
+          ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+          ...this.getAuthHeaders(isDoctor),
+          ...options.headers,
+        };
+        
+        const retryResponse = await fetch(url, {
+          ...options,
+          headers: newHeaders,
+        });
+        
+        const retryData = await retryResponse.json();
+        
+        if (!retryResponse.ok) {
+          console.error('API Error after retry:', {
+            status: retryResponse.status,
+            statusText: retryResponse.statusText,
+            detail: retryData.detail,
+          });
+          throw new Error(retryData.detail || 'An error occurred');
+        }
+        
+        return retryData;
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        // Redirect to login
+        window.location.href = '/';
+        throw new Error('Session expired. Please login again.');
+      }
+    }
 
     const data = await response.json();
 

@@ -6,11 +6,14 @@ from datetime import timedelta
 
 from app.db import get_db
 from app.models import Doctor
-from app.schemas import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken
+from app.schemas import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken, TokenWithRefresh, RefreshTokenRequest
 from app.services import (
     get_password_hash,
     verify_password,
     create_access_token,
+    create_refresh_token,
+    validate_refresh_token,
+    revoke_refresh_token,
     get_current_doctor,
 )
 from app.core.config import settings
@@ -138,10 +141,55 @@ async def doctor_signin(credentials: DoctorSignIn, db: Session = Depends(get_db)
         },
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
+    
+    refresh_token = create_refresh_token(doctor.id, "doctor", db)
 
-    return DoctorToken(
+    return TokenWithRefresh(
         access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
         user=DoctorResponse.model_validate(doctor),
+    )
+
+
+@router.post("/refresh", response_model=TokenWithRefresh)
+async def refresh_access_token(
+    request: RefreshTokenRequest,
+    db: Session = Depends(get_db)
+):
+    """Refresh access token using refresh token"""
+    # Validate refresh token
+    refresh_token_obj = validate_refresh_token(request.refresh_token, db)
+    if not refresh_token_obj:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token"
+        )
+    
+    # Get doctor
+    doctor = db.query(Doctor).filter(Doctor.id == refresh_token_obj.user_id).first()
+    if not doctor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Doctor not found"
+        )
+    
+    # Create new access token
+    access_token = create_access_token(
+        data={
+            "sub": str(doctor.id),
+            "email": None,
+            "role": "doctor",
+        },
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    
+    # Return same refresh token
+    return TokenWithRefresh(
+        access_token=access_token,
+        refresh_token=request.refresh_token,
+        token_type="bearer",
+        user=DoctorResponse.model_validate(doctor)
     )
 
 
