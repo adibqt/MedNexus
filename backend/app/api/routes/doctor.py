@@ -163,6 +163,28 @@ async def list_public_doctors(db: Session = Depends(get_db)):
     return [DoctorResponse.model_validate(d) for d in docs]
 
 
+@router.get("/{doctor_id}", response_model=DoctorResponse)
+async def get_doctor_by_id(doctor_id: int, db: Session = Depends(get_db)):
+    """Get a single doctor's public profile by ID."""
+    doctor = (
+        db.query(Doctor)
+        .filter(
+            Doctor.id == doctor_id,
+            Doctor.is_approved == True,
+            Doctor.is_active == True,
+        )
+        .first()
+    )
+    
+    if not doctor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Doctor not found or not available",
+        )
+    
+    return DoctorResponse.model_validate(doctor)
+
+
 @router.put("/schedule", response_model=DoctorResponse)
 async def update_schedule(
     schedule: dict,

@@ -1,137 +1,404 @@
-import { useState, useEffect } from 'react';
-import { Menu, X, Heart } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Heart, ChevronDown, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { name: 'Services', href: '#services' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Doctors', href: '#doctors' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Contact', href: '#contact' },
-  ];
+  const { user, logout } = useAuth();
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <motion.a
-            href="#"
-            className="flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className={`text-2xl font-bold ${scrolled ? 'text-gray-900' : 'text-white'}`}>
-              Med<span className="text-emerald-500">Nexus</span>
-            </span>
-          </motion.a>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                style={{ color: scrolled ? '#10b981' : '#10b981' }}
-                className="text-sm font-medium transition-colors hover:opacity-80"
-                whileHover={{ y: -2 }}
+    <header>
+      {/* Navigation Bar */}
+      <nav
+        style={{ borderBottom: "1px solid #e9ecef", backgroundColor: "#fff" }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="py-4 flex items-center justify-between">
+            {/* Logo */}
+            <a href="/" className="flex items-center gap-3 z-50">
+              <div
+                style={{
+                  width: "55px",
+                  height: "55px",
+                  backgroundColor: "#10b981",
+                  borderRadius: "8px",
+                }}
+                className="flex items-center justify-center shadow-lg"
               >
-                {link.name}
-              </motion.a>
-            ))}
-          </div>
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold text-gray-900">
+                Med<span style={{ color: "#10b981" }}>Nexus</span>
+              </span>
+            </a>
 
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05,boxShadow: '0 10px 40px rgba(175, 235, 215, 0.3)' }}
-              whileTap={{ scale: 0.95 }}
-              style={{ color: '#10b981' }}
-              className="px-5 py-2.5 text-sm font-medium transition-colors"
-              onClick={() => navigate('/sign-in')}
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-gray-700 hover:text-emerald-600"
             >
-              Sign In
-            </motion.button>
-            
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={
+                    isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
+                  }
+                />
+              </svg>
+            </button>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-8">
+              <a
+                href="/"
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
+                Home
+              </a>
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/about");
+                }}
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
+                About
+              </a>
+              <a
+                href="/services"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/services");
+                }}
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
+                Services
+              </a>
+
+              {/* Department Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown("dept")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  type="button"
+                  style={{ color: "#222" }}
+                  className="font-medium hover:text-emerald-600 flex items-center gap-1"
+                >
+                  Department <ChevronDown className="w-4 h-4" />
+                </button>
+                {openDropdown === "dept" && (
+                  <div className="absolute left-0 top-full mt-0 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/departments");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Departments
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/departments/1");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Department Single
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Doctors Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setOpenDropdown("docs")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  type="button"
+                  style={{ color: "#222" }}
+                  className="font-medium hover:text-emerald-600 flex items-center gap-1"
+                >
+                  Doctors <ChevronDown className="w-4 h-4" />
+                </button>
+                {openDropdown === "docs" && (
+                  <div className="absolute left-0 top-full mt-0 w-52 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-100">
+                    <div className="h-1 w-full bg-emerald-500" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/doctors");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctors
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/doctors/1");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Doctor Single
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/appointments");
+                        setOpenDropdown(null);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                    >
+                      Appointments
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <a
+                href="/#contact"
+                style={{ color: "#222" }}
+                className="font-medium hover:text-emerald-600"
+              >
+                Contact
+              </a>
+
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <button
+                    style={{ backgroundColor: "#10b981", color: "#fff" }}
+                    className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                    onClick={() => navigate("/patient/dashboard")}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    style={{ color: "#10b981", border: "2px solid #10b981" }}
+                    className="px-6 py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center gap-2"
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  style={{
+                    backgroundColor: "#10b981",
+                    color: "#fff",
+                    borderRadius: "9999px",
+                  }}
+                  className="px-5 py-2 rounded-full font-medium hover:opacity-90"
+                  onClick={() => navigate("/sign-in")}
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2 rounded-lg ${
-              scrolled ? 'text-gray-700' : 'text-white'
-            }`}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </motion.button>
-        </div>
-      </div>
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden pb-4 border-t border-gray-200">
+              <a
+                href="/"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+              >
+                Home
+              </a>
+              <a
+                href="/about"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/about");
+                  setIsOpen(false);
+                }}
+              >
+                About
+              </a>
+              <a
+                href="/services"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/services");
+                  setIsOpen(false);
+                }}
+              >
+                Services
+              </a>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t"
-          >
-            <div className="px-4 py-6 space-y-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="block text-gray-600 hover:text-emerald-600 font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <div className="pt-4 space-y-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setOpenDropdown(
+                    openDropdown === "department" ? null : "department",
+                  )
+                }
+                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
+              >
+                Department{" "}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${openDropdown === "department" ? "rotate-180" : ""}`}
+                />
+              </button>
+              {openDropdown === "department" && (
+                <div className="bg-gray-50 pl-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/departments");
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Departments
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/departments/1");
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Department Single
+                  </button>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() =>
+                  setOpenDropdown(openDropdown === "doctors" ? null : "doctors")
+                }
+                className="w-full text-left py-2 text-gray-700 hover:text-emerald-600 flex items-center justify-between"
+              >
+                Doctors{" "}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${openDropdown === "doctors" ? "rotate-180" : ""}`}
+                />
+              </button>
+              {openDropdown === "doctors" && (
+                <div className="bg-gray-50 pl-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/doctors");
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Doctors
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/doctors/1");
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Doctor Single
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/appointments");
+                      setIsOpen(false);
+                      setOpenDropdown(null);
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-emerald-600"
+                  >
+                    Appointments
+                  </button>
+                </div>
+              )}
+
+              <a
+                href="/#contact"
+                className="block py-2 text-gray-700 hover:text-emerald-600"
+              >
+                Contact
+              </a>
+              {user ? (
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    style={{ backgroundColor: "#10b981", color: "#fff" }}
+                    className="w-full py-2 rounded-full font-medium hover:opacity-90"
+                    onClick={() => {
+                      navigate("/patient/dashboard");
+                      setIsOpen(false);
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    style={{ color: "#10b981", border: "2px solid #10b981" }}
+                    className="w-full py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                      setIsOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
                 <button
-                  className="w-full py-3 text-gray-700 font-medium rounded-full border border-gray-200 hover:border-emerald-500 transition-colors"
+                  style={{
+                    backgroundColor: "#10b981",
+                    color: "#fff",
+                    borderRadius: "9999px",
+                  }}
+                  className="w-full mt-4 px-5 py-2 rounded-full font-medium hover:opacity-90"
                   onClick={() => {
+                    navigate("/sign-in");
                     setIsOpen(false);
-                    navigate('/sign-in');
                   }}
                 >
                   Sign In
                 </button>
-                <button className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-full">
-                  Get Started
-                </button>
-              </div>
+              )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+          )}
+        </div>
+      </nav>
+    </header>
   );
 };
 

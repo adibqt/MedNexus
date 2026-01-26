@@ -2,35 +2,47 @@ import {
   Navbar,
   Hero,
   Services,
+  AppointmentForm,
   HowItWorks,
-  Doctors,
   Testimonials,
+  Partners,
   CTA,
   Footer,
-} from './components/landing';
+  Doctors as LandingDoctors,
+} from "./components/landing";
 
-import { Routes, Route, Navigate } from 'react-router-dom';
-import SignIn from './pages/SignIn.jsx';
-import PatientSignUp from './pages/patient/PatientSignUp.jsx';
-import PatientSignIn from './pages/patient/PatientSignIn.jsx';
-import ProfileCompletion from './pages/patient/ProfileCompletion.jsx';
-import PatientDashboard from './pages/patient/PatientDashboard.jsx';
-import EditProfile from './pages/patient/EditProfile.jsx';
-import BookAppointment from './pages/patient/BookAppointment.jsx';
-import AIConsultationPage from './pages/patient/AIConsultationPage.jsx';
-import DoctorSignUp from './pages/doctor/DoctorSignUp.jsx';
-import DoctorSignIn from './pages/doctor/DoctorSignIn.jsx';
-import DoctorSchedule from './pages/doctor/DoctorSchedule.jsx';
-import DoctorDashboard from './pages/doctor/DoctorDashboard.jsx';
-import DoctorEditProfile from './pages/doctor/DoctorEditProfile.jsx';
-import DoctorAppointments from './pages/doctor/DoctorAppointments.jsx';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext.jsx';
-import { VideoCallProvider } from './context/VideoCallContext';
-import AdminLogin from './pages/admin/AdminLogin.jsx';
-import AdminDashboard from './pages/admin/AdminDashboard.jsx';
+import { Routes, Route, Navigate } from "react-router-dom";
+import SignIn from "./pages/SignIn.jsx";
+import Auth from "./pages/Auth.jsx";
+import PatientSignUp from "./pages/patient/PatientSignUp.jsx";
+import PatientSignIn from "./pages/patient/PatientSignIn.jsx";
+import ProfileCompletion from "./pages/patient/ProfileCompletion.jsx";
+import PatientDashboard from "./pages/patient/PatientDashboard.jsx";
+import EditProfile from "./pages/patient/EditProfile.jsx";
+import BookAppointment from "./pages/patient/BookAppointment.jsx";
+import Doctors from "./pages/Doctors.jsx";
+import DoctorSingle from "./pages/DoctorSingle.jsx";
+import Appointments from "./pages/Appointments.jsx";
+import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
+import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
+import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
+import DoctorDashboard from "./pages/doctor/DoctorDashboard.jsx";
+import DoctorEditProfile from "./pages/doctor/DoctorEditProfile.jsx";
+import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
+import About from "./pages/About.jsx";
+import ServicesPage from "./pages/Services.jsx";
+import Departments from "./pages/Departments.jsx";
+import DepartmentSingle from "./pages/DepartmentSingle.jsx";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import {
+  AdminAuthProvider,
+  useAdminAuth,
+} from "./context/AdminAuthContext.jsx";
+import { VideoCallProvider } from "./context/VideoCallContext";
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
-import './pages/Landing.css';
+import "./pages/Landing.css";
 
 const Landing = () => (
   <div className="landing-page">
@@ -38,12 +50,13 @@ const Landing = () => (
     <main className="landing-main">
       <Hero />
       <Services />
+      <AppointmentForm />
       <div className="landing-section-spacer" />
       <HowItWorks />
       <div className="landing-section-spacer" />
-      <Doctors />
-      <div className="landing-section-spacer" />
+      <LandingDoctors />
       <Testimonials />
+      <Partners />
       <div className="landing-section-spacer" />
       <CTA />
     </main>
@@ -120,6 +133,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/services" element={<ServicesPage />} />
+      <Route path="/departments" element={<Departments />} />
+      <Route path="/departments/:id" element={<DepartmentSingle />} />
+      <Route path="/doctors" element={<Doctors />} />
+      <Route path="/doctors/:id" element={<DoctorSingle />} />
+      <Route path="/appointments" element={<Appointments />} />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/doctor" element={<DoctorSignUp />} />
       <Route path="/sign-in/doctor" element={<DoctorSignIn />} />
@@ -145,11 +166,11 @@ function AppRoutes() {
           </AdminProtectedRoute>
         }
       />
-      
+
       {/* Patient Auth Routes */}
       <Route path="/sign-up/patient" element={<PatientSignUp />} />
       <Route path="/sign-in/patient" element={<PatientSignIn />} />
-      
+
       {/* Protected Patient Routes */}
       <Route
         path="/patient/complete-profile"
@@ -185,16 +206,6 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/patient/ai-consultation"
-        element={
-          <ProtectedRoute requireProfileComplete>
-            <PatientVideoCallWrapper>
-              <AIConsultationPage />
-            </PatientVideoCallWrapper>
-          </ProtectedRoute>
-        }
-      />
     </Routes>
   );
 }
@@ -203,13 +214,9 @@ function AppRoutes() {
 const PatientVideoCallWrapper = ({ children }) => {
   const { user } = useAuth();
   if (!user) return children;
-  
+
   return (
-    <VideoCallProvider
-      userId={user.id}
-      userType="patient"
-      userName={user.name}
-    >
+    <VideoCallProvider userId={user.id} userType="patient" userName={user.name}>
       {children}
     </VideoCallProvider>
   );
@@ -217,11 +224,11 @@ const PatientVideoCallWrapper = ({ children }) => {
 
 // VideoCall wrapper for doctor routes
 const DoctorVideoCallWrapper = ({ children }) => {
-  const doctorId = localStorage.getItem('doctor_id');
-  const doctorName = localStorage.getItem('doctor_name');
-  
+  const doctorId = localStorage.getItem("doctor_id");
+  const doctorName = localStorage.getItem("doctor_name");
+
   if (!doctorId) return children;
-  
+
   return (
     <VideoCallProvider
       userId={parseInt(doctorId)}
