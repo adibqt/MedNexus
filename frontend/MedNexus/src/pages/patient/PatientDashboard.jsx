@@ -202,6 +202,7 @@ const PatientDashboard = () => {
 
     // Skip carousel for users who prefer reduced motion
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
     const el = doctorsCarouselRef.current;
     if (!el) return;
 
@@ -425,7 +426,7 @@ const PatientDashboard = () => {
         <div className="patient-dashboard-header-inner">
           {/* Logo & greeting */}
           <div className="patient-dashboard-header-left">
-            <div className="patient-dashboard-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+            <div className="patient-dashboard-logo">
               <div className="patient-dashboard-logo-icon">
                 <Heart />
               </div>
@@ -732,15 +733,11 @@ const PatientDashboard = () => {
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    navigate('/');
-                    setTimeout(() => {
-                      const appointmentSection = document.getElementById('appointment');
-                      if (appointmentSection) {
-                        appointmentSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }, 100);
-                  }}
+                  onClick={() =>
+                    document
+                      .querySelector('.patient-dashboard-doctors-body')
+                      ?.scrollIntoView({ behavior: 'smooth' })
+                  }
                   className="patient-dashboard-appointment-empty-cta"
                 >
                   Book an Appointment

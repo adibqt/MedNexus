@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import apiService from '../../services/api';
 
@@ -357,7 +358,20 @@ const AppointmentForm = () => {
                 )}
 
                 {success && (
-                  <div style={{ color: '#059669', fontSize: '13px', fontWeight: '600', padding: '10px', backgroundColor: '#d1fae5', borderRadius: '8px' }}>✓ Appointment booked successfully! Redirecting to dashboard...</div>
+                  <div style={{ 
+                    color: '#059669', 
+                    fontSize: '13px', 
+                    fontWeight: '600', 
+                    padding: '12px 16px', 
+                    backgroundColor: '#d1fae5', 
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <CheckCircle size={18} strokeWidth={2.5} />
+                    <span>Appointment booked successfully! Redirecting to dashboard...</span>
+                  </div>
                 )}
 
                 {/* Submit Button */}

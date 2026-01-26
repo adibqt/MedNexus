@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Building2, Clock, Phone, Users, Award, Globe, Stethoscope } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -136,7 +137,19 @@ const Hero = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              <div style={{ fontSize: "48px", marginBottom: "20px" }}>🏥</div>
+              <div style={{ 
+                width: "72px", 
+                height: "72px", 
+                margin: "0 auto 20px",
+                backgroundColor: "#10b981",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)"
+              }}>
+                <Building2 size={40} color="#fff" strokeWidth={2} />
+              </div>
               <span
                 style={{
                   color: "#10b981",
@@ -192,7 +205,19 @@ const Hero = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              <div style={{ fontSize: "48px", marginBottom: "20px" }}>⏰</div>
+              <div style={{ 
+                width: "72px", 
+                height: "72px", 
+                margin: "0 auto 20px",
+                backgroundColor: "#10b981",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)"
+              }}>
+                <Clock size={40} color="#fff" strokeWidth={2} />
+              </div>
               <span
                 style={{
                   color: "#10b981",
@@ -248,7 +273,19 @@ const Hero = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              <div style={{ fontSize: "48px", marginBottom: "20px" }}>📞</div>
+              <div style={{ 
+                width: "72px", 
+                height: "72px", 
+                margin: "0 auto 20px",
+                backgroundColor: "#10b981",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)"
+              }}>
+                <Phone size={40} color="#fff" strokeWidth={2} />
+              </div>
               <span
                 style={{
                   color: "#10b981",
@@ -400,7 +437,18 @@ const Hero = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div style={{ fontSize: "48px", marginBottom: "10px" }}>👨‍⚕️</div>
+              <div style={{ 
+                width: "64px", 
+                height: "64px", 
+                margin: "0 auto 10px",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Users size={36} color="#fff" strokeWidth={2} />
+              </div>
               <div
                 style={{ fontSize: "36px", fontWeight: "700", color: "#fff" }}
               >
@@ -411,7 +459,18 @@ const Hero = () => {
               </p>
             </div>
             <div>
-              <div style={{ fontSize: "48px", marginBottom: "10px" }}>🏥</div>
+              <div style={{ 
+                width: "64px", 
+                height: "64px", 
+                margin: "0 auto 10px",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Stethoscope size={36} color="#fff" strokeWidth={2} />
+              </div>
               <div
                 style={{ fontSize: "36px", fontWeight: "700", color: "#fff" }}
               >
@@ -422,7 +481,18 @@ const Hero = () => {
               </p>
             </div>
             <div>
-              <div style={{ fontSize: "48px", marginBottom: "10px" }}>⭐</div>
+              <div style={{ 
+                width: "64px", 
+                height: "64px", 
+                margin: "0 auto 10px",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Award size={36} color="#fff" strokeWidth={2} />
+              </div>
               <div
                 style={{ fontSize: "36px", fontWeight: "700", color: "#fff" }}
               >
@@ -433,7 +503,18 @@ const Hero = () => {
               </p>
             </div>
             <div>
-              <div style={{ fontSize: "48px", marginBottom: "10px" }}>🌍</div>
+              <div style={{ 
+                width: "64px", 
+                height: "64px", 
+                margin: "0 auto 10px",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Globe size={36} color="#fff" strokeWidth={2} />
+              </div>
               <div
                 style={{ fontSize: "36px", fontWeight: "700", color: "#fff" }}
               >

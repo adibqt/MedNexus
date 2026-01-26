@@ -190,18 +190,53 @@ const Navbar = () => {
               {user ? (
                 <div className="flex items-center gap-3">
                   <button
-                    style={{ backgroundColor: "#10b981", color: "#fff" }}
-                    className="px-6 py-2 rounded-full font-medium hover:opacity-90"
+                    style={{ 
+                      backgroundColor: "#10b981", 
+                      color: "#fff",
+                      padding: "10px 24px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      border: "none",
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 2px 8px rgba(16, 185, 129, 0.2)"
+                    }}
+                    className="hover:opacity-90 hover:shadow-lg"
                     onClick={() => navigate("/patient/dashboard")}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(16, 185, 129, 0.2)";
+                    }}
                   >
                     Dashboard
                   </button>
                   <button
-                    style={{ color: "#10b981", border: "2px solid #10b981" }}
-                    className="px-6 py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center gap-2"
+                    style={{ 
+                      color: "#ef4444",
+                      backgroundColor: "#fef2f2",
+                      padding: "10px 24px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      border: "none",
+                      transition: "all 0.2s ease"
+                    }}
+                    className="flex items-center gap-2"
                     onClick={() => {
                       logout();
                       navigate("/");
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fee2e2";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fef2f2";
+                      e.currentTarget.style.transform = "translateY(0)";
                     }}
                   >
                     <LogOut className="w-4 h-4" />
@@ -356,8 +391,17 @@ const Navbar = () => {
               {user ? (
                 <div className="flex flex-col gap-2 pt-2">
                   <button
-                    style={{ backgroundColor: "#10b981", color: "#fff" }}
-                    className="w-full py-2 rounded-full font-medium hover:opacity-90"
+                    style={{ 
+                      backgroundColor: "#10b981", 
+                      color: "#fff",
+                      padding: "10px 24px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      border: "none",
+                      width: "100%"
+                    }}
+                    className="hover:opacity-90"
                     onClick={() => {
                       navigate("/patient/dashboard");
                       setIsOpen(false);
@@ -366,8 +410,17 @@ const Navbar = () => {
                     Dashboard
                   </button>
                   <button
-                    style={{ color: "#10b981", border: "2px solid #10b981" }}
-                    className="w-full py-2 rounded-full font-medium hover:bg-emerald-50 flex items-center justify-center gap-2"
+                    style={{ 
+                      color: "#ef4444",
+                      backgroundColor: "#fef2f2",
+                      padding: "10px 24px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      border: "none",
+                      width: "100%"
+                    }}
+                    className="flex items-center justify-center gap-2"
                     onClick={() => {
                       logout();
                       navigate("/");

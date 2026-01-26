@@ -5,7 +5,6 @@ import {
   AppointmentForm,
   HowItWorks,
   Testimonials,
-  Partners,
   CTA,
   Footer,
   Doctors as LandingDoctors,
@@ -20,6 +19,7 @@ import ProfileCompletion from "./pages/patient/ProfileCompletion.jsx";
 import PatientDashboard from "./pages/patient/PatientDashboard.jsx";
 import EditProfile from "./pages/patient/EditProfile.jsx";
 import BookAppointment from "./pages/patient/BookAppointment.jsx";
+import AIConsultationPage from "./pages/patient/AIConsultationPage.jsx";
 import Doctors from "./pages/Doctors.jsx";
 import DoctorSingle from "./pages/DoctorSingle.jsx";
 import Appointments from "./pages/Appointments.jsx";
@@ -56,7 +56,6 @@ const Landing = () => (
       <div className="landing-section-spacer" />
       <LandingDoctors />
       <Testimonials />
-      <Partners />
       <div className="landing-section-spacer" />
       <CTA />
     </main>
@@ -203,6 +202,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <BookAppointment />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patient/ai-consultation"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <AIConsultationPage />
           </ProtectedRoute>
         }
       />
