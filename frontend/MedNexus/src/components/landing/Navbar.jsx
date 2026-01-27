@@ -18,7 +18,12 @@ const Navbar = () => {
         <div className="container mx-auto px-4">
           <div className="py-4 flex items-center justify-between">
             {/* Logo */}
-            <a href="/" className="flex items-center gap-3 z-50">
+            <button
+              type="button"
+              className="flex items-center gap-3 z-50 cursor-pointer"
+              style={{ background: "none", border: "none", padding: 0 }}
+              onClick={() => navigate("/")}
+            >
               <div
                 style={{
                   width: "55px",
@@ -33,7 +38,7 @@ const Navbar = () => {
               <span className="text-3xl font-bold text-gray-900">
                 Med<span style={{ color: "#10b981" }}>Nexus</span>
               </span>
-            </a>
+            </button>
 
             {/* Mobile Toggle */}
             <button

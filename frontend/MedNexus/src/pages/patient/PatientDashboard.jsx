@@ -426,14 +426,19 @@ const PatientDashboard = () => {
         <div className="patient-dashboard-header-inner">
           {/* Logo & greeting */}
           <div className="patient-dashboard-header-left">
-            <div className="patient-dashboard-logo">
+            <button
+              type="button"
+              className="patient-dashboard-logo"
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+              onClick={() => navigate("/")}
+            >
               <div className="patient-dashboard-logo-icon">
                 <Heart />
               </div>
               <span className="patient-dashboard-logo-text">
                 Med<span>Nexus</span>
               </span>
-            </div>
+            </button>
             <div className="patient-dashboard-greeting">
               <p className="patient-dashboard-greeting-line1">{greeting},</p>
               <h1 className="patient-dashboard-greeting-line2">
