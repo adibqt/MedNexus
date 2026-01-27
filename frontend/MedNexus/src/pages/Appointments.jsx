@@ -89,6 +89,44 @@ const Appointments = () => {
       </section>
 
       {/* Appointment Section */}
+      {/* Custom calendar styles for green theme */}
+      <style>{`
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(41%) sepia(98%) saturate(469%) hue-rotate(110deg) brightness(92%) contrast(92%);
+        }
+        input[type="date"]:focus {
+          border-color: #10b981;
+          box-shadow: 0 0 0 2px #10b98133;
+        }
+        input[type="date"]::-webkit-input-placeholder { color: #10b981; }
+        input[type="date"]::-moz-placeholder { color: #10b981; }
+        input[type="date"]:-ms-input-placeholder { color: #10b981; }
+        input[type="date"]::placeholder { color: #10b981; }
+        /* Chrome/Edge/Opera calendar popup */
+        ::-webkit-calendar-picker-indicator { color: #10b981; }
+        /* Date picker highlight for Chrome */
+        ::-webkit-datetime-edit-text { color: #222; }
+        ::-webkit-datetime-edit-month-field:focus,
+        ::-webkit-datetime-edit-day-field:focus,
+        ::-webkit-datetime-edit-year-field:focus {
+          background: #10b98122;
+          color: #10b981;
+        }
+        /* Firefox calendar popup */
+        .react-datepicker__day--selected,
+        .react-datepicker__day--keyboard-selected {
+          background-color: #10b981 !important;
+          color: #fff !important;
+        }
+        /* General calendar improvements */
+        input[type="date"] {
+          border-radius: 8px;
+          border: 1.5px solid #e9ecef;
+          padding: 12px 16px;
+          font-size: 1.1rem;
+          transition: border 0.2s, box-shadow 0.2s;
+        }
+      `}</style>
       <section className="appoinment section">
         <div className="container">
           <div className="row">
@@ -169,7 +207,7 @@ const Appointments = () => {
                     </div>
 
                     <div className="col-lg-6">
-                      <div className="form-group">
+                      <div className="form-group" style={{ position: 'relative' }}>
                         <input
                           name="time"
                           type="time"
@@ -177,7 +215,45 @@ const Appointments = () => {
                           value={formData.time}
                           onChange={handleChange}
                           required
+                          disabled={!formData.date}
+                          style={{
+                            position: 'relative',
+                            zIndex: 2,
+                            background: 'transparent',
+                            color: !formData.time ? 'rgba(0,0,0,0.15)' : undefined,
+                            caretColor: '#222',
+                            opacity: !formData.date ? 0 : 1,
+                          }}
                         />
+                        { (!formData.date) ? (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              left: '16px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              color: '#888',
+                              pointerEvents: 'none',
+                              zIndex: 1,
+                            }}
+                          >
+                            Select Date First
+                          </span>
+                        ) : (!formData.time && formData.date) ? (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              left: '16px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              color: '#888',
+                              pointerEvents: 'none',
+                              zIndex: 1,
+                            }}
+                          >
+                            Select Time
+                          </span>
+                        ) : null }
                       </div>
                     </div>
 
