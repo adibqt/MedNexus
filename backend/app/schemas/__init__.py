@@ -10,6 +10,7 @@ from app.schemas.patient import (
 )
 from app.schemas.doctor import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken
 from app.schemas.appointment import AppointmentOut
+from app.schemas.refresh_token import TokenWithRefresh, RefreshTokenRequest
 from app.schemas.ai_doctor import (
     AIConsultationRequest,
     AIConsultationResponse,

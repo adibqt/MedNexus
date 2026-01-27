@@ -1,159 +1,258 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const testimonials = [
     {
-      name: 'Amanda Richards',
-      role: 'Marketing Executive',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-      rating: 5,
-      text: "MedNexus completely changed how I approach healthcare. I was able to consult with a specialist within minutes when I had concerns about my symptoms. The video quality was excellent, and the doctor was incredibly thorough.",
+      name: "John Partho",
+      role: "Patient",
+      image: "/novena/images/team/1.jpg",
+      text: "Fast response and clear guidance during my video visit. Booking and follow-up were effortless.",
     },
     {
-      name: 'Robert Martinez',
-      role: 'Software Engineer',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      rating: 5,
-      text: "As someone with a busy schedule, MedNexus has been a lifesaver. No more taking half a day off for a doctor's visit. I can get consultations during lunch breaks or after work. The prescription delivery is also incredibly convenient.",
+      name: "Mullar Sarth",
+      role: "Patient",
+      image: "/novena/images/team/2.jpg",
+      text: "Loved the chat follow-up and prescription delivery. Felt cared for from start to finish.",
     },
     {
-      name: 'Sarah Thompson',
-      role: 'Teacher',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      rating: 5,
-      text: "The AI symptom checker was incredibly accurate and helped me understand my condition before my consultation. The doctor confirmed the preliminary diagnosis and prescribed treatment right away. I was feeling better within days!",
+      name: "Dr. Sarah Wilson",
+      role: "Patient",
+      image: "/novena/images/team/3.jpg",
+      text: "Excellent care and professionalism. The doctors and staff are very attentive and compassionate. Highly recommended for anyone seeking quality healthcare.",
     },
     {
-      name: 'David Chen',
-      role: 'Business Owner',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      rating: 5,
-      text: "I was skeptical about telemedicine at first, but MedNexus exceeded all my expectations. The platform is intuitive, the doctors are professional, and the follow-up care is exceptional. Highly recommend to everyone!",
+      name: "Ahmed Hassan",
+      role: "Patient",
+      image: "/novena/images/team/4.jpg",
+      text: "Outstanding service and treatment. The facilities are state-of-the-art and the team is very professional. I felt well cared for throughout my visit.",
+    },
+    {
+      name: "Maria Lopez",
+      role: "Patient",
+      image: "/novena/images/team/test-thumb1.jpg",
+      text: "Best healthcare experience I have had. Very clean, organized, and the staff is incredibly helpful and knowledgeable. Definitely coming back.",
+    },
+    {
+      name: "James Thompson",
+      role: "Patient",
+      image: "/novena/images/team/test-thumb2.jpg",
+      text: "Highly professional team with excellent bedside manner. They took time to explain everything and made me feel comfortable. Great experience overall.",
     },
   ];
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const itemsPerPage = 2;
+  const maxIndex = Math.ceil(testimonials.length / itemsPerPage) - 1;
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev < maxIndex ? prev + 1 : 0));
   };
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : maxIndex));
   };
+
+  const visibleTestimonials = testimonials.slice(
+    currentIndex * itemsPerPage,
+    (currentIndex + 1) * itemsPerPage,
+  );
 
   return (
-    <section id="testimonials" className="py-24 w-full bg-gradient-to-b from-gray-50 to-white overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
-            Testimonials
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            What Our Patients
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">
-              {' '}Say About Us
-            </span>
+    <section
+      id="testimonials"
+      style={{
+        paddingTop: "80px",
+        paddingBottom: "80px",
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      <div className="container mx-auto px-4">
+        <div style={{ textAlign: "center", marginBottom: "60px" }}>
+          <h2
+            style={{
+              fontSize: "36px",
+              fontWeight: "700",
+              color: "#003d82",
+              marginBottom: "20px",
+            }}
+          >
+            We served over 5000+
+            <br />
+            Patients
           </h2>
-          <p className="text-lg text-gray-600">
-            Don't just take our word for it. Here's what real patients have to 
-            say about their MedNexus experience.
+          <div
+            style={{
+              width: "60px",
+              height: "3px",
+              backgroundColor: "#10b981",
+              margin: "20px auto",
+            }}
+          ></div>
+          <p
+            style={{
+              color: "#666",
+              fontSize: "16px",
+              lineHeight: "1.6",
+              maxWidth: "600px",
+              margin: "20px auto",
+            }}
+          >
+            Hear from patients who use MedNexus for video consults, chat
+            follow-ups, and coordinated in-clinic care.
           </p>
-        </motion.div>
-
-        {/* Testimonial Slider */}
-        <div className="relative max-w-4xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl shadow-gray-100 border border-gray-100"
-            >
-              {/* Quote Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-8">
-                <Quote className="w-8 h-8 text-white" />
-              </div>
-
-              {/* Rating */}
-              <div className="flex gap-1 mb-6">
-                {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
-                ))}
-              </div>
-
-              {/* Text */}
-              <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8">
-                "{testimonials[currentIndex].text}"
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-4">
-                <img
-                  src={testimonials[currentIndex].image}
-                  alt={testimonials[currentIndex].name}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
-                <div>
-                  <h4 className="font-bold text-gray-900">
-                    {testimonials[currentIndex].name}
-                  </h4>
-                  <p className="text-gray-500 text-sm">
-                    {testimonials[currentIndex].role}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mt-8">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={prevSlide}
-              className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-600" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={nextSlide}
-              className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg flex items-center justify-center"
-            >
-              <ChevronRight className="w-6 h-6 text-white" />
-            </motion.button>
-          </div>
-
-          {/* Dots */}
-          <div className="flex justify-center gap-2 mt-6">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? 'bg-emerald-500 w-8'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
-        
+        <div style={{ position: "relative" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "40px",
+            }}
+          >
+            {visibleTestimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "40px",
+                  borderRadius: "8px",
+                  border: "2px solid #10b981",
+                  boxShadow: "0 2px 10px rgba(16, 185, 129, 0.05)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <img
+                    src={testimonial.image || "https://via.placeholder.com/60"}
+                    alt={testimonial.name}
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      borderRadius: "50%",
+                      marginRight: "20px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div>
+                    <h4
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        color: "#222",
+                        margin: "0 0 5px 0",
+                      }}
+                    >
+                      {testimonial.name}
+                    </h4>
+                    <p style={{ fontSize: "14px", color: "#999", margin: 0 }}>
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+                <p
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    lineHeight: "1.6",
+                    marginBottom: "15px",
+                  }}
+                >
+                  {testimonial.text}
+                </p>
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ fontSize: "40px", color: "#10b981" }}>❝</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Navigation Buttons */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "20px",
+              marginTop: "40px",
+            }}
+          >
+            <button
+              onClick={handlePrev}
+              style={{
+                backgroundColor: "#10b981",
+                color: "#fff",
+                border: "none",
+                borderRadius: "50%",
+                width: "50px",
+                height: "50px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#0d9488";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#10b981";
+              }}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Dots Indicator */}
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    borderRadius: "50%",
+                    border: "none",
+                    backgroundColor: currentIndex === idx ? "#10b981" : "#ddd",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={handleNext}
+              style={{
+                backgroundColor: "#10b981",
+                color: "#fff",
+                border: "none",
+                borderRadius: "50%",
+                width: "50px",
+                height: "50px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#0d9488";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#10b981";
+              }}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

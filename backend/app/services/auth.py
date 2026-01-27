@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import secrets
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -8,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db import get_db
-from app.models import Patient, Doctor
+from app.models import Patient, Doctor, RefreshToken
 from app.schemas import TokenData
 
 # Password hashing
@@ -20,11 +21,15 @@ security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
+    # Truncate to 72 bytes (bcrypt limit) to match hashing
+    plain_password = plain_password[:72]
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
+    # Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
+    password = password[:72]
     return pwd_context.hash(password)
 
 
@@ -38,6 +43,60 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
+
+def create_refresh_token(user_id: int, user_type: str, db: Session) -> str:
+    """Create a refresh token and store it in the database"""
+    # Generate a secure random token
+    token = secrets.token_urlsafe(32)
+    
+    # Calculate expiration
+    expires_at = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    
+    # Store in database
+    db_token = RefreshToken(
+        token=token,
+        user_id=user_id,
+        user_type=user_type,
+        expires_at=expires_at
+    )
+    db.add(db_token)
+    db.commit()
+    
+    return token
+
+
+def validate_refresh_token(token: str, db: Session) -> Optional[RefreshToken]:
+    """Validate a refresh token and return the token record if valid"""
+    db_token = db.query(RefreshToken).filter(RefreshToken.token == token).first()
+    
+    if not db_token:
+        return None
+    
+    if not db_token.is_valid():
+        return None
+    
+    return db_token
+
+
+def revoke_refresh_token(token: str, db: Session) -> bool:
+    """Revoke a refresh token"""
+    db_token = db.query(RefreshToken).filter(RefreshToken.token == token).first()
+    if db_token:
+        db_token.is_revoked = True
+        db.commit()
+        return True
+    return False
+
+
+def revoke_all_user_tokens(user_id: int, user_type: str, db: Session) -> None:
+    """Revoke all refresh tokens for a user (useful for logout all devices)"""
+    db.query(RefreshToken).filter(
+        RefreshToken.user_id == user_id,
+        RefreshToken.user_type == user_type,
+        RefreshToken.is_revoked == False
+    ).update({"is_revoked": True})
+    db.commit()
 
 
 def decode_token(token: str) -> TokenData:

@@ -1,150 +1,115 @@
-import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import apiService from "../../services/api";
+
+const API_URL = "http://localhost:8000";
+
+const getImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  return `${API_URL}${url}`;
+};
 
 const Doctors = () => {
-  const doctors = [
-    {
-      name: 'Dr. Sarah Johnson',
-      specialty: 'Cardiologist',
-      experience: '15+ years',
-      rating: 4.9,
-      reviews: 234,
-      available: true,
-      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face',
-    },
-    {
-      name: 'Dr. Michael Chen',
-      specialty: 'Neurologist',
-      experience: '12+ years',
-      rating: 4.8,
-      reviews: 189,
-      available: true,
-      image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face',
-    },
-    {
-      name: 'Dr. Emily Parker',
-      specialty: 'Dermatologist',
-      experience: '10+ years',
-      rating: 4.9,
-      reviews: 312,
-      available: false,
-      image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop&crop=face',
-    },
-    {
-      name: 'Dr. James Wilson',
-      specialty: 'General Physician',
-      experience: '20+ years',
-      rating: 4.7,
-      reviews: 456,
-      available: true,
-      image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop&crop=face',
-    },
-  ];
+  const navigate = useNavigate();
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getDoctors();
+      // Only show first 4 doctors on landing page
+      setDoctors(response.slice(0, 4));
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDoctorClick = (doctorId) => {
+    navigate(`/doctors/${doctorId}`);
+  };
+
+  const handleViewAll = () => {
+    navigate("/doctors");
+  };
 
   return (
-    <section id="doctors" className="py-24 w-full bg-white">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
-            Our Doctors
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Meet Our Expert
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">
-              {' '}Medical Team
-            </span>
-          </h2>
-          <p className="text-lg text-gray-600">
-            Our network includes over 200+ board-certified specialists ready to 
-            provide you with world-class medical care.
+    <section id="doctors" className="section-doctors">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12 max-w-3xl mx-auto">
+          <h2 className="doctors-title">Meet Our Expert Doctors</h2>
+          <div className="divider" />
+          <p className="doctors-subtitle">
+            Our network includes board-certified specialists ready to provide
+            you with world-class medical care.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Doctors Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {doctors.map((doctor, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-2xl hover:shadow-emerald-100 transition-all duration-300"
-            >
-              {/* Image */}
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={doctor.image}
-                  alt={doctor.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                {/* Availability Badge */}
-                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
-                  doctor.available 
-                    ? 'bg-emerald-100 text-emerald-700' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
-                  {doctor.available ? '● Available Now' : '○ Busy'}
-                </div>
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                {/* Quick Action */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute bottom-4 left-4 right-4 py-3 bg-white/90 backdrop-blur-sm text-emerald-600 font-semibold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                >
-                  Book Appointment
-                </motion.button>
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-1">
-                  {doctor.name}
-                </h3>
-                <p className="text-emerald-600 font-medium text-sm mb-3">
-                  {doctor.specialty}
-                </p>
-                <p className="text-gray-500 text-sm mb-4">
-                  {doctor.experience} experience
-                </p>
-                {/* Rating */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                    <span className="font-bold text-gray-900">{doctor.rating}</span>
-                    <span className="text-gray-400 text-sm">({doctor.reviews})</span>
+        {loading ? (
+          <div className="text-center py-5">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="doctors-grid">
+            {doctors.map((doctor, index) => (
+              <div
+                key={doctor.id || index}
+                className="doctor-card"
+                onClick={() => handleDoctorClick(doctor.id)}
+              >
+                <div className="doctor-card-inner">
+                  <div className="doctor-profile">
+                    <div className="doctor-img">
+                      <img
+                        src={
+                          getImageUrl(doctor.profile_picture) ||
+                          "/novena/images/team/1.jpg"
+                        }
+                        alt={`Dr. ${doctor.full_name}`}
+                        className="img-fluid"
+                      />
+                    </div>
+                  </div>
+                  <div className="doctor-content">
+                    <h4 className="doctor-name">
+                      <a
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDoctorClick(doctor.id);
+                        }}
+                      >
+                        Dr. {doctor.full_name}
+                      </a>
+                    </h4>
+                    <p className="doctor-specialty">{doctor.specialization}</p>
+                    {doctor.qualifications && (
+                      <p className="doctor-qualification">
+                        {doctor.qualifications}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* View All Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors"
-          >
+        <div className="text-center mt-12">
+          <button className="btn-view-all" onClick={handleViewAll}>
             View All Doctors
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
       </div>
     </section>
   );

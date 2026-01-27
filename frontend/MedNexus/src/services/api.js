@@ -3,6 +3,8 @@ const API_BASE_URL = 'http://localhost:8000';
 class ApiService {
   constructor() {
     this.baseUrl = API_BASE_URL;
+    this.isRefreshing = false;
+    this.refreshSubscribers = [];
   }
 
   getAuthHeaders(isDoctor = false) {
@@ -15,6 +17,62 @@ class ApiService {
       console.log('No token found in localStorage');
     }
     return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  async refreshAccessToken(isDoctor = false) {
+    const refreshToken = isDoctor 
+      ? localStorage.getItem('doctor_refresh_token')
+      : localStorage.getItem('refresh_token');
+    
+    if (!refreshToken) {
+      throw new Error('NO_REFRESH_TOKEN');
+    }
+
+    const endpoint = isDoctor ? '/api/doctors/refresh' : '/api/patients/refresh';
+    
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (!response.ok) {
+        // Only clear tokens if refresh token is actually invalid (401/403)
+        // Don't clear on 500/503 (server errors)
+        if (response.status === 401 || response.status === 403) {
+          if (isDoctor) {
+            localStorage.removeItem('doctor_access_token');
+            localStorage.removeItem('doctor_refresh_token');
+          } else {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+          }
+          throw new Error('INVALID_REFRESH_TOKEN');
+        }
+        // For other errors (500, 503, etc), throw without clearing tokens
+        throw new Error('SERVER_ERROR');
+      }
+
+      const data = await response.json();
+      
+      // Update tokens
+      if (isDoctor) {
+        localStorage.setItem('doctor_access_token', data.access_token);
+      } else {
+        localStorage.setItem('access_token', data.access_token);
+      }
+      
+      return data.access_token;
+    } catch (error) {
+      // Network errors (server down) - don't clear tokens
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        throw new Error('SERVER_UNAVAILABLE');
+      }
+      throw error;
+    }
   }
 
   async request(endpoint, options = {}) {
@@ -34,23 +92,78 @@ class ApiService {
       headers: { ...headers, Authorization: headers.Authorization ? 'Bearer ***' : 'none' },
     });
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        detail: data.detail,
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
       });
-      throw new Error(data.detail || 'An error occurred');
-    }
 
-    return data;
+      // Handle 401 - token expired, try to refresh
+      if (response.status === 401 && !endpoint.includes('/refresh') && !endpoint.includes('/signin') && !endpoint.includes('/signup')) {
+        try {
+          // Refresh the token
+          await this.refreshAccessToken(isDoctor);
+          
+          // Retry the original request with new token
+          const newHeaders = {
+            ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+            ...this.getAuthHeaders(isDoctor),
+            ...options.headers,
+          };
+          
+          const retryResponse = await fetch(url, {
+            ...options,
+            headers: newHeaders,
+          });
+          
+          const retryData = await retryResponse.json();
+          
+          if (!retryResponse.ok) {
+            console.error('API Error after retry:', {
+              status: retryResponse.status,
+              statusText: retryResponse.statusText,
+              detail: retryData.detail,
+            });
+            throw new Error(retryData.detail || 'An error occurred');
+          }
+          
+          return retryData;
+        } catch (refreshError) {
+          console.error('Token refresh error:', refreshError.message);
+          
+          // Only redirect to login if token is actually invalid
+          if (refreshError.message === 'INVALID_REFRESH_TOKEN' || refreshError.message === 'NO_REFRESH_TOKEN') {
+            console.log('Invalid refresh token - redirecting to login');
+            window.location.href = '/';
+          } else if (refreshError.message === 'SERVER_UNAVAILABLE' || refreshError.message === 'SERVER_ERROR') {
+            // Server is down or having issues - don't logout, just throw error
+            console.warn('Server temporarily unavailable - keeping user logged in');
+            throw new Error('Server is temporarily unavailable. Please try again.');
+          }
+          throw refreshError;
+        }
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          detail: data.detail,
+        });
+        throw new Error(data.detail || 'An error occurred');
+      }
+
+      return data;
+    } catch (error) {
+      // Network error (server down) - don't redirect to login
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        console.warn('Network error - server may be down. Keeping user logged in.');
+        throw new Error('Cannot connect to server. Please check your connection.');
+      }
+      throw error;
+    }
   }
 
   // Patient Auth

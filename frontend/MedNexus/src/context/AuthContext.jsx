@@ -47,10 +47,12 @@ export const AuthProvider = ({ children }) => {
       const response = await apiService.patientSignUp(userData);
       console.log('SignUp Response:', {
         hasToken: !!response.access_token,
+        hasRefreshToken: !!response.refresh_token,
         hasUser: !!response.user,
         user: response.user,
       });
       localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
       localStorage.setItem('user', JSON.stringify(response.user));
       setUser(response.user);
       return response;
@@ -65,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiService.patientSignIn(credentials);
       localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
       localStorage.setItem('user', JSON.stringify(response.user));
       setUser(response.user);
       return response;
@@ -76,6 +79,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setUser(null);
     navigate('/');
