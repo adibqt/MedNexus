@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { 
   LiveKitRoom, 
-  VideoConference, 
-  RoomAudioRenderer,
+  VideoConference,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { PhoneOff, Video, Shield } from 'lucide-react';
@@ -195,7 +194,6 @@ const VideoCall = ({ appointmentId, onLeave, userType = 'patient' }) => {
         data-lk-theme="default"
       >
         <VideoConference chatMessageFormatter={undefined} />
-        <RoomAudioRenderer />
         
         {/* Custom header with professional design */}
         <div className="video-call-header-new">
