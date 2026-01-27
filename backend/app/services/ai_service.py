@@ -6,7 +6,7 @@ import os
 import json
 import re
 from typing import List, Dict, Optional
-import google.generativeai as genai
+import google.genai as genai
 from app.core.config import settings
 from app.services.rag_service import rag_service
 from pathlib import Path
