@@ -219,7 +219,7 @@ const AppointmentForm = () => {
                 <p style={{ fontSize: '13px', lineHeight: '1.55', marginBottom: '6px', fontWeight: '600' }}>
                   Please call our emergency hotline for immediate assistance.
                 </p>
-                <h3 style={{ fontSize: '22px', fontWeight: '700' }}>+1-800-456-7890</h3>
+                <h3 style={{ fontSize: '22px', fontWeight: '700' }}>+880-02-4821-39572</h3>
               </div>
             </div>
           </div>

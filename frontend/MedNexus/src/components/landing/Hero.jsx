@@ -255,7 +255,7 @@ const Hero = () => {
                   <span>9:00 - 17:00</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Sat - Sun:</span>
+                  <span>Sat:</span>
                   <span>10:00 - 17:00</span>
                 </div>
               </div>
@@ -304,7 +304,7 @@ const Hero = () => {
                   marginBottom: "15px",
                 }}
               >
-                1-800-700-6200
+                +880-02-4821-39572
               </h4>
               <p style={{ color: "#666", fontSize: "14px", lineHeight: "1.6" }}>
                 Get all time support for emergency. We have introduced the

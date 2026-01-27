@@ -98,7 +98,7 @@ const Appointments = () => {
                   <i className="icofont-support text-lg text-color"></i>
                 </div>
                 <span className="h3">Call for an Emergency Service!</span>
-                <h2 className="text-color mt-3">+1-823-456-5134</h2>
+                <h2 className="text-color mt-3">+880-02-4821-39572</h2>
               </div>
             </div>
 
