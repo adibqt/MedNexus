@@ -214,7 +214,7 @@ const SignIn = () => {
               >
                 <p>
                   New to MedNexus?{' '}
-                  <Link to="/sign-up">
+                  <Link to="/sign-up/patient">
                     Create an account
                   </Link>
                 </p>

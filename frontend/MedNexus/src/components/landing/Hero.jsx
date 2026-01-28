@@ -21,7 +21,7 @@ const Hero = () => {
       navigate('/patient/complete-profile');
       return;
     }
-    navigate('/sign-in/patient?redirect=' + encodeURIComponent('/#appointment'));
+    navigate('/sign-in?redirect=' + encodeURIComponent('/#appointment'));
   };
 
   return (
