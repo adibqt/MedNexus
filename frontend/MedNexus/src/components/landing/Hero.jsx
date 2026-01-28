@@ -1,8 +1,28 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Building2, Clock, Phone, Users, Award, Globe, Stethoscope } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const Hero = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, isProfileComplete } = useAuth();
+
+  const handleMakeAppointment = () => {
+    if (isAuthenticated && isProfileComplete) {
+      if (location.pathname === '/') {
+        const el = document.getElementById('appointment');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate('/#appointment');
+      }
+      return;
+    }
+    if (isAuthenticated && !isProfileComplete) {
+      navigate('/patient/complete-profile');
+      return;
+    }
+    navigate('/sign-in/patient?redirect=' + encodeURIComponent('/#appointment'));
+  };
 
   return (
     <>
@@ -90,7 +110,7 @@ const Hero = () => {
               </p>
               <div className="flex gap-4">
                 <button
-                  onClick={() => navigate("/sign-in")}
+                  onClick={handleMakeAppointment}
                   style={{
                     backgroundColor: "#10b981",
                     color: "#fff",
@@ -186,7 +206,7 @@ const Hero = () => {
                   border: "none",
                   cursor: "pointer",
                 }}
-                onClick={() => navigate("/sign-in")}
+                onClick={handleMakeAppointment}
                 className="hover:opacity-90"
               >
                 Make Appointment

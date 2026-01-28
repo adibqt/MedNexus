@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -7,6 +7,8 @@ import './PatientSignIn.css';
 
 const PatientSignIn = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect');
   const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,10 +30,15 @@ const PatientSignIn = () => {
 
     try {
       const response = await signIn(formData);
+      // If user came from a booking/appointment flow, send them back there
+      if (redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
+        navigate(redirectTo, { replace: true });
+        return;
+      }
       if (response.user.is_profile_complete) {
-        navigate('/patient/dashboard');
+        navigate('/patient/dashboard', { replace: true });
       } else {
-        navigate('/patient/complete-profile');
+        navigate('/patient/complete-profile', { replace: true });
       }
     } catch (err) {
       setError(err.message || 'Invalid email or password');

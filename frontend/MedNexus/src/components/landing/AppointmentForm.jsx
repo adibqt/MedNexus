@@ -142,7 +142,7 @@ const AppointmentForm = () => {
     }
 
     if (!user) {
-      navigate('/sign-in');
+      navigate('/sign-in/patient?redirect=' + encodeURIComponent(window.location.pathname + (window.location.search || '') + (window.location.hash || '#appointment')), { replace: true });
       return;
     }
 

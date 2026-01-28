@@ -44,8 +44,11 @@ const SignIn = () => {
   );
 
   const handleRoleClick = (roleKey) => {
+    const redirect = searchParams.get('redirect');
     setSearchParams({ role: roleKey });
-    setTimeout(() => navigate(`/sign-in/${roleKey}`), 300);
+    const path = `/sign-in/${roleKey}`;
+    const query = redirect ? `?redirect=${encodeURIComponent(redirect)}` : '';
+    setTimeout(() => navigate(path + query), 300);
   };
 
   return (

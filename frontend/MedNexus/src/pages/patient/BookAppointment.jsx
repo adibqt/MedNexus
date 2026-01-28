@@ -24,7 +24,8 @@ const BookAppointment = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/sign-in/patient', { replace: true });
+      const returnTo = `/patient/book-appointment/${doctorId}`;
+      navigate('/sign-in/patient?redirect=' + encodeURIComponent(returnTo), { replace: true });
       return;
     }
 
