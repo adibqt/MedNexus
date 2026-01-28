@@ -1,3 +1,4 @@
+
 @import url("https://fonts.googleapis.com/css?family=Exo:500,600,700|Roboto&display=swap");
 
 /* ========== BASE STYLES FROM NOVENA ========== */
@@ -407,6 +408,7 @@ a:hover {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
+  background-color: #ffffff;
 }
 
 /* ========== DOCTORS SECTION ========== */

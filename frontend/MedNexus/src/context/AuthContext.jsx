@@ -77,6 +77,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Revert: simple signOut, no backend call, just clear state and storage
   const signOut = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -115,6 +116,7 @@ export const AuthProvider = ({ children }) => {
     isProfileComplete: user?.is_profile_complete || false,
   };
 
+  // Always render children, even if user is null or loading, to prevent blank page
   return (
     <AuthContext.Provider value={value}>
       {children}

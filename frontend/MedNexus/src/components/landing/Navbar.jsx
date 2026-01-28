@@ -231,10 +231,7 @@ const Navbar = () => {
                       transition: "all 0.2s ease"
                     }}
                     className="flex items-center gap-2"
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
+                    onClick={logout}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = "#fee2e2";
                       e.currentTarget.style.transform = "translateY(-1px)";
@@ -428,7 +425,6 @@ const Navbar = () => {
                     className="flex items-center justify-center gap-2"
                     onClick={() => {
                       logout();
-                      navigate("/");
                       setIsOpen(false);
                     }}
                   >
