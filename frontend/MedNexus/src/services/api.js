@@ -186,6 +186,36 @@ class ApiService {
     return this.request('/api/patients/me');
   }
 
+  async patientLogout() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      return { message: 'Logged out locally.' };
+    }
+    try {
+      const response = await fetch(`${this.baseUrl}/api/patients/logout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...this.getAuthHeaders() },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || 'Logout failed');
+      }
+      return await response.json();
+    } catch (err) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      throw err;
+    }
+  }
+
   async completeProfile(profileData) {
     return this.request('/api/patients/complete-profile', {
       method: 'POST',

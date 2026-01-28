@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Navbar,
   Hero,
@@ -213,6 +214,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      {/* Fallback route: always render Landing for unknown paths */}
+      <Route path="*" element={<Landing />} />
     </Routes>
   );
 }
