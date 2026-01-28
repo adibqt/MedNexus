@@ -7,7 +7,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
 
   return (
     <header>
@@ -231,7 +231,7 @@ const Navbar = () => {
                       transition: "all 0.2s ease"
                     }}
                     className="flex items-center gap-2"
-                    onClick={logout}
+                    onClick={signOut}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = "#fee2e2";
                       e.currentTarget.style.transform = "translateY(-1px)";
@@ -424,7 +424,7 @@ const Navbar = () => {
                     }}
                     className="flex items-center justify-center gap-2"
                     onClick={() => {
-                      logout();
+                      signOut();
                       setIsOpen(false);
                     }}
                   >
