@@ -105,12 +105,36 @@ const RequestQuotation = ({ prescriptionId, medicines }) => {
     }
   };
 
-  // Pharmacies that already have a request
+  // Pharmacies that already have an active (in-progress) request
   const requestedPharmacyIds = new Set(
     quotations
-      .filter(q => ['pending', 'quoted', 'accepted'].includes(q.request.status))
+      .filter(q => ['pending', 'quoted'].includes(q.request.status))
       .map(q => q.request.pharmacy_id)
   );
+
+  const handleReRequest = async (pharmacyId) => {
+    setSending(pharmacyId);
+    setError('');
+    setSuccess('');
+    try {
+      await apiService.request('/api/quotations/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          prescription_id: prescriptionId,
+          pharmacy_id: pharmacyId,
+          note: note || null,
+        }),
+      });
+      setSuccess('New quotation request sent!');
+      await loadQuotations();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message);
+      setTimeout(() => setError(''), 4000);
+    } finally {
+      setSending(null);
+    }
+  };
 
   const statusConfig = {
     pending: { icon: <Clock size={13} />, color: '#f59e0b', label: 'Pending' },
@@ -235,6 +259,23 @@ const RequestQuotation = ({ prescriptionId, medicines }) => {
                           {isExpanded && !q.response && q.request.status === 'pending' && (
                             <div className="rq-waiting">
                               <Clock size={14} /> Waiting for pharmacy response...
+                            </div>
+                          )}
+
+                          {/* Re-request button for finished quotations */}
+                          {['accepted', 'rejected'].includes(q.request.status) && (
+                            <div className="rq-re-request">
+                              <button
+                                className="rq-re-request-btn"
+                                disabled={sending === q.request.pharmacy_id}
+                                onClick={() => handleReRequest(q.request.pharmacy_id)}
+                              >
+                                {sending === q.request.pharmacy_id ? (
+                                  <div className="rq-spinner rq-spinner--sm" />
+                                ) : (
+                                  <><Send size={13} /> Request New Quotation</>
+                                )}
+                              </button>
                             </div>
                           )}
                         </div>
