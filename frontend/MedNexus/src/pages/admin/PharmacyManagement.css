@@ -1,0 +1,460 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
+
+.pharm-mgmt {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Header */
+.pharm-mgmt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pharm-mgmt-header-title h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pharm-mgmt-header-title p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.pharm-mgmt-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pharm-mgmt-pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+/* Stat cards */
+.pharm-mgmt-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pharm-mgmt-stat-card {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 14px 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pharm-mgmt-stat-info h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.pharm-mgmt-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 4px;
+  color: #0f172a;
+}
+
+.pharm-mgmt-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+/* Filters */
+.pharm-mgmt-filters {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 14px 16px 16px;
+  margin-bottom: 18px;
+}
+
+.pharm-mgmt-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pharm-mgmt-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  flex: 1;
+}
+
+.pharm-mgmt-filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.pharm-mgmt-search-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.pharm-mgmt-search-input svg {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+}
+
+.pharm-mgmt-search-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.pharm-mgmt-filter-select {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: #f9fafb;
+  outline: none;
+  color: #0f172a;
+}
+
+/* Table */
+.pharm-mgmt-table-container {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.pharm-mgmt-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pharm-mgmt-table-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pharm-mgmt-table-count {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pharm-mgmt-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pharm-mgmt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pharm-mgmt-table thead {
+  background: #f9fafb;
+}
+
+.pharm-mgmt-table th,
+.pharm-mgmt-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.pharm-mgmt-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+}
+
+/* Row cells */
+.pharm-mgmt-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pharm-mgmt-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.pharm-mgmt-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.pharm-mgmt-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pharm-mgmt-sub {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.pharm-mgmt-licence {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.pharm-mgmt-contact {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Status pill */
+.pharm-mgmt-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pharm-mgmt-status-pill--approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pharm-mgmt-status-pill--pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.pharm-mgmt-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* Actions */
+.pharm-mgmt-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.pharm-mgmt-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: #4b5563;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pharm-mgmt-action-btn.view {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.pharm-mgmt-action-btn.approve {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pharm-mgmt-action-btn.reject {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pharm-mgmt-action-btn:hover {
+  filter: brightness(0.97);
+}
+
+/* Pagination */
+.pharm-mgmt-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 12px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pharm-mgmt-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pharm-mgmt-pagination-btn {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.pharm-mgmt-pagination-btn.active {
+  background: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
+}
+
+.pharm-mgmt-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Modal */
+.pharm-mgmt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pharm-mgmt-modal {
+  width: 100%;
+  max-width: 520px;
+  margin: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+.pharm-mgmt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pharm-mgmt-modal-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pharm-mgmt-modal-close {
+  border: none;
+  background: transparent;
+  padding: 6px;
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.pharm-mgmt-modal-close:hover {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.pharm-mgmt-modal-body {
+  padding: 16px 18px;
+  font-size: 13px;
+  color: #374151;
+  overflow-y: auto;
+}
+
+.pharm-mgmt-detail-section {
+  margin-bottom: 16px;
+}
+
+.pharm-mgmt-detail-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b5cf6;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pharm-mgmt-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.pharm-mgmt-detail-full {
+  grid-column: 1 / -1;
+}
+
+.pharm-mgmt-detail-label {
+  font-size: 11px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.pharm-mgmt-detail-label svg {
+  color: #a78bfa;
+}
+
+.pharm-mgmt-detail-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}

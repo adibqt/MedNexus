@@ -23,6 +23,12 @@ from app.schemas.ai_doctor import (
     AIConsultationHistoryItem,
     AIConsultationHistoryResponse,
 )
+from app.schemas.pharmacy import (
+    PharmacySignUp,
+    PharmacySignIn,
+    PharmacyResponse,
+    PharmacyToken,
+)
 from app.schemas.prescription import (
     PrescriptionCreate,
     PrescriptionUpdate,

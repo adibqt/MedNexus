@@ -1,0 +1,500 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Page ─────────────────────────────────────────────────── */
+.pharm-signup-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #f3e8ff 0, transparent 45%),
+    radial-gradient(circle at 100% 0%, #ede9fe 0, transparent 45%),
+    linear-gradient(180deg, #f9fafb 0%, #f5f3ff 55%, #f9fafb 100%);
+}
+
+.pharm-signup-main {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 40px;
+}
+
+@media (min-width: 768px) {
+  .pharm-signup-main {
+    padding: 40px 24px 56px;
+  }
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.pharm-signup-card {
+  width: 100%;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 32px 80px rgba(15, 23, 42, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .pharm-signup-card {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+/* ── Left: Form Column ────────────────────────────────────── */
+.pharm-signup-form-col {
+  padding: 26px 22px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signup-form-col {
+    padding: 32px 30px;
+  }
+}
+
+/* Header */
+.pharm-signup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.pharm-signup-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.pharm-signup-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 40px rgba(139, 92, 246, 0.5);
+}
+
+.pharm-signup-logo-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.pharm-signup-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pharm-signup-logo-text span {
+  color: #8b5cf6;
+}
+
+.pharm-signup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f3e8ff;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pharm-signup-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #a78bfa;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.8);
+}
+
+/* Title / subtitle */
+.pharm-signup-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.04em;
+  margin-bottom: 6px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signup-title {
+    font-size: 26px;
+  }
+}
+
+.pharm-signup-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.pharm-signup-subtitle span {
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+/* Error */
+.pharm-signup-error {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* ── Form Grid ────────────────────────────────────────────── */
+.pharm-signup-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px 16px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signup-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pharm-signup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pharm-signup-field--full {
+  grid-column: 1 / -1;
+}
+
+.pharm-signup-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pharm-signup-helper {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Input wrapper (with icon) */
+.pharm-signup-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pharm-signup-input-wrap--textarea {
+  align-items: flex-start;
+}
+
+.pharm-signup-input-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #a78bfa;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.pharm-signup-input-icon--top {
+  top: 14px;
+}
+
+.pharm-signup-input {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.pharm-signup-input::placeholder {
+  color: #9ca3af;
+}
+
+.pharm-signup-input:focus {
+  border-color: #a78bfa;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.45);
+}
+
+.pharm-signup-textarea {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.pharm-signup-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.pharm-signup-textarea:focus {
+  border-color: #a78bfa;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.45);
+}
+
+/* Eye toggle */
+.pharm-signup-eye-btn {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0;
+}
+
+.pharm-signup-eye-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Footer / Submit ──────────────────────────────────────── */
+.pharm-signup-footer {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signup-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.pharm-signup-note {
+  font-size: 11px;
+  color: #6b7280;
+  max-width: 280px;
+}
+
+.pharm-signup-submit {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 40%, #4f46e5 100%);
+  box-shadow: 0 18px 45px rgba(139, 92, 246, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+  white-space: nowrap;
+}
+
+.pharm-signup-submit svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pharm-signup-submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 22px 55px rgba(139, 92, 246, 0.65);
+}
+
+.pharm-signup-submit:disabled {
+  opacity: 0.7;
+  cursor: default;
+  box-shadow: none;
+}
+
+.pharm-signup-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: pharm-signup-spin 0.8s linear infinite;
+}
+
+@keyframes pharm-signup-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pharm-signup-small {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.pharm-signup-small a {
+  text-decoration: none;
+}
+
+.pharm-signup-small span {
+  font-weight: 600;
+  color: #7c3aed;
+  cursor: pointer;
+}
+
+/* ── Right: Info Column ───────────────────────────────────── */
+.pharm-signup-info-col {
+  display: none;
+  padding: 28px 26px 26px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.12) 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.1) 0, transparent 55%),
+    linear-gradient(135deg, #0f0720 0%, #1a0b2e 55%, #0f172a 100%);
+  color: #e5e7eb;
+}
+
+@media (min-width: 1024px) {
+  .pharm-signup-info-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.pharm-signup-info-header {
+  font-size: 12px;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+}
+
+.pharm-signup-info-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  color: #f9fafb;
+  margin-bottom: 10px;
+}
+
+.pharm-signup-info-text {
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.7;
+}
+
+.pharm-signup-info-list {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pharm-signup-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.pharm-signup-info-item strong {
+  display: block;
+  color: #f9fafb;
+  margin-bottom: 2px;
+}
+
+.pharm-signup-info-item p {
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.pharm-signup-info-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(139, 92, 246, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pharm-signup-info-icon svg {
+  width: 16px;
+  height: 16px;
+  color: #a78bfa;
+}
+
+.pharm-signup-info-footer {
+  margin-top: 32px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ───────── Address Grid ───────── */
+.pharm-signup-address-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pharm-signup-address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pharm-signup-address-field--full {
+  grid-column: 1 / -1;
+}
+
+.pharm-signup-address-field .pharm-signup-input {
+  padding-left: 14px;
+}
+
+.pharm-signup-address-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  padding-left: 2px;
+}
+
+@media (max-width: 480px) {
+  .pharm-signup-address-grid {
+    grid-template-columns: 1fr;
+  }
+}

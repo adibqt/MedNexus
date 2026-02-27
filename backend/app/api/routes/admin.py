@@ -6,7 +6,9 @@ from typing import Optional
 
 from app.db import get_db
 from app.models import Patient, Doctor, Specialization, Symptom
+from app.models.pharmacy import Pharmacy
 from app.schemas import PatientResponse, DoctorResponse
+from app.schemas.pharmacy import PharmacyResponse
 from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -29,6 +31,17 @@ class DoctorsListResponse(BaseModel):
     total: int
     approved: int
     pending: int
+
+
+class PharmaciesListResponse(BaseModel):
+    pharmacies: list[PharmacyResponse]
+    total: int
+    approved: int
+    pending: int
+
+
+class PharmacyStatusUpdate(BaseModel):
+    is_active: bool
 
 
 class DoctorStatusUpdate(BaseModel):
@@ -184,6 +197,10 @@ async def get_admin_stats(
     approved_doctors = db.query(Doctor).filter(Doctor.is_approved == True).count()
     pending_doctors = db.query(Doctor).filter(Doctor.is_approved == False).count()
 
+    total_pharmacies = db.query(Pharmacy).count()
+    approved_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == True).count()
+    pending_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == False).count()
+
     # New patients this month
     current_month = datetime.now().month
     current_year = datetime.now().year
@@ -200,6 +217,9 @@ async def get_admin_stats(
         "total_doctors": total_doctors,
         "approved_doctors": approved_doctors,
         "pending_doctors": pending_doctors,
+        "total_pharmacies": total_pharmacies,
+        "approved_pharmacies": approved_pharmacies,
+        "pending_pharmacies": pending_pharmacies,
     }
 
 
@@ -417,4 +437,90 @@ async def delete_symptom(symptom_id: int, db: Session = Depends(get_db)):
     db.delete(item)
     db.commit()
     return
+
+
+# ── Pharmacy Management ──────────────────────────────────────────────────
+
+@router.get("/pharmacies", response_model=PharmaciesListResponse)
+async def get_all_pharmacies(
+    skip: int = 0,
+    limit: int = 100,
+    status_filter: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """Get all pharmacies with optional filters."""
+    query = db.query(Pharmacy)
+
+    if status_filter == "approved":
+        query = query.filter(Pharmacy.is_approved == True)
+    elif status_filter == "pending":
+        query = query.filter(Pharmacy.is_approved == False)
+
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            (Pharmacy.owner_name.ilike(pattern))
+            | (Pharmacy.pharmacy_name.ilike(pattern))
+            | (Pharmacy.email.ilike(pattern))
+            | (Pharmacy.phone.ilike(pattern))
+            | (Pharmacy.licence_number.ilike(pattern))
+        )
+
+    total = query.count()
+    pharmacies = query.order_by(Pharmacy.created_at.desc()).offset(skip).limit(limit).all()
+
+    approved = db.query(Pharmacy).filter(Pharmacy.is_approved == True).count()
+    pending = db.query(Pharmacy).filter(Pharmacy.is_approved == False).count()
+
+    return PharmaciesListResponse(
+        pharmacies=[PharmacyResponse.model_validate(p) for p in pharmacies],
+        total=total,
+        approved=approved,
+        pending=pending,
+    )
+
+
+@router.patch("/pharmacies/{pharmacy_id}/approval", response_model=PharmacyResponse)
+async def update_pharmacy_approval(
+    pharmacy_id: int,
+    approve: bool,
+    db: Session = Depends(get_db),
+):
+    """Approve or deny a pharmacy signup."""
+    pharmacy = db.query(Pharmacy).filter(Pharmacy.id == pharmacy_id).first()
+
+    if not pharmacy:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pharmacy not found")
+
+    pharmacy.is_approved = approve
+    if not approve:
+        pharmacy.is_active = False
+
+    pharmacy.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(pharmacy)
+
+    return PharmacyResponse.model_validate(pharmacy)
+
+
+@router.patch("/pharmacies/{pharmacy_id}/status", response_model=PharmacyResponse)
+async def update_pharmacy_status(
+    pharmacy_id: int,
+    status_update: PharmacyStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    """Activate or deactivate a pharmacy account."""
+    pharmacy = db.query(Pharmacy).filter(Pharmacy.id == pharmacy_id).first()
+
+    if not pharmacy:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pharmacy not found")
+
+    pharmacy.is_active = status_update.is_active
+    pharmacy.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(pharmacy)
+
+    return PharmacyResponse.model_validate(pharmacy)
 

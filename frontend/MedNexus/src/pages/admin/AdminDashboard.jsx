@@ -29,6 +29,7 @@ import PatientManagement from './PatientManagement';
 import DoctorManagement from './DoctorManagement';
 import SpecializationManagement from './SpecializationManagement';
 import SymptomManagement from './SymptomManagement';
+import PharmacyManagement from './PharmacyManagement';
 import './AdminDashboard.css';
 
 const statCards = [
@@ -71,6 +72,7 @@ const AdminDashboard = () => {
   const [activeNav, setActiveNav] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pendingDoctors, setPendingDoctors] = useState(0);
+  const [pendingPharmacies, setPendingPharmacies] = useState(0);
   const [cleanupLoading, setCleanupLoading] = useState(false);
   const [cleanupResult, setCleanupResult] = useState(null);
 
@@ -81,6 +83,9 @@ const AdminDashboard = () => {
         const stats = await apiService.getAdminStats();
         if (typeof stats.pending_doctors === 'number') {
           setPendingDoctors(stats.pending_doctors);
+        }
+        if (typeof stats.pending_pharmacies === 'number') {
+          setPendingPharmacies(stats.pending_pharmacies);
         }
       } catch (e) {
         console.error('Failed to load admin stats', e);
@@ -114,7 +119,7 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'patients', label: 'Patients', icon: Users },
     { id: 'doctors', label: 'Doctors', icon: Stethoscope, badge: pendingDoctors || null },
-    { id: 'pharmacies', label: 'Pharmacies', icon: Pill },
+    { id: 'pharmacies', label: 'Pharmacies', icon: Pill, badge: pendingPharmacies || null },
     { id: 'clinics', label: 'Clinics', icon: Building2 },
     { id: 'specializations', label: 'Specializations', icon: Microscope },
     { id: 'symptoms', label: 'Symptoms', icon: FileText },
@@ -221,6 +226,8 @@ const AdminDashboard = () => {
             <SpecializationManagement />
           ) : activeNav === 'symptoms' ? (
             <SymptomManagement />
+          ) : activeNav === 'pharmacies' ? (
+            <PharmacyManagement onPendingChange={setPendingPharmacies} />
           ) : activeNav === 'system' ? (
             <div className="admin-system-management">
               <motion.div

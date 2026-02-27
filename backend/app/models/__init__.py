@@ -6,5 +6,6 @@ from app.models.appointment import Appointment
 from app.models.ai_consultation import AIConsultation
 from app.models.refresh_token import RefreshToken
 from app.models.prescription import Prescription
+from app.models.pharmacy import Pharmacy
 
-__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription"]
+__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription", "Pharmacy"]
