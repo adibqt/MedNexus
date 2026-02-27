@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 import json
@@ -7,6 +7,7 @@ from app.db import get_db
 from app.models import Appointment, Doctor, Patient, Prescription
 from app.schemas.prescription import PrescriptionCreate, PrescriptionUpdate, PrescriptionOut, MedicineItem, LabTestItem
 from app.services import get_current_doctor, get_current_patient
+from app.services.email_service import send_prescription_email
 
 router = APIRouter(prefix="/api/prescriptions", tags=["prescriptions"])
 
@@ -94,6 +95,7 @@ async def get_completed_appointments(
 @router.post("", response_model=PrescriptionOut, status_code=status.HTTP_201_CREATED)
 async def create_prescription(
     payload: PrescriptionCreate,
+    background_tasks: BackgroundTasks,
     current_doctor: Doctor = Depends(get_current_doctor),
     db: Session = Depends(get_db),
 ):
@@ -133,7 +135,18 @@ async def create_prescription(
     db.add(rx)
     db.commit()
     db.refresh(rx)
-    return _build_out(rx, current_doctor, patient, appointment)
+
+    result = _build_out(rx, current_doctor, patient, appointment)
+
+    # Send email with PDF when finalized
+    if rx.is_finalized and patient and patient.email:
+        background_tasks.add_task(
+            send_prescription_email,
+            patient.email,
+            result.model_dump(),
+        )
+
+    return result
 
 
 @router.get("/{prescription_id}", response_model=PrescriptionOut)
@@ -176,6 +189,7 @@ async def get_prescription_by_appointment(
 async def update_prescription(
     prescription_id: int,
     payload: PrescriptionUpdate,
+    background_tasks: BackgroundTasks,
     current_doctor: Doctor = Depends(get_current_doctor),
     db: Session = Depends(get_db),
 ):
@@ -187,6 +201,8 @@ async def update_prescription(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prescription not found")
     if rx.is_finalized:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Finalized prescriptions cannot be edited")
+
+    was_finalized_before = rx.is_finalized
 
     if payload.diagnosis is not None:
         rx.diagnosis = payload.diagnosis
@@ -206,7 +222,17 @@ async def update_prescription(
 
     appointment = db.query(Appointment).filter(Appointment.id == rx.appointment_id).first()
     patient = db.query(Patient).filter(Patient.id == rx.patient_id).first()
-    return _build_out(rx, current_doctor, patient, appointment)
+    result = _build_out(rx, current_doctor, patient, appointment)
+
+    # Send email when prescription is newly finalized
+    if rx.is_finalized and not was_finalized_before and patient and patient.email:
+        background_tasks.add_task(
+            send_prescription_email,
+            patient.email,
+            result.model_dump(),
+        )
+
+    return result
 
 
 # ──────────────────────────────────────────────
