@@ -346,6 +346,16 @@
   border-color: #fca5a5;
 }
 
+.doctor-appointments-card-btn.prescription {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: white;
+}
+
+.doctor-appointments-card-btn.prescription:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .doctor-appointments-page {

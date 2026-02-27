@@ -1,0 +1,451 @@
+/* ══════════════════════════════════════
+   Patient – View Prescriptions Page
+══════════════════════════════════════ */
+
+.vp-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdfa 0%, #f1f5f9 50%, #eff6ff 100%);
+  padding: 32px 20px 60px;
+}
+
+.vp-container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.vp-header {
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 14px;
+}
+.vp-back-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.vp-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.vp-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 4px 0 0;
+}
+
+/* ── Refresh button ── */
+.vp-refresh-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.25s;
+  flex-shrink: 0;
+  margin-top: 24px;
+}
+.vp-refresh-btn:hover {
+  background: #f0fdfa;
+  border-color: #0d9488;
+  color: #0d9488;
+}
+.vp-refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.vp-refresh-btn--spin svg {
+  animation: vp-spin 0.9s linear infinite;
+}
+
+/* ── Stats ── */
+.vp-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.vp-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px 20px;
+  flex: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.vp-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.vp-stat-icon--teal {
+  background: #ccfbf1;
+  color: #0d9488;
+}
+.vp-stat-icon--blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.vp-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vp-stat-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── Error ── */
+.vp-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+/* ── Loading ── */
+.vp-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.vp-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #0d9488;
+  border-radius: 50%;
+  animation: vp-spin 0.9s linear infinite;
+}
+@keyframes vp-spin { to { transform: rotate(360deg); } }
+
+/* Smaller spinner for detail loading */
+.vp-spinner--sm {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.vp-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+/* ── Empty state ── */
+.vp-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+.vp-empty svg {
+  margin-bottom: 12px;
+}
+.vp-empty h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #475569;
+  margin: 0 0 6px;
+}
+.vp-empty p {
+  max-width: 380px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── Prescription card list ── */
+.vp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vp-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+.vp-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border-color: #d1d5db;
+}
+.vp-card--open {
+  border-color: #0d9488;
+  box-shadow: 0 6px 24px rgba(13,148,136,0.10);
+}
+
+/* Collapsed header row */
+.vp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.vp-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vp-card-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vp-card-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vp-card-doctor {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.vp-card-spec {
+  font-size: 12px;
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.vp-card-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.vp-card-right-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.vp-card-diag-pill {
+  display: inline-block;
+  max-width: 200px;
+  padding: 3px 10px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vp-card-med-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 3px 10px;
+  background: #f8fafc;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+/* Expanded area */
+.vp-expanded {
+  overflow: hidden;
+}
+
+.vp-rx-wrap {
+  padding: 0 20px 20px;
+}
+
+/* Print bar below each rx */
+.vp-print-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0 0;
+}
+
+.vp-print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.25);
+}
+.vp-print-btn:hover {
+  background: linear-gradient(135deg, #0f766e, #115e59);
+  box-shadow: 0 4px 12px rgba(13,148,136,0.35);
+}
+
+/* ── Print overrides ── */
+@media print {
+  /* Hide everything except the expanded prescription */
+  .vp-header,
+  .vp-stats,
+  .vp-error,
+  .vp-back-btn,
+  .vp-print-bar,
+  .vp-card-header {
+    display: none !important;
+  }
+
+  .vp-page {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  .vp-container {
+    max-width: 100%;
+  }
+
+  /* Hide non-expanded cards */
+  .vp-card:not(.vp-card--open) {
+    display: none !important;
+  }
+
+  .vp-card--open {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .vp-expanded {
+    height: auto !important;
+    opacity: 1 !important;
+  }
+
+  .vp-rx-wrap {
+    padding: 0 !important;
+  }
+
+  .rx-pad {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .rx-header-accent {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #0d9488 !important;
+  }
+
+  .rx-stamp {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .vp-page {
+    padding: 16px 12px 40px;
+  }
+
+  .vp-title {
+    font-size: 22px;
+  }
+
+  .vp-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .vp-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .vp-card-right-summary {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .vp-card-diag-pill {
+    max-width: 100%;
+  }
+}

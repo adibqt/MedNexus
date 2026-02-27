@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Stethoscope,
@@ -11,18 +11,93 @@ import {
   Pencil,
   LogOut,
   Video,
+  RefreshCw,
 } from 'lucide-react';
 import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
 import './DoctorDashboard.css';
 
+/* ── sessionStorage cache helpers ─────────────────── */
+const CACHE_DOCTOR  = 'dd_doctor_cache';
+const CACHE_APPTS   = 'dd_appointments_cache';
+const CACHE_TTL     = 5 * 60 * 1000; // 5 minutes
+
+const readCache = (key) => {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) { sessionStorage.removeItem(key); return null; }
+    return data;
+  } catch { return null; }
+};
+
+const writeCache = (key, data) => {
+  try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); }
+  catch { /* quota exceeded */ }
+};
+
 const DoctorDashboard = () => {
   const navigate = useNavigate();
   const { initiateCall } = useVideoCall();
-  const [doctor, setDoctor] = useState(null);
-  const [schedule, setSchedule] = useState(null);
-  const [appointments, setAppointments] = useState([]);
-  const [loadingAppointments, setLoadingAppointments] = useState(true);
+
+  const [doctor, setDoctor] = useState(() => readCache(CACHE_DOCTOR));
+  const [schedule, setSchedule] = useState(() => {
+    const d = readCache(CACHE_DOCTOR);
+    if (d?.schedule) { try { return JSON.parse(d.schedule); } catch { return null; } }
+    return null;
+  });
+  const [appointments, setAppointments] = useState(() => readCache(CACHE_APPTS) || []);
+  const [loadingAppointments, setLoadingAppointments] = useState(() => !readCache(CACHE_APPTS));
+  const [refreshing, setRefreshing] = useState(false);
+  const hasFetched = useRef(false);
+
+  const loadDoctor = useCallback(async () => {
+    const token = localStorage.getItem('doctor_access_token');
+    try {
+      const data = await apiService.request('/api/doctors/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDoctor(data);
+      writeCache(CACHE_DOCTOR, data);
+      if (data.schedule) {
+        try { setSchedule(JSON.parse(data.schedule)); } catch { setSchedule(null); }
+      }
+    } catch {
+      navigate('/sign-in/doctor', { replace: true });
+    }
+  }, [navigate]);
+
+  const loadAppointments = useCallback(async () => {
+    try {
+      const data = await apiService.getDoctorAppointments();
+      setAppointments(data || []);
+      writeCache(CACHE_APPTS, data || []);
+    } catch (err) {
+      console.error('Failed to load appointments:', err);
+      setAppointments([]);
+    }
+  }, []);
+
+  const loadAll = useCallback(async (force = false) => {
+    if (!force) {
+      const cachedDoc = readCache(CACHE_DOCTOR);
+      const cachedApt = readCache(CACHE_APPTS);
+      if (cachedDoc && cachedApt) {
+        setDoctor(cachedDoc);
+        setAppointments(cachedApt);
+        if (cachedDoc.schedule) {
+          try { setSchedule(JSON.parse(cachedDoc.schedule)); } catch { setSchedule(null); }
+        }
+        setLoadingAppointments(false);
+        return;
+      }
+    }
+    force ? setRefreshing(true) : setLoadingAppointments(true);
+    await Promise.all([loadDoctor(), loadAppointments()]);
+    setLoadingAppointments(false);
+    setRefreshing(false);
+  }, [loadDoctor, loadAppointments]);
 
   useEffect(() => {
     const token = localStorage.getItem('doctor_access_token');
@@ -30,43 +105,11 @@ const DoctorDashboard = () => {
       navigate('/sign-in/doctor', { replace: true });
       return;
     }
-
-    const load = async () => {
-      try {
-        const data = await apiService.request('/api/doctors/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setDoctor(data);
-        if (data.schedule) {
-          try {
-            setSchedule(JSON.parse(data.schedule));
-          } catch {
-            setSchedule(null);
-          }
-        }
-      } catch {
-        navigate('/sign-in/doctor', { replace: true });
-      }
-    };
-
-    const loadAppointments = async () => {
-      try {
-        setLoadingAppointments(true);
-        const data = await apiService.getDoctorAppointments();
-        setAppointments(data || []);
-      } catch (err) {
-        console.error('Failed to load appointments:', err);
-        setAppointments([]);
-      } finally {
-        setLoadingAppointments(false);
-      }
-    };
-
-    load();
-    loadAppointments();
-  }, [navigate]);
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      loadAll();
+    }
+  }, [navigate, loadAll]);
 
   const scheduleEntries = schedule
     ? Object.entries(schedule).filter(([, v]) => v.enabled)
@@ -132,6 +175,8 @@ const DoctorDashboard = () => {
     localStorage.removeItem('doctor_access_token');
     localStorage.removeItem('doctor_refresh_token');
     localStorage.removeItem('doctor_user');
+    sessionStorage.removeItem(CACHE_DOCTOR);
+    sessionStorage.removeItem(CACHE_APPTS);
     navigate('/sign-in/doctor', { replace: true });
   };
 
@@ -167,6 +212,16 @@ const DoctorDashboard = () => {
           </div>
         </div>
         <div className="doctor-dashboard-hero-right">
+          <button
+            type="button"
+            className={`doctor-dashboard-hero-btn secondary${refreshing ? ' spinning' : ''}`}
+            onClick={() => loadAll(true)}
+            disabled={refreshing}
+            title="Refresh dashboard"
+          >
+            <RefreshCw size={14} />
+            {refreshing ? '' : 'Refresh'}
+          </button>
           <button
             type="button"
             className="doctor-dashboard-hero-btn secondary"
@@ -268,7 +323,7 @@ const DoctorDashboard = () => {
               <button
                 type="button"
                 className="doctor-dashboard-quick-button"
-                // Placeholder: hook into prescription flow when implemented
+                onClick={() => navigate('/doctor/prescriptions')}
               >
                 Open
               </button>

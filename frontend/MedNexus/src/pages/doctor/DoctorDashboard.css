@@ -135,6 +135,14 @@
   color: #e5e7eb;
   border: 1px solid rgba(226, 232, 240, 0.3);
 }
+.doctor-dashboard-hero-btn.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.doctor-dashboard-hero-btn.spinning svg {
+  animation: dd-spin 0.9s linear infinite;
+}
+@keyframes dd-spin { to { transform: rotate(360deg); } }
 
 .doctor-dashboard-hero-btn.danger {
   background: #ef4444;

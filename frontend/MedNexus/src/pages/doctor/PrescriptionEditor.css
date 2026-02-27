@@ -1,0 +1,763 @@
+/* ══════════════════════════════════════
+   Prescription Editor Page
+══════════════════════════════════════ */
+
+.pe-page {
+  min-height: 100vh;
+  background: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading */
+.pe-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pe-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: pe-spin 1s linear infinite;
+}
+@keyframes pe-spin { to { transform: rotate(360deg); } }
+
+/* ── Top bar ── */
+.pe-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.pe-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.pe-back-btn:hover { background: #f3f4f6; border-color: #d1d5db; }
+
+.pe-topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  flex: 1;
+}
+.pe-finalized-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: #ecfdf5;
+  color: #059669;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.pe-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pe-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.pe-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.pe-action-btn--outline {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  color: #374151;
+}
+.pe-action-btn--outline:hover { background: #f9fafb; border-color: #d1d5db; }
+.pe-action-btn--green {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.25);
+}
+.pe-action-btn--green:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+.pe-action-btn--print {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+}
+.pe-action-btn--print:hover { background: #f1f5f9; }
+.pe-action-btn--lg { padding: 10px 22px; font-size: 14px; }
+
+/* Alerts */
+.pe-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.pe-alert--error   { background: #fef2f2; color: #dc2626; border-bottom:1px solid #fecaca; }
+.pe-alert--success { background: #f0fdf4; color: #059669; border-bottom:1px solid #bbf7d0; }
+
+/* ── Body (two panels) ── */
+.pe-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  flex: 1;
+  align-items: start;
+  padding: 24px;
+  gap: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Form panel ── */
+.pe-form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pe-section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+}
+.pe-section--info { background: #f8fafc; }
+
+.pe-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.pe-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.pe-info-grid { display: flex; flex-direction: column; gap: 8px; }
+.pe-info-row  { display: flex; gap: 10px; font-size: 13px; }
+.pe-info-label { color: #9ca3af; width: 110px; flex-shrink: 0; }
+.pe-info-value { color: #111827; font-weight: 500; }
+
+/* Inputs */
+.pe-input {
+  padding: 9px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.pe-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+}
+.pe-input--full { width: 100%; }
+.pe-input:disabled { background: #f9fafb; color: #6b7280; }
+
+.pe-select {
+  padding: 9px 10px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.pe-select:focus { border-color: #10b981; }
+.pe-select:disabled { background: #f9fafb; color: #6b7280; }
+
+.pe-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.pe-textarea:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+}
+.pe-textarea:disabled { background: #f9fafb; color: #6b7280; }
+
+.pe-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1.5px dashed #6ee7b7;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pe-add-btn:hover { background: #d1fae5; border-color: #34d399; }
+
+.pe-remove-btn {
+  padding: 7px;
+  background: #fef2f2;
+  color: #ef4444;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.pe-remove-btn:hover { background: #fee2e2; }
+
+/* Medicines list */
+.pe-medicines-list, .pe-labs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pe-medicine-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.pe-med-num, .pe-lab-num {
+  width: 24px;
+  height: 24px;
+  background: #10b981;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pe-med-fields, .pe-lab-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pe-med-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.pe-lab-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+}
+.pe-lab-num { background: #0ea5e9; }
+
+.pe-empty-hint {
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+  padding: 16px 0;
+  font-style: italic;
+}
+
+.pe-bottom-actions {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0 4px;
+}
+
+/* ════════════════════════════════════
+   Prescription Template (Preview)
+════════════════════════════════════ */
+
+.pe-preview-panel {
+  position: sticky;
+  top: 90px;
+}
+
+.rx-pad {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+  overflow: hidden;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* Header / Letterhead */
+.rx-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.rx-header-accent {
+  height: 6px;
+  background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #5eead4 70%, #0d9488 100%);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.rx-header-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 28px 18px;
+  border-bottom: 2px solid #0d9488;
+}
+
+.rx-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rx-logo-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rx-clinic-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0d9488;
+  letter-spacing: 0.02em;
+  font-family: system-ui, sans-serif;
+}
+.rx-clinic-tagline {
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: system-ui, sans-serif;
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+.rx-header-sep {
+  width: 1px;
+  align-self: stretch;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.rx-doctor-info {
+  text-align: right;
+}
+.rx-doctor-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: system-ui, sans-serif;
+}
+.rx-doctor-spec {
+  font-size: 12px;
+  color: #0d9488;
+  font-family: system-ui, sans-serif;
+  margin-top: 3px;
+  font-weight: 600;
+}
+.rx-doctor-bmdc {
+  font-size: 11px;
+  color: #64748b;
+  font-family: system-ui, sans-serif;
+  margin-top: 3px;
+}
+
+/* Meta row */
+.rx-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 14px 28px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafcff;
+}
+
+.rx-meta-block {
+  flex: 1;
+  min-width: 120px;
+  padding: 4px 12px 4px 0;
+}
+.rx-meta-block--right { text-align: right; padding-right: 0; }
+
+.rx-meta-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: system-ui, sans-serif;
+}
+.rx-meta-value {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 2px;
+  font-family: system-ui, sans-serif;
+}
+
+/* Diagnosis */
+.rx-diagnosis-box {
+  margin: 0 28px 0;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.rx-field-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  font-family: system-ui, sans-serif;
+  margin-bottom: 5px;
+}
+.rx-diagnosis-text {
+  font-size: 13px;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+/* Rx symbol */
+.rx-symbol {
+  font-size: 38px;
+  font-weight: 900;
+  color: #0d9488;
+  line-height: 1;
+  padding: 18px 28px 6px;
+  font-family: 'Times New Roman', serif;
+}
+
+/* Medicines */
+.rx-medicines {
+  padding: 0 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rx-med-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+.rx-med-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.rx-med-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d9488;
+  width: 20px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.rx-med-body { flex: 1; }
+
+.rx-med-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  font-style: italic;
+}
+.rx-med-details {
+  font-size: 12px;
+  color: #475569;
+  margin-top: 3px;
+  font-family: system-ui, sans-serif;
+}
+.rx-med-instructions {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+  margin-top: 3px;
+  font-family: system-ui, sans-serif;
+}
+
+.rx-placeholder-block {
+  padding: 0 28px 18px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Lab tests */
+.rx-labs-section {
+  margin: 0 28px 18px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.rx-labs-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #1e40af;
+  font-family: system-ui, sans-serif;
+  margin-bottom: 10px;
+}
+
+.rx-labs-list { display: flex; flex-direction: column; gap: 8px; }
+.rx-lab-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.rx-lab-bullet {
+  font-size: 10px;
+  color: #3b82f6;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.rx-lab-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e3a5f;
+}
+.rx-lab-inst {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  font-family: system-ui, sans-serif;
+}
+
+/* Notes */
+.rx-notes-section {
+  margin: 0 28px 16px;
+  padding: 12px 16px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+}
+.rx-notes-text {
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+/* Follow-up */
+.rx-followup {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 28px 16px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  font-family: system-ui, sans-serif;
+}
+.rx-followup strong { color: #0f172a; }
+
+/* Footer */
+.rx-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 16px 28px 22px;
+  border-top: 1px solid #f1f5f9;
+  background: #fafcff;
+}
+
+.rx-sig-line {
+  width: 140px;
+  height: 1px;
+  background: #0d9488;
+  margin-bottom: 6px;
+}
+.rx-sig-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: system-ui, sans-serif;
+}
+.rx-sig-spec {
+  font-size: 11px;
+  color: #64748b;
+  font-family: system-ui, sans-serif;
+}
+
+.rx-footer-stamp { text-align: right; }
+
+.rx-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: #ecfdf5;
+  color: #059669;
+  border: 2px solid #059669;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.rx-footer-id {
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: system-ui, sans-serif;
+}
+
+.rx-placeholder { color: #94a3b8; font-style: italic; }
+
+/* ── Print Styles ── */
+@media print {
+  .pe-topbar,
+  .pe-form-panel,
+  .pe-alert,
+  .pe-back-btn {
+    display: none !important;
+  }
+
+  .pe-page,
+  .pe-body {
+    display: block;
+    padding: 0;
+    background: #fff;
+  }
+
+  .pe-preview-panel {
+    position: static;
+  }
+
+  .rx-pad {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  /* Force colored borders & text in print */
+  .rx-header-accent {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #0d9488 !important;
+  }
+
+  .rx-header-body {
+    border-bottom: 2px solid #0d9488 !important;
+  }
+
+  .rx-clinic-name {
+    color: #0d9488 !important;
+  }
+
+  .rx-doctor-spec {
+    color: #0d9488 !important;
+  }
+
+  .rx-logo-icon svg path {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .rx-stamp {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .pe-body {
+    grid-template-columns: 1fr;
+  }
+  .pe-preview-panel {
+    position: static;
+  }
+}

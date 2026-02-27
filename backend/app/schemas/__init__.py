@@ -23,6 +23,13 @@ from app.schemas.ai_doctor import (
     AIConsultationHistoryItem,
     AIConsultationHistoryResponse,
 )
+from app.schemas.prescription import (
+    PrescriptionCreate,
+    PrescriptionUpdate,
+    PrescriptionOut,
+    MedicineItem,
+    LabTestItem,
+)
 
 __all__ = [
     "PatientSignUp",

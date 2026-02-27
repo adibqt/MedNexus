@@ -306,6 +306,54 @@ class ApiService {
     });
   }
 
+  // ── E-Prescription APIs ──────────────────────────────
+
+  async getCompletedAppointmentsForPrescription() {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request('/api/prescriptions/doctor/completed-appointments', {
+      isDoctor: true,
+      headers: { Authorization: token ? `Bearer ${token}` : undefined },
+    });
+  }
+
+  async createPrescription(payload) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request('/api/prescriptions', {
+      method: 'POST',
+      isDoctor: true,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updatePrescription(prescriptionId, payload) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/prescriptions/${prescriptionId}`, {
+      method: 'PATCH',
+      isDoctor: true,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getPrescriptionByAppointment(appointmentId) {
+    const token = localStorage.getItem('doctor_access_token') || '';
+    return this.request(`/api/prescriptions/by-appointment/${appointmentId}`, {
+      isDoctor: true,
+      headers: { Authorization: token ? `Bearer ${token}` : undefined },
+    });
+  }
+
+  async getPatientPrescriptions() {
+    return this.request('/api/prescriptions/patient/my-prescriptions');
+  }
+
   // LiveKit room cleanup (admin)
   async cleanupAllRooms() {
     return this.adminRequest('/api/livekit/rooms/cleanup/all', {

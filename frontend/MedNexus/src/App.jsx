@@ -10,6 +10,7 @@ import {
   Doctors as LandingDoctors,
 } from "./components/landing";
 
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/SignIn.jsx";
 import Auth from "./pages/Auth.jsx";
@@ -26,9 +27,12 @@ import Appointments from "./pages/Appointments.jsx";
 import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
 import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
-import DoctorDashboard from "./pages/doctor/DoctorDashboard.jsx";
+const DoctorDashboard = React.lazy(() => import("./pages/doctor/DoctorDashboard.jsx"));
 import DoctorEditProfile from "./pages/doctor/DoctorEditProfile.jsx";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
+import WritePrescription from "./pages/doctor/WritePrescription.jsx";
+import PrescriptionEditor from "./pages/doctor/PrescriptionEditor.jsx";
+const ViewPrescriptions = React.lazy(() => import("./pages/patient/ViewPrescriptions.jsx"));
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -148,12 +152,20 @@ function AppRoutes() {
         path="/doctor/dashboard"
         element={
           <DoctorVideoCallWrapper>
-            <DoctorDashboard />
+            <Suspense fallback={
+              <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                <div style={{ width: 44, height: 44, border: '4px solid #e5e7eb', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+              </div>
+            }>
+              <DoctorDashboard />
+            </Suspense>
           </DoctorVideoCallWrapper>
         }
       />
       <Route path="/doctor/profile" element={<DoctorEditProfile />} />
       <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+      <Route path="/doctor/prescriptions" element={<WritePrescription />} />
+      <Route path="/doctor/prescriptions/write/:appointmentId" element={<PrescriptionEditor />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -210,6 +222,20 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireProfileComplete>
             <AIConsultationPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/view-prescription"
+        element={
+          <ProtectedRoute requireProfileComplete>
+            <Suspense fallback={
+              <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                <div style={{ width: 44, height: 44, border: '4px solid #e5e7eb', borderTopColor: '#0d9488', borderRadius: '50%', animation: 'vp-spin 0.9s linear infinite' }} />
+              </div>
+            }>
+              <ViewPrescriptions />
+            </Suspense>
           </ProtectedRoute>
         }
       />
