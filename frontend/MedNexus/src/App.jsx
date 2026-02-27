@@ -33,6 +33,8 @@ import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
 import WritePrescription from "./pages/doctor/WritePrescription.jsx";
 import PrescriptionEditor from "./pages/doctor/PrescriptionEditor.jsx";
 const ViewPrescriptions = React.lazy(() => import("./pages/patient/ViewPrescriptions.jsx"));
+const PharmacySignUp = React.lazy(() => import("./pages/pharmacy/PharmacySignUp.jsx"));
+const PharmacySignIn = React.lazy(() => import("./pages/pharmacy/PharmacySignIn.jsx"));
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -166,6 +168,32 @@ function AppRoutes() {
       <Route path="/doctor/appointments" element={<DoctorAppointments />} />
       <Route path="/doctor/prescriptions" element={<WritePrescription />} />
       <Route path="/doctor/prescriptions/write/:appointmentId" element={<PrescriptionEditor />} />
+
+      {/* Pharmacy Routes */}
+      <Route
+        path="/sign-up/pharmacy"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <PharmacySignUp />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/sign-in/pharmacy"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <PharmacySignIn />
+          </Suspense>
+        }
+      />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />

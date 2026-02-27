@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Page ─────────────────────────────────────────────────── */
+.pharm-signin-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #f3e8ff 0, transparent 45%),
+    radial-gradient(circle at 100% 0%, #ede9fe 0, transparent 45%),
+    linear-gradient(180deg, #0f0720 0%, #0f0720 55%, #0f0720 100%);
+}
+
+/* ── Background Orbs ──────────────────────────────────────── */
+.pharm-signin-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pharm-signin-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(64px);
+}
+
+.pharm-signin-orb--purple {
+  width: 420px;
+  height: 420px;
+  top: 18%;
+  left: -60px;
+  background: rgba(139, 92, 246, 0.24);
+}
+
+.pharm-signin-orb--indigo {
+  width: 380px;
+  height: 380px;
+  bottom: 14%;
+  right: 0;
+  background: rgba(79, 70, 229, 0.2);
+}
+
+.pharm-signin-orb--fuchsia {
+  width: 360px;
+  height: 360px;
+  top: 50%;
+  left: 52%;
+  transform: translate(-50%, -8%);
+  background: rgba(192, 132, 252, 0.16);
+}
+
+.pharm-signin-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.5) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* ── Left brand panel ─────────────────────────────────────── */
+.pharm-signin-left,
+.pharm-signin-right {
+  position: relative;
+  z-index: 10;
+}
+
+.pharm-signin-left {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pharm-signin-left {
+    display: flex;
+    width: 50%;
+    padding: 40px 40px 32px 48px;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.2) 0, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(192, 132, 252, 0.14) 0, transparent 55%),
+      #0f0720;
+  }
+}
+
+.pharm-signin-left-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  color: #e5e7eb;
+}
+
+/* Logo */
+.pharm-signin-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.pharm-signin-logo-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 40px rgba(139, 92, 246, 0.5);
+}
+
+.pharm-signin-logo-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+}
+
+.pharm-signin-logo-text {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: #f9fafb;
+}
+
+.pharm-signin-logo-text span {
+  color: #a78bfa;
+}
+
+/* Hero */
+.pharm-signin-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 520px;
+  padding: 40px 0;
+}
+
+.pharm-signin-heading {
+  font-size: 38px;
+  font-weight: 800;
+  color: #f9fafb;
+  letter-spacing: -0.06em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.pharm-signin-heading span {
+  display: block;
+  background: linear-gradient(135deg, #a78bfa 0%, #c084fc 40%, #e879f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pharm-signin-description {
+  font-size: 15px;
+  color: #9ca3af;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.pharm-signin-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pharm-signin-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.pharm-signin-stat-label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.pharm-signin-left-footer {
+  margin-top: 28px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── Right: Form panel ────────────────────────────────────── */
+.pharm-signin-right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f9fafb 0%, #f5f3ff 100%);
+}
+
+@media (min-width: 1024px) {
+  .pharm-signin-right {
+    width: 50%;
+    background: #f9fafb;
+  }
+}
+
+/* Mobile header */
+.pharm-signin-mobile-header {
+  display: flex;
+  padding: 16px 20px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(18px);
+}
+
+@media (min-width: 1024px) {
+  .pharm-signin-mobile-header {
+    display: none;
+  }
+}
+
+.pharm-signin-mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.pharm-signin-mobile-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pharm-signin-mobile-logo-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.pharm-signin-mobile-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pharm-signin-mobile-logo-text span {
+  color: #8b5cf6;
+}
+
+.pharm-signin-mobile-back {
+  font-size: 13px;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+/* Card */
+.pharm-signin-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px 40px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signin-main {
+    padding: 40px 32px 48px;
+  }
+}
+
+.pharm-signin-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 28px 22px;
+  box-shadow:
+    0 18px 60px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+@media (min-width: 640px) {
+  .pharm-signin-card {
+    padding: 32px 28px;
+  }
+}
+
+.pharm-signin-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+}
+
+.pharm-signin-card-icon svg {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+}
+
+.pharm-signin-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.06em;
+  margin-bottom: 6px;
+}
+
+@media (min-width: 640px) {
+  .pharm-signin-title {
+    font-size: 30px;
+  }
+}
+
+.pharm-signin-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 22px;
+}
+
+/* Error */
+.pharm-signin-error {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* Form */
+.pharm-signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pharm-signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pharm-signin-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Input with icon */
+.pharm-signin-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pharm-signin-input-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #a78bfa;
+  pointer-events: none;
+}
+
+.pharm-signin-input {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.pharm-signin-input::placeholder {
+  color: #9ca3af;
+}
+
+.pharm-signin-input:focus {
+  border-color: #a78bfa;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.45);
+}
+
+/* Eye toggle */
+.pharm-signin-eye-btn {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0;
+}
+
+.pharm-signin-eye-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Submit */
+.pharm-signin-submit {
+  margin-top: 4px;
+  width: 100%;
+  border-radius: 999px;
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 40%, #4f46e5 100%);
+  box-shadow: 0 18px 45px rgba(139, 92, 246, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+
+.pharm-signin-submit svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pharm-signin-submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 22px 55px rgba(139, 92, 246, 0.65);
+}
+
+.pharm-signin-submit:disabled {
+  opacity: 0.7;
+  cursor: default;
+  box-shadow: none;
+}
+
+.pharm-signin-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: pharm-signin-spin 0.8s linear infinite;
+}
+
+@keyframes pharm-signin-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Footer text */
+.pharm-signin-footer-text {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.pharm-signin-footer-text a {
+  text-decoration: none;
+}
+
+.pharm-signin-footer-text span {
+  font-weight: 600;
+  color: #7c3aed;
+}

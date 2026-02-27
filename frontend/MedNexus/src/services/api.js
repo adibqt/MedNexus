@@ -635,6 +635,31 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // ── Admin: Pharmacies ──────────────────────────────────────────
+
+  async getAllPharmacies(params = {}) {
+    const qp = new URLSearchParams();
+    if (params.skip) qp.append('skip', params.skip);
+    if (params.limit) qp.append('limit', params.limit);
+    if (params.status_filter) qp.append('status_filter', params.status_filter);
+    if (params.search) qp.append('search', params.search);
+    const qs = qp.toString();
+    return this.adminRequest(`/api/admin/pharmacies${qs ? `?${qs}` : ''}`);
+  }
+
+  async updatePharmacyApproval(pharmacyId, approve) {
+    return this.adminRequest(`/api/admin/pharmacies/${pharmacyId}/approval?approve=${approve}`, {
+      method: 'PATCH',
+    });
+  }
+
+  async updatePharmacyStatus(pharmacyId, isActive) {
+    return this.adminRequest(`/api/admin/pharmacies/${pharmacyId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_active: isActive }),
+    });
+  }
 }
 
 export const apiService = new ApiService();
