@@ -8,6 +8,7 @@ from app.services.auth import (
     decode_token,
     get_current_patient,
     get_current_doctor,
+    get_current_pharmacy,
 )
 from app.services.ai_service import ai_service, AIService
 
@@ -21,6 +22,7 @@ __all__ = [
     "decode_token",
     "get_current_patient",
     "get_current_doctor",
+    "get_current_pharmacy",
     "ai_service",
     "AIService",
 ]

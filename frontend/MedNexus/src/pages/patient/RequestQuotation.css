@@ -1,0 +1,403 @@
+/* ═══════ RequestQuotation component ═══════ */
+.rq-wrapper {
+  margin-top: 0;
+}
+
+.rq-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(139,92,246,.2);
+}
+.rq-toggle-btn:hover {
+  box-shadow: 0 4px 16px rgba(139,92,246,.3);
+  transform: translateY(-1px);
+}
+.rq-toggle-btn--active {
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+}
+
+.rq-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.25);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Panel ─────────────────── */
+.rq-panel {
+  overflow: hidden;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid #ede9fe;
+  background: #faf5ff;
+}
+
+.rq-panel-inner {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Sections ──────────────── */
+.rq-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+/* ── Note input ──────────── */
+.rq-note-field {
+  margin-bottom: 10px;
+}
+
+.rq-note-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  font-family: inherit;
+}
+.rq-note-input:focus { border-color: #8b5cf6; }
+
+/* ── Alerts ─────────────── */
+.rq-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.rq-alert--error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.rq-alert--success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* ── Loading ─────────────── */
+.rq-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.rq-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ede9fe;
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: rq-spin 0.8s linear infinite;
+}
+.rq-spinner--sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+@keyframes rq-spin { to { transform: rotate(360deg); } }
+
+.rq-empty-text {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ── Pharmacy list ────────── */
+.rq-pharmacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rq-pharmacy-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #ede9fe;
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+.rq-pharmacy-card:hover { border-color: #c4b5fd; }
+.rq-pharmacy-card--sent { opacity: 0.7; }
+
+.rq-pharmacy-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rq-pharmacy-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+
+.rq-pharmacy-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rq-pharmacy-addr,
+.rq-pharmacy-phone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.rq-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rq-send-btn:hover { box-shadow: 0 2px 10px rgba(139,92,246,.3); }
+.rq-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.rq-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  padding: 6px 12px;
+  background: #ecfdf5;
+  border-radius: 8px;
+}
+
+/* ── Quotation cards ─────── */
+.rq-quotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rq-quote-card {
+  background: #fff;
+  border: 1px solid #ede9fe;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rq-quote-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.rq-quote-header:hover { background: #faf5ff; }
+
+.rq-quote-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rq-quote-left svg { color: #7c3aed; }
+
+.rq-quote-pharmacy {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rq-quote-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.rq-quote-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rq-quote-right svg { color: #9ca3af; }
+
+.rq-quote-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+/* ── Detail expand ─────── */
+.rq-quote-detail {
+  overflow: hidden;
+  border-top: 1px solid #f3f4f6;
+  padding: 16px;
+}
+
+.rq-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.rq-items-table th {
+  text-align: left;
+  padding: 8px;
+  background: #faf5ff;
+  font-weight: 700;
+  color: #7c3aed;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.rq-items-table td {
+  padding: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.rq-row--unavail td { opacity: 0.45; text-decoration: line-through; }
+
+.rq-quote-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rq-delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #059669;
+  font-weight: 600;
+}
+
+.rq-pharmacy-notes {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  padding: 8px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.rq-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #faf5ff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+.rq-total-row strong { color: #7c3aed; font-size: 16px; }
+
+/* ── Actions ─────────── */
+.rq-quote-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rq-act-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rq-act-btn--accept {
+  background: #ecfdf5;
+  color: #059669;
+}
+.rq-act-btn--accept:hover { background: #d1fae5; }
+
+.rq-act-btn--reject {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.rq-act-btn--reject:hover { background: #fee2e2; }
+
+.rq-waiting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* ═══ Print: hide quotation UI ═══ */
+@media print {
+  .rq-wrapper { display: none !important; }
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 600px) {
+  .rq-pharmacy-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .rq-pharmacy-action { align-self: flex-end; }
+  .rq-items-table { font-size: 11px; }
+}

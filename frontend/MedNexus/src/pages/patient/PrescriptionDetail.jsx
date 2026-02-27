@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   FlaskConical,
 } from 'lucide-react';
+import RequestQuotation from './RequestQuotation';
 
 const formatDate = (d) => {
   if (!d) return '—';
@@ -153,12 +154,19 @@ const PrescriptionDetail = ({ rx, onPrint }) => (
       </div>
     </div>
 
-    {/* Print button */}
+    {/* Print button + Quotation */}
     <div className="vp-print-bar">
       <button className="vp-print-btn" onClick={() => onPrint(rx.id)}>
         <Printer size={15} /> Print Prescription
       </button>
     </div>
+
+    {/* Request Quotation from pharmacies */}
+    {rx.medicines && rx.medicines.length > 0 && (
+      <div style={{ padding: '0 20px 20px' }}>
+        <RequestQuotation prescriptionId={rx.id} medicines={rx.medicines} />
+      </div>
+    )}
   </div>
 );
 
