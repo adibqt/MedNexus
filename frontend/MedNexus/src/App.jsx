@@ -35,6 +35,7 @@ import PrescriptionEditor from "./pages/doctor/PrescriptionEditor.jsx";
 const ViewPrescriptions = React.lazy(() => import("./pages/patient/ViewPrescriptions.jsx"));
 const PharmacySignUp = React.lazy(() => import("./pages/pharmacy/PharmacySignUp.jsx"));
 const PharmacySignIn = React.lazy(() => import("./pages/pharmacy/PharmacySignIn.jsx"));
+const PharmacyDashboard = React.lazy(() => import("./pages/pharmacy/PharmacyDashboard.jsx"));
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -191,6 +192,18 @@ function AppRoutes() {
             </div>
           }>
             <PharmacySignIn />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/pharmacy/dashboard"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f3ff' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <PharmacyDashboard />
           </Suspense>
         }
       />

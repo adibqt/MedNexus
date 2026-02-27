@@ -1,0 +1,755 @@
+/* ═══════ PharmacyDashboard ═══════ */
+.phd-page {
+  min-height: 100vh;
+  background: #f5f3ff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Header ──────────────────── */
+.phd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: #fff;
+  border-bottom: 1px solid #ede9fe;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.phd-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.phd-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  color: #7c3aed;
+}
+.phd-logo svg { color: #8b5cf6; }
+.phd-logo b { color: #6d28d9; }
+
+.phd-header-divider {
+  width: 1px;
+  height: 24px;
+  background: #e5e7eb;
+}
+
+.phd-header-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+.phd-header-info svg { color: #8b5cf6; }
+
+.phd-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phd-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+.phd-refresh-btn:hover { border-color: #8b5cf6; color: #8b5cf6; }
+.phd-refresh-btn--spin svg { animation: phd-spin 0.8s linear infinite; }
+
+.phd-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.phd-logout-btn:hover { background: #fee2e2; }
+
+@keyframes phd-spin { to { transform: rotate(360deg); } }
+
+/* ── Content ────────────────── */
+.phd-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+/* ── Stats ───────────────────── */
+.phd-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.phd-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #ede9fe;
+  box-shadow: 0 1px 3px rgba(139,92,246,.06);
+}
+
+.phd-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.phd-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.phd-stat-label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* ── Tabs ────────────────────── */
+.phd-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ede9fe;
+  padding-bottom: 0;
+}
+
+.phd-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.phd-tab:hover { color: #6d28d9; }
+.phd-tab--active {
+  color: #7c3aed;
+  border-bottom-color: #7c3aed;
+}
+
+.phd-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Error ────────────────────── */
+.phd-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ── Loading / Empty ──────────── */
+.phd-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.phd-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #ede9fe;
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: phd-spin 0.8s linear infinite;
+}
+.phd-spinner--sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.phd-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+.phd-empty svg { color: #d1d5db; margin-bottom: 16px; }
+.phd-empty h3 { font-size: 18px; color: #6b7280; margin-bottom: 6px; }
+.phd-empty p { font-size: 14px; }
+
+/* ── Request Cards ────────────── */
+.phd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.phd-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #ede9fe;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.phd-card--open {
+  box-shadow: 0 4px 20px rgba(139,92,246,.1);
+  border-color: #c4b5fd;
+}
+
+.phd-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 12px;
+  text-align: left;
+}
+
+.phd-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.phd-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+
+.phd-card-patient {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.phd-card-doctor {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+.phd-card-doctor svg { color: #10b981; }
+
+.phd-card-date {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.phd-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phd-card-med-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.phd-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ── Expanded body ────────────── */
+.phd-card-body {
+  overflow: hidden;
+  border-top: 1px solid #f3f4f6;
+}
+
+.phd-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.phd-detail-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #7c3aed;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phd-detail-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.phd-detail-row strong { color: #1f2937; font-weight: 600; }
+.phd-detail-row svg { flex-shrink: 0; margin-top: 1px; }
+
+.phd-meds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.phd-med-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #faf5ff;
+  border-radius: 8px;
+}
+
+.phd-med-num {
+  font-weight: 700;
+  font-size: 12px;
+  color: #8b5cf6;
+  min-width: 20px;
+}
+
+.phd-med-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.phd-med-detail {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* ── Actions ──────────────────── */
+.phd-card-actions {
+  padding: 0 20px 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.phd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.phd-btn--primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(139,92,246,.25);
+}
+.phd-btn--primary:hover { box-shadow: 0 4px 16px rgba(139,92,246,.35); transform: translateY(-1px); }
+.phd-btn--primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.phd-btn--ghost {
+  background: none;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+.phd-btn--ghost:hover { background: #f9fafb; }
+
+.phd-accepted-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 16px;
+  padding: 12px 16px;
+  background: #ecfdf5;
+  border-radius: 10px;
+  color: #059669;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ═══════ Quote Summary (accepted/quoted) ═══════ */
+.phd-quote-summary {
+  margin: 0 20px 16px;
+  padding: 16px;
+  background: #f8f7ff;
+  border: 1px solid #e5e1fc;
+  border-radius: 12px;
+}
+.phd-quote-summary h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6d28d9;
+}
+.phd-quote-summary-table-wrap {
+  overflow-x: auto;
+}
+.phd-quote-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.phd-quote-summary-table th {
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  border-bottom: 1px solid #e5e1fc;
+  font-weight: 600;
+}
+.phd-quote-summary-table td {
+  padding: 7px 10px;
+  color: #374151;
+  border-bottom: 1px solid #f3f0ff;
+}
+.phd-quote-summary-table tr.phd-quote-row--unavail td {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+.phd-quote-summary-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.phd-quote-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #6b7280;
+}
+.phd-quote-summary-row span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.phd-quote-summary-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  padding-top: 8px;
+  border-top: 2px solid #e5e1fc;
+}
+.phd-quote-summary-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 8px 0 0;
+  font-style: italic;
+}
+
+/* ═══════ Quote Modal ═══════ */
+.phd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.phd-modal {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 760px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.phd-modal-header {
+  padding: 24px 28px 0;
+}
+.phd-modal-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  color: #1f2937;
+  margin: 0;
+}
+.phd-modal-header h2 svg { color: #8b5cf6; }
+.phd-modal-header p {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 4px 0 0;
+}
+
+.phd-modal-body {
+  padding: 20px 28px;
+}
+
+/* ── Table ─────── */
+.phd-quote-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #ede9fe;
+}
+
+.phd-quote-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.phd-quote-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #faf5ff;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #7c3aed;
+  letter-spacing: 0.5px;
+}
+
+.phd-quote-table td {
+  padding: 10px 12px;
+  border-top: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.phd-quote-row--unavail td {
+  opacity: 0.45;
+}
+
+.phd-quote-med {
+  font-weight: 600;
+  color: #1f2937;
+  min-width: 120px;
+}
+
+.phd-quote-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.phd-quote-input:focus { border-color: #8b5cf6; }
+.phd-quote-input:disabled { background: #f9fafb; color: #9ca3af; }
+
+.phd-quote-subtotal {
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+/* toggle */
+.phd-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+.phd-toggle input { opacity: 0; width: 0; height: 0; }
+.phd-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.phd-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  bottom: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.phd-toggle input:checked + .phd-toggle-slider { background: #8b5cf6; }
+.phd-toggle input:checked + .phd-toggle-slider::before { transform: translateX(18px); }
+
+/* ── Extras ────── */
+.phd-quote-extras {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.phd-quote-delivery {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.phd-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+.phd-toggle-label input {
+  accent-color: #8b5cf6;
+  width: 16px;
+  height: 16px;
+}
+
+.phd-quote-delivery-fee {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+.phd-quote-delivery-fee .phd-quote-input { width: 100px; }
+
+.phd-quote-notes label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.phd-quote-notes textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+}
+.phd-quote-notes textarea:focus { border-color: #8b5cf6; }
+
+/* ── Total ─────── */
+.phd-quote-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: #faf5ff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.phd-quote-total-amount {
+  font-size: 22px;
+  color: #7c3aed;
+}
+
+/* ── Modal Footer ─ */
+.phd-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 28px 24px;
+}
+
+/* ═══════ Responsive ═══════ */
+@media (max-width: 768px) {
+  .phd-stats { grid-template-columns: repeat(2, 1fr); }
+  .phd-detail-grid { grid-template-columns: 1fr; }
+  .phd-card-right { flex-wrap: wrap; }
+  .phd-header { padding: 12px 16px; }
+  .phd-content { padding: 16px 12px 40px; }
+  .phd-quote-table { font-size: 12px; }
+  .phd-modal { margin: 10px; max-height: 95vh; }
+}
+
+@media (max-width: 480px) {
+  .phd-stats { grid-template-columns: 1fr; }
+  .phd-tabs { overflow-x: auto; }
+  .phd-tab { white-space: nowrap; padding: 8px 12px; font-size: 12px; }
+  .phd-card-header { flex-direction: column; align-items: flex-start; }
+  .phd-card-right { margin-top: 8px; }
+}

@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db import get_db
 from app.models import Patient, Doctor, RefreshToken
+from app.models.pharmacy import Pharmacy
 from app.schemas import TokenData
 
 # Password hashing
@@ -177,3 +178,36 @@ async def get_current_doctor(
         )
 
     return doctor
+
+
+async def get_current_pharmacy(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> Pharmacy:
+    """Get current authenticated pharmacy from JWT token"""
+    token = credentials.credentials
+    token_data = decode_token(token)
+
+    if token_data.role != "pharmacy":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access pharmacy resources",
+        )
+
+    pharmacy = db.query(Pharmacy).filter(Pharmacy.id == token_data.user_id).first()
+    if pharmacy is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Pharmacy not found"
+        )
+    if not pharmacy.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Pharmacy account is deactivated",
+        )
+    if not pharmacy.is_approved:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Pharmacy account is not yet approved",
+        )
+
+    return pharmacy

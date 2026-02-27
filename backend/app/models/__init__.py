@@ -7,5 +7,6 @@ from app.models.ai_consultation import AIConsultation
 from app.models.refresh_token import RefreshToken
 from app.models.prescription import Prescription
 from app.models.pharmacy import Pharmacy
+from app.models.quotation import QuotationRequest, QuotationResponse
 
-__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription", "Pharmacy"]
+__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription", "Pharmacy", "QuotationRequest", "QuotationResponse"]
