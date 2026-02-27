@@ -183,7 +183,7 @@ def generate_prescription_pdf(rx_data: dict) -> bytes:
     s_rx = ParagraphStyle(
         "RxSymbol",
         parent=styles["Normal"],
-        fontName="Times-Bold",
+        fontName="Times-BoldItalic",
         fontSize=30,
         textColor=TEAL,
         leading=34,
@@ -293,7 +293,10 @@ def generate_prescription_pdf(rx_data: dict) -> bytes:
     # ════════════════════════════════════════════
     diagnosis = rx_data.get("diagnosis")
     if diagnosis:
-        diag_data = [[Paragraph("DIAGNOSIS / CHIEF COMPLAINT", s_heading), Paragraph(diagnosis, s_body)]]
+        diag_data = [
+            [Paragraph("DIAGNOSIS / CHIEF COMPLAINT", s_heading)],
+            [Paragraph(diagnosis, s_body)],
+        ]
         diag_table = Table(diag_data, colWidths=[doc.width])
         diag_table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), GREEN_BG),
@@ -309,7 +312,7 @@ def generate_prescription_pdf(rx_data: dict) -> bytes:
     # ════════════════════════════════════════════
     # Rx SYMBOL + MEDICINES
     # ════════════════════════════════════════════
-    elements.append(Paragraph("℞", s_rx))
+    elements.append(Paragraph("<font size='30'>R</font><font size='20'>x</font>", s_rx))
     elements.append(Spacer(1, 2 * mm))
 
     medicines = rx_data.get("medicines") or []
@@ -383,7 +386,10 @@ def generate_prescription_pdf(rx_data: dict) -> bytes:
     # ════════════════════════════════════════════
     notes = rx_data.get("notes")
     if notes:
-        note_data = [[Paragraph("ADVICE / NOTES", s_heading), Paragraph(notes, s_body)]]
+        note_data = [
+            [Paragraph("ADVICE / NOTES", s_heading)],
+            [Paragraph(notes, s_body)],
+        ]
         note_table = Table(note_data, colWidths=[doc.width])
         note_table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), YELLOW_BG),
