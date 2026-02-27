@@ -2,13 +2,14 @@
 Quotation routes – patients request quotations, pharmacies respond with pricing.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 import json
 
 from app.db import get_db
 from app.models import Patient, Pharmacy, Prescription, Doctor, Appointment
+from app.services.email_service import send_quotation_email
 from app.models.quotation import QuotationRequest as QReqModel, QuotationResponse as QResModel
 from app.schemas.quotation import (
     QuotationRequestCreate,
@@ -281,6 +282,7 @@ async def get_pharmacy_request_detail(
 @router.post("/pharmacy/respond", response_model=QuotationResponseOut, status_code=status.HTTP_201_CREATED)
 async def submit_quotation_response(
     payload: QuotationResponseCreate,
+    background_tasks: BackgroundTasks,
     current_pharmacy: Pharmacy = Depends(get_current_pharmacy),
     db: Session = Depends(get_db),
 ):
@@ -315,6 +317,27 @@ async def submit_quotation_response(
     qr.status = "quoted"
     db.commit()
     db.refresh(qres)
+
+    # Send email notification to patient
+    patient = db.query(Patient).filter(Patient.id == qr.patient_id).first()
+    rx = db.query(Prescription).filter(Prescription.id == qr.prescription_id).first()
+    doctor = db.query(Doctor).filter(Doctor.id == rx.doctor_id).first() if rx else None
+    if patient and patient.email:
+        address_parts = [current_pharmacy.street_address, current_pharmacy.city, current_pharmacy.state, current_pharmacy.postal_code]
+        email_data = {
+            "patient_name": patient.name,
+            "pharmacy_name": current_pharmacy.pharmacy_name,
+            "pharmacy_phone": current_pharmacy.phone,
+            "pharmacy_address": ", ".join([p for p in address_parts if p]),
+            "diagnosis": rx.diagnosis if rx else "",
+            "doctor_name": doctor.name if doctor else "",
+            "total_amount": float(payload.total_amount),
+            "delivery_available": payload.delivery_available,
+            "delivery_fee": float(payload.delivery_fee),
+            "notes": payload.notes or "",
+            "items": [item.model_dump() for item in payload.items],
+        }
+        background_tasks.add_task(send_quotation_email, patient.email, email_data)
 
     return _enrich_response(qres, db)
 

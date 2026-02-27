@@ -415,7 +415,7 @@ const PharmacyDashboard = () => {
                               <span>Name:</span> <strong>{req.patient_name || '—'}</strong>
                             </div>
                             <div className="phd-detail-row">
-                              <span><Phone size={12} /> Phone:</span> <strong>{req.patient_phone || '—'}</strong>
+                              <span> Phone:</span> <strong>{req.patient_phone || '—'}</strong>
                             </div>
                             {req.diagnosis && (
                               <div className="phd-detail-row">
