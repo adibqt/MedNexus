@@ -27,7 +27,7 @@ import Appointments from "./pages/Appointments.jsx";
 import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
 import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
-import DoctorDashboard from "./pages/doctor/DoctorDashboard.jsx";
+const DoctorDashboard = React.lazy(() => import("./pages/doctor/DoctorDashboard.jsx"));
 import DoctorEditProfile from "./pages/doctor/DoctorEditProfile.jsx";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
 import WritePrescription from "./pages/doctor/WritePrescription.jsx";
@@ -152,7 +152,13 @@ function AppRoutes() {
         path="/doctor/dashboard"
         element={
           <DoctorVideoCallWrapper>
-            <DoctorDashboard />
+            <Suspense fallback={
+              <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                <div style={{ width: 44, height: 44, border: '4px solid #e5e7eb', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+              </div>
+            }>
+              <DoctorDashboard />
+            </Suspense>
           </DoctorVideoCallWrapper>
         }
       />
