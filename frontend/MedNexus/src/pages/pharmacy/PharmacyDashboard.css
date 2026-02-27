@@ -439,6 +439,85 @@
   font-weight: 600;
 }
 
+/* ═══════ Quote Summary (accepted/quoted) ═══════ */
+.phd-quote-summary {
+  margin: 0 20px 16px;
+  padding: 16px;
+  background: #f8f7ff;
+  border: 1px solid #e5e1fc;
+  border-radius: 12px;
+}
+.phd-quote-summary h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6d28d9;
+}
+.phd-quote-summary-table-wrap {
+  overflow-x: auto;
+}
+.phd-quote-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.phd-quote-summary-table th {
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  border-bottom: 1px solid #e5e1fc;
+  font-weight: 600;
+}
+.phd-quote-summary-table td {
+  padding: 7px 10px;
+  color: #374151;
+  border-bottom: 1px solid #f3f0ff;
+}
+.phd-quote-summary-table tr.phd-quote-row--unavail td {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+.phd-quote-summary-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.phd-quote-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #6b7280;
+}
+.phd-quote-summary-row span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.phd-quote-summary-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  padding-top: 8px;
+  border-top: 2px solid #e5e1fc;
+}
+.phd-quote-summary-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 8px 0 0;
+  font-style: italic;
+}
+
 /* ═══════ Quote Modal ═══════ */
 .phd-modal-overlay {
   position: fixed;

@@ -27,8 +27,8 @@ import apiService from '../../services/api';
 import './PharmacyDashboard.css';
 
 /* ── Cache ──────────────────────────────── */
-const CACHE_STATS = 'phd_stats_cache';
-const CACHE_REQS = 'phd_requests_cache';
+const CACHE_STATS = 'phd_stats_v2';
+const CACHE_REQS = 'phd_requests_v2';
 const CACHE_TTL = 3 * 60 * 1000;
 
 const readCache = (k) => {
@@ -243,8 +243,9 @@ const PharmacyDashboard = () => {
   };
 
   const filtered = requests.filter(r => {
+    const st = r.request ? r.request.status : r.status;
     if (activeTab === 'all') return true;
-    return r.status === activeTab;
+    return st === activeTab;
   });
 
   const statusColors = {
@@ -358,9 +359,12 @@ const PharmacyDashboard = () => {
           </div>
         ) : (
           <div className="phd-list">
-            {filtered.map((req, i) => {
+            {filtered.map((item, i) => {
+              const req = item.request || item;
+              const qResponse = item.response || null;
               const isOpen = expandedId === req.id;
               const meds = (() => { try { return JSON.parse(req.medicines_snapshot || '[]'); } catch { return []; } })();
+              const quotedItems = (() => { try { return qResponse ? JSON.parse(qResponse.items || '[]') : []; } catch { return []; } })();
               return (
                 <motion.div
                   key={req.id}
@@ -456,6 +460,54 @@ const PharmacyDashboard = () => {
                         {req.status === 'accepted' && (
                           <div className="phd-accepted-banner">
                             <CheckCircle2 size={16} /> Patient accepted your quotation
+                          </div>
+                        )}
+
+                        {/* Show submitted quotation pricing for quoted/accepted */}
+                        {(req.status === 'accepted' || req.status === 'quoted') && qResponse && quotedItems.length > 0 && (
+                          <div className="phd-quote-summary">
+                            <h4><DollarSign size={14} /> Your Quotation</h4>
+                            <div className="phd-quote-summary-table-wrap">
+                              <table className="phd-quote-summary-table">
+                                <thead>
+                                  <tr>
+                                    <th>Medicine</th>
+                                    <th>Available</th>
+                                    <th>Unit ৳</th>
+                                    <th>Qty</th>
+                                    <th>Subtotal</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {quotedItems.map((qi, qIdx) => (
+                                    <tr key={qIdx} className={!qi.available ? 'phd-quote-row--unavail' : ''}>
+                                      <td>{qi.medicine_name}</td>
+                                      <td>{qi.available ? '✓' : '✗'}</td>
+                                      <td>{qi.available ? `৳${(qi.unit_price || 0).toFixed(2)}` : '—'}</td>
+                                      <td>{qi.available ? qi.quantity : '—'}</td>
+                                      <td>{qi.available ? `৳${(qi.subtotal || 0).toFixed(2)}` : '—'}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <div className="phd-quote-summary-footer">
+                              {qResponse.delivery_available && (
+                                <div className="phd-quote-summary-row">
+                                  <span><Truck size={13} /> Delivery Fee</span>
+                                  <span>৳{(qResponse.delivery_fee || 0).toFixed(2)}</span>
+                                </div>
+                              )}
+                              <div className="phd-quote-summary-row phd-quote-summary-total">
+                                <span>Total</span>
+                                <span>৳{((qResponse.total_amount || 0) + (qResponse.delivery_available ? (qResponse.delivery_fee || 0) : 0)).toFixed(2)}</span>
+                              </div>
+                              {qResponse.notes && (
+                                <div className="phd-quote-summary-notes">
+                                  <MessageSquare size={12} /> {qResponse.notes}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </motion.div>

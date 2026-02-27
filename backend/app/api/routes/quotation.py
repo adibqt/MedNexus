@@ -237,18 +237,25 @@ async def reject_quotation(
 # PHARMACY ENDPOINTS
 # ═══════════════════════════════════════════════════════════════════
 
-@router.get("/pharmacy/requests", response_model=List[QuotationRequestOut])
+@router.get("/pharmacy/requests", response_model=List[QuotationFull])
 async def get_pharmacy_requests(
     status_filter: str = None,
     current_pharmacy: Pharmacy = Depends(get_current_pharmacy),
     db: Session = Depends(get_db),
 ):
-    """Get all quotation requests sent to the current pharmacy."""
+    """Get all quotation requests sent to the current pharmacy, with responses."""
     q = db.query(QReqModel).filter(QReqModel.pharmacy_id == current_pharmacy.id)
     if status_filter:
         q = q.filter(QReqModel.status == status_filter)
     requests = q.order_by(QReqModel.created_at.desc()).all()
-    return [_enrich_request(qr, db) for qr in requests]
+
+    results = []
+    for qr in requests:
+        enriched_req = _enrich_request(qr, db)
+        qres = db.query(QResModel).filter(QResModel.request_id == qr.id).first()
+        enriched_res = _enrich_response(qres, db) if qres else None
+        results.append(QuotationFull(request=enriched_req, response=enriched_res))
+    return results
 
 
 @router.get("/pharmacy/request/{request_id}", response_model=QuotationFull)
