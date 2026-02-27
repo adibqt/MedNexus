@@ -268,7 +268,7 @@ const DoctorDashboard = () => {
               <button
                 type="button"
                 className="doctor-dashboard-quick-button"
-                // Placeholder: hook into prescription flow when implemented
+                onClick={() => navigate('/doctor/prescriptions')}
               >
                 Open
               </button>

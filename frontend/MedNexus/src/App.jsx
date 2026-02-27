@@ -29,6 +29,8 @@ import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard.jsx";
 import DoctorEditProfile from "./pages/doctor/DoctorEditProfile.jsx";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
+import WritePrescription from "./pages/doctor/WritePrescription.jsx";
+import PrescriptionEditor from "./pages/doctor/PrescriptionEditor.jsx";
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -154,6 +156,8 @@ function AppRoutes() {
       />
       <Route path="/doctor/profile" element={<DoctorEditProfile />} />
       <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+      <Route path="/doctor/prescriptions" element={<WritePrescription />} />
+      <Route path="/doctor/prescriptions/write/:appointmentId" element={<PrescriptionEditor />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />

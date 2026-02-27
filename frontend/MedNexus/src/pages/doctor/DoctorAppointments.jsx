@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, User, CheckCircle2, XCircle, AlertCircle, Filter } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, CheckCircle2, XCircle, AlertCircle, Filter, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import apiService from '../../services/api';
 import './DoctorAppointments.css';
@@ -345,6 +345,29 @@ const DoctorAppointments = () => {
                     >
                       <XCircle size={18} />
                       Cancel
+                    </button>
+                  </div>
+                )}
+
+                {appointment.status === 'Completed' && (
+                  <div className="doctor-appointments-card-actions">
+                    <button
+                      onClick={() =>
+                        navigate(`/doctor/prescriptions/write/${appointment.id}`, {
+                          state: {
+                            appointmentInfo: {
+                              id: appointment.id,
+                              appointment_date: appointment.appointment_date,
+                              appointment_time: appointment.appointment_time,
+                              patient_name: appointment.patient_name,
+                            },
+                          },
+                        })
+                      }
+                      className="doctor-appointments-card-btn prescription"
+                    >
+                      <FileText size={16} />
+                      Write Prescription
                     </button>
                   </div>
                 )}
