@@ -7,8 +7,10 @@ from typing import Optional
 from app.db import get_db
 from app.models import Patient, Doctor, Specialization, Symptom
 from app.models.pharmacy import Pharmacy
+from app.models.clinic import Clinic
 from app.schemas import PatientResponse, DoctorResponse
 from app.schemas.pharmacy import PharmacyResponse
+from app.schemas.clinic import ClinicResponse
 from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -41,6 +43,17 @@ class PharmaciesListResponse(BaseModel):
 
 
 class PharmacyStatusUpdate(BaseModel):
+    is_active: bool
+
+
+class ClinicsListResponse(BaseModel):
+    clinics: list[ClinicResponse]
+    total: int
+    approved: int
+    pending: int
+
+
+class ClinicStatusUpdate(BaseModel):
     is_active: bool
 
 
@@ -201,6 +214,10 @@ async def get_admin_stats(
     approved_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == True).count()
     pending_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == False).count()
 
+    total_clinics = db.query(Clinic).count()
+    approved_clinics = db.query(Clinic).filter(Clinic.is_approved == True).count()
+    pending_clinics = db.query(Clinic).filter(Clinic.is_approved == False).count()
+
     # New patients this month
     current_month = datetime.now().month
     current_year = datetime.now().year
@@ -220,6 +237,9 @@ async def get_admin_stats(
         "total_pharmacies": total_pharmacies,
         "approved_pharmacies": approved_pharmacies,
         "pending_pharmacies": pending_pharmacies,
+        "total_clinics": total_clinics,
+        "approved_clinics": approved_clinics,
+        "pending_clinics": pending_clinics,
     }
 
 
@@ -524,3 +544,88 @@ async def update_pharmacy_status(
 
     return PharmacyResponse.model_validate(pharmacy)
 
+
+# ── Clinic Management ──────────────────────────────────────────────────
+
+@router.get("/clinics", response_model=ClinicsListResponse)
+async def get_all_clinics(
+    skip: int = 0,
+    limit: int = 100,
+    status_filter: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """Get all clinics with optional filters."""
+    query = db.query(Clinic)
+
+    if status_filter == "approved":
+        query = query.filter(Clinic.is_approved == True)
+    elif status_filter == "pending":
+        query = query.filter(Clinic.is_approved == False)
+
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            (Clinic.owner_name.ilike(pattern))
+            | (Clinic.clinic_name.ilike(pattern))
+            | (Clinic.email.ilike(pattern))
+            | (Clinic.phone.ilike(pattern))
+            | (Clinic.licence_number.ilike(pattern))
+        )
+
+    total = query.count()
+    clinics = query.order_by(Clinic.created_at.desc()).offset(skip).limit(limit).all()
+
+    approved = db.query(Clinic).filter(Clinic.is_approved == True).count()
+    pending = db.query(Clinic).filter(Clinic.is_approved == False).count()
+
+    return ClinicsListResponse(
+        clinics=[ClinicResponse.model_validate(c) for c in clinics],
+        total=total,
+        approved=approved,
+        pending=pending,
+    )
+
+
+@router.patch("/clinics/{clinic_id}/approval", response_model=ClinicResponse)
+async def update_clinic_approval(
+    clinic_id: int,
+    approve: bool,
+    db: Session = Depends(get_db),
+):
+    """Approve or deny a clinic signup."""
+    clinic = db.query(Clinic).filter(Clinic.id == clinic_id).first()
+
+    if not clinic:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Clinic not found")
+
+    clinic.is_approved = approve
+    if not approve:
+        clinic.is_active = False
+
+    clinic.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(clinic)
+
+    return ClinicResponse.model_validate(clinic)
+
+
+@router.patch("/clinics/{clinic_id}/status", response_model=ClinicResponse)
+async def update_clinic_status(
+    clinic_id: int,
+    status_update: ClinicStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    """Activate or deactivate a clinic account."""
+    clinic = db.query(Clinic).filter(Clinic.id == clinic_id).first()
+
+    if not clinic:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Clinic not found")
+
+    clinic.is_active = status_update.is_active
+    clinic.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(clinic)
+
+    return ClinicResponse.model_validate(clinic)

@@ -11,6 +11,8 @@ from app.api.routes import health, patient, admin, doctor, appointment, video_ca
 from app.api.routes import prescription as prescription_router
 from app.api.routes import pharmacy as pharmacy_router
 from app.api.routes import quotation as quotation_router
+from app.api.routes import clinic as clinic_router
+from app.api.routes import lab_quotation as lab_quotation_router
 from app.db import Base, engine
 
 # Create database tables
@@ -157,6 +159,8 @@ app.include_router(video_call.router)
 app.include_router(prescription_router.router)
 app.include_router(pharmacy_router.router)
 app.include_router(quotation_router.router)
+app.include_router(clinic_router.router)
+app.include_router(lab_quotation_router.router)
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

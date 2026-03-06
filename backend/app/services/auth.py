@@ -211,3 +211,38 @@ async def get_current_pharmacy(
         )
 
     return pharmacy
+
+
+async def get_current_clinic(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+):
+    """Get current authenticated clinic from JWT token"""
+    from app.models.clinic import Clinic
+
+    token = credentials.credentials
+    token_data = decode_token(token)
+
+    if token_data.role != "clinic":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access clinic resources",
+        )
+
+    clinic = db.query(Clinic).filter(Clinic.id == token_data.user_id).first()
+    if clinic is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Clinic not found"
+        )
+    if not clinic.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Clinic account is deactivated",
+        )
+    if not clinic.is_approved:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Clinic account is not yet approved",
+        )
+
+    return clinic

@@ -660,6 +660,31 @@ class ApiService {
       body: JSON.stringify({ is_active: isActive }),
     });
   }
+
+  // ── Clinic Admin ──────────────────────────────────────────
+
+  async getAllClinics(params = {}) {
+    const qp = new URLSearchParams();
+    if (params.skip) qp.append('skip', params.skip);
+    if (params.limit) qp.append('limit', params.limit);
+    if (params.status_filter) qp.append('status_filter', params.status_filter);
+    if (params.search) qp.append('search', params.search);
+    const qs = qp.toString();
+    return this.adminRequest(`/api/admin/clinics${qs ? `?${qs}` : ''}`);
+  }
+
+  async updateClinicApproval(clinicId, approve) {
+    return this.adminRequest(`/api/admin/clinics/${clinicId}/approval?approve=${approve}`, {
+      method: 'PATCH',
+    });
+  }
+
+  async updateClinicStatus(clinicId, isActive) {
+    return this.adminRequest(`/api/admin/clinics/${clinicId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_active: isActive }),
+    });
+  }
 }
 
 export const apiService = new ApiService();

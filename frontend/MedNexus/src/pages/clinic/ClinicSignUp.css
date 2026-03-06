@@ -1,0 +1,410 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Page ─────────────────────────────────────────────────── */
+.clinic-signup-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #e0f7fa 0, transparent 45%),
+    radial-gradient(circle at 100% 0%, #e0f2fe 0, transparent 45%),
+    linear-gradient(180deg, #f9fafb 0%, #ecfeff 55%, #f9fafb 100%);
+}
+
+.clinic-signup-main {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 40px;
+}
+
+@media (min-width: 768px) {
+  .clinic-signup-main { padding: 40px 24px 56px; }
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.clinic-signup-card {
+  width: 100%;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .clinic-signup-card { grid-template-columns: 1.15fr 0.85fr; }
+}
+
+/* ── Left: Form Column ────────────────────────────────────── */
+.clinic-signup-form-col { padding: 26px 22px; }
+
+@media (min-width: 640px) {
+  .clinic-signup-form-col { padding: 32px 30px; }
+}
+
+.clinic-signup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.clinic-signup-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.clinic-signup-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 40px rgba(8, 145, 178, 0.5);
+}
+
+.clinic-signup-logo-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.clinic-signup-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.clinic-signup-logo-text span {
+  color: #0891b2;
+}
+
+.clinic-signup-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #ecfeff;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0891b2;
+}
+
+.clinic-signup-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #06b6d4;
+  animation: clinic-badge-pulse 1.8s infinite;
+}
+
+@keyframes clinic-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.clinic-signup-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.clinic-signup-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+.clinic-signup-subtitle span {
+  font-weight: 700;
+  color: #0891b2;
+}
+
+.clinic-signup-error {
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  margin-bottom: 14px;
+}
+
+/* ── Form Fields ──────────────────────────────────────────── */
+.clinic-signup-form { display: flex; flex-direction: column; gap: 14px; }
+
+.clinic-signup-field {}
+
+.clinic-signup-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.clinic-signup-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clinic-signup-input-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+}
+
+.clinic-signup-input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #1f2937;
+  background: #f9fafb;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.clinic-signup-input--noicon {
+  padding-left: 12px;
+}
+
+.clinic-signup-input:focus {
+  outline: none;
+  border-color: #0891b2;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+}
+
+/* Address grid */
+.clinic-signup-address-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 480px) {
+  .clinic-signup-address-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .clinic-signup-address-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Eye toggle */
+.clinic-signup-eye {
+  position: absolute;
+  right: 10px;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+}
+
+.clinic-signup-eye svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Submit ────────────────────────────────────────────────── */
+.clinic-signup-submit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 10px 30px rgba(8, 145, 178, 0.35);
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.clinic-signup-submit:hover {
+  box-shadow: 0 14px 40px rgba(8, 145, 178, 0.45);
+  transform: translateY(-1px);
+}
+
+.clinic-signup-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.clinic-signup-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: clinic-spin 0.7s linear infinite;
+}
+
+@keyframes clinic-spin {
+  100% { transform: rotate(360deg); }
+}
+
+.clinic-signup-login-link {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 16px;
+}
+
+.clinic-signup-login-link a {
+  color: #0891b2;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.clinic-signup-login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ── Right: Hero ──────────────────────────────────────────── */
+.clinic-signup-hero-col {
+  position: relative;
+  display: none;
+  background: linear-gradient(160deg, #0e7490 0%, #0891b2 40%, #06b6d4 100%);
+  padding: 36px 28px;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .clinic-signup-hero-col { display: flex; flex-direction: column; justify-content: center; }
+}
+
+.clinic-signup-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.clinic-signup-hero-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+}
+
+.clinic-signup-hero-orb--1 {
+  width: 220px;
+  height: 220px;
+  top: -40px;
+  right: -30px;
+  background: rgba(6, 182, 212, 0.4);
+}
+
+.clinic-signup-hero-orb--2 {
+  width: 180px;
+  height: 180px;
+  bottom: 30px;
+  left: -30px;
+  background: rgba(34, 211, 238, 0.3);
+}
+
+.clinic-signup-hero-content {
+  position: relative;
+  z-index: 5;
+}
+
+.clinic-signup-hero-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.clinic-signup-hero-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.clinic-signup-hero-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.clinic-signup-hero-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.clinic-signup-hero-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.clinic-signup-hero-feat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.clinic-signup-hero-feat-icon svg {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+}
+
+.clinic-signup-hero-feat-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.clinic-signup-hero-feat-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
