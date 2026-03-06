@@ -1,0 +1,502 @@
+/* ═══════ RequestLabQuotation component ═══════ */
+.rlq-wrapper {
+  margin-top: 0;
+}
+
+.rlq-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(8,145,178,.2);
+}
+.rlq-toggle-btn:hover {
+  box-shadow: 0 4px 16px rgba(8,145,178,.3);
+  transform: translateY(-1px);
+}
+.rlq-toggle-btn--active {
+  background: linear-gradient(135deg, #0e7490, #0891b2);
+}
+
+.rlq-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.25);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Panel ─────────────────── */
+.rlq-panel {
+  overflow: hidden;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid #ccfbf1;
+  background: #ecfeff;
+}
+.rlq-panel-inner {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Sections ──────────────── */
+.rlq-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0891b2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+/* ── Note input ──────────── */
+.rlq-note-field {
+  margin-bottom: 10px;
+}
+.rlq-note-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #a5f3fc;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  font-family: inherit;
+}
+.rlq-note-input:focus { border-color: #0891b2; }
+
+/* ── Alerts ─────────────── */
+.rlq-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.rlq-alert--error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.rlq-alert--success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* ── Loading ─────────────── */
+.rlq-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+.rlq-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ccfbf1;
+  border-top-color: #0891b2;
+  border-radius: 50%;
+  animation: rlq-spin 0.8s linear infinite;
+}
+.rlq-spinner--sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+@keyframes rlq-spin { to { transform: rotate(360deg); } }
+
+.rlq-empty-text {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ── Clinic list ────────── */
+.rlq-clinic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rlq-clinic-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #ccfbf1;
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+.rlq-clinic-card:hover { border-color: #67e8f9; }
+.rlq-clinic-card--sent { opacity: 0.7; }
+
+.rlq-clinic-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rlq-clinic-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ccfbf1, #a5f3fc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0891b2;
+  flex-shrink: 0;
+}
+.rlq-clinic-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.rlq-clinic-addr,
+.rlq-clinic-phone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.rlq-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rlq-send-btn:hover { box-shadow: 0 2px 10px rgba(8,145,178,.3); }
+.rlq-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.rlq-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  padding: 6px 12px;
+  background: #ecfdf5;
+  border-radius: 8px;
+}
+
+/* ── Quotation cards ─────── */
+.rlq-quotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rlq-quote-card {
+  background: #fff;
+  border: 1px solid #ccfbf1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.rlq-quote-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.rlq-quote-header:hover { background: #ecfeff; }
+
+.rlq-quote-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rlq-quote-left svg { color: #0891b2; }
+
+.rlq-quote-clinic {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.rlq-quote-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.rlq-quote-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rlq-quote-right svg { color: #9ca3af; }
+
+.rlq-quote-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0891b2;
+}
+
+/* ── Detail expand ─────── */
+.rlq-quote-detail {
+  overflow: hidden;
+  border-top: 1px solid #f3f4f6;
+  padding: 16px;
+}
+.rlq-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.rlq-items-table th {
+  text-align: left;
+  padding: 8px;
+  background: #ecfeff;
+  font-weight: 700;
+  color: #0891b2;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.rlq-items-table td {
+  padding: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+.rlq-row--unavail td { opacity: 0.45; text-decoration: line-through; }
+
+.rlq-quote-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rlq-home-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #059669;
+  font-weight: 600;
+}
+.rlq-clinic-notes {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  padding: 8px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+.rlq-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #ecfeff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+.rlq-total-row strong { color: #0891b2; font-size: 16px; }
+
+/* ── Actions ─────────── */
+.rlq-quote-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.rlq-act-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rlq-act-btn--accept {
+  background: #ecfdf5;
+  color: #059669;
+}
+.rlq-act-btn--accept:hover { background: #d1fae5; }
+.rlq-act-btn--reject {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.rlq-act-btn--reject:hover { background: #fee2e2; }
+
+.rlq-waiting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* ═══ Re-request button ═══ */
+.rlq-re-request {
+  padding: 10px 16px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+}
+.rlq-re-request-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rlq-re-request-btn:hover {
+  background: linear-gradient(135deg, #0e7490, #0891b2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(8,145,178,.3);
+}
+.rlq-re-request-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ═══ Lab Report Section ═══ */
+.rlq-report-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-radius: 10px;
+}
+.rlq-report-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e7490;
+  margin-bottom: 12px;
+}
+.rlq-download-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rlq-download-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.rlq-download-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.rlq-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.rlq-report-table th {
+  background: #cffafe;
+  color: #0e7490;
+  padding: 8px 8px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rlq-report-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e0f2fe;
+  color: #1f2937;
+}
+.rlq-result-value { font-weight: 700; }
+
+.rlq-row--critical td { background: #fef2f2; }
+.rlq-row--abnormal td { background: #fffbeb; }
+
+.rlq-status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.rlq-status-pill--normal { background: #dcfce7; color: #15803d; }
+.rlq-status-pill--abnormal { background: #fef9c3; color: #a16207; }
+.rlq-status-pill--critical { background: #fee2e2; color: #dc2626; }
+
+.rlq-report-summary {
+  padding: 10px 12px;
+  background: #eff6ff;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e3a5f;
+  margin-bottom: 8px;
+}
+.rlq-report-notes {
+  padding: 10px 12px;
+  background: #fffbeb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #78350f;
+}
+
+/* ═══ Print: hide lab quotation UI ═══ */
+@media print {
+  .rlq-wrapper { display: none !important; }
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 600px) {
+  .rlq-clinic-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .rlq-clinic-action { align-self: flex-end; }
+  .rlq-items-table { font-size: 11px; }
+  .rlq-report-table { font-size: 10px; }
+}

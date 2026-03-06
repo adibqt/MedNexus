@@ -8,5 +8,8 @@ from app.models.refresh_token import RefreshToken
 from app.models.prescription import Prescription
 from app.models.pharmacy import Pharmacy
 from app.models.quotation import QuotationRequest, QuotationResponse
+from app.models.clinic import Clinic
+from app.models.lab_quotation import LabQuotationRequest, LabQuotationResponse
+from app.models.lab_report import LabReport
 
-__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription", "Pharmacy", "QuotationRequest", "QuotationResponse"]
+__all__ = ["Patient", "UserRole", "Doctor", "Specialization", "Symptom", "Appointment", "AIConsultation", "RefreshToken", "Prescription", "Pharmacy", "QuotationRequest", "QuotationResponse", "Clinic", "LabQuotationRequest", "LabQuotationResponse", "LabReport"]

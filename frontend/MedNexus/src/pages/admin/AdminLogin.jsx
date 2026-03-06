@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Heart,
   Mail,
@@ -7,11 +8,7 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  Home,
-  Shield,
-  Users,
-  Activity,
-  BarChart3,
+  ArrowLeft,
   AlertCircle,
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -24,6 +21,7 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,165 +36,133 @@ const AdminLogin = () => {
     }
   };
 
-  const features = [
-    {
-      icon: Users,
-      title: 'User Management',
-      description: 'Manage patients, doctors, and staff accounts',
-    },
-    {
-      icon: Activity,
-      title: 'Real-time Monitoring',
-      description: 'Track platform activity and system health',
-    },
-    {
-      icon: BarChart3,
-      title: 'Analytics Dashboard',
-      description: 'Comprehensive reports and insights',
-    },
-  ];
-
   return (
-    <div className="admin-login">
-      {/* Animated Background */}
-      <div className="admin-login-bg">
-        <div className="admin-login-bg-circle" />
-        <div className="admin-login-bg-circle" />
-        <div className="admin-login-bg-circle" />
+    <div className="al">
+      {/* Subtle background accents */}
+      <div className="al-bg">
+        <div className="al-bg__blob al-bg__blob--1" />
+        <div className="al-bg__blob al-bg__blob--2" />
       </div>
 
-      {/* Left Panel - Branding */}
-      <div className="admin-login-left">
-        <div className="admin-login-brand">
-          <div className="admin-login-logo">
-            <Heart />
+      {/* Back link */}
+      <motion.div
+        className="al-back"
+        initial={{ opacity: 0, x: -16 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Link to="/" className="al-back__link">
+          <ArrowLeft size={18} />
+          <span>Back to website</span>
+        </Link>
+      </motion.div>
+
+      {/* Card */}
+      <motion.div
+        className="al-card"
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Logo + heading */}
+        <div className="al-head">
+          <div className="al-logo">
+            <Heart size={24} strokeWidth={2.5} />
           </div>
-          <div className="admin-login-brand-text">
-            <h1>Med<span className="text-emerald">Nexus</span></h1>
-            <p>Healthcare Management System</p>
-          </div>
+          <h1 className="al-title">
+            Med<span>Nexus</span>
+          </h1>
+          <p className="al-subtitle">Admin Portal</p>
         </div>
 
-        <div className="admin-login-hero">
-          <h2>
-            Welcome to the <span>Admin Portal</span>
-          </h2>
-          <p>
-            Access the administrative dashboard to manage your healthcare platform. 
-            Monitor patients, doctors, appointments, and system performance all in one place.
-          </p>
-        </div>
-
-        <div className="admin-login-features">
-          {features.map((feature, index) => (
-            <div key={index} className="admin-login-feature">
-              <div className="admin-login-feature-icon">
-                <feature.icon />
-              </div>
-              <div className="admin-login-feature-text">
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-              </div>
+        {/* Form */}
+        <form className="al-form" onSubmit={handleSubmit} noValidate>
+          {/* Email */}
+          <div className={`al-field ${focusedField === 'email' ? 'focused' : ''}`}>
+            <label className="al-label" htmlFor="al-email">Email</label>
+            <div className="al-input-wrap">
+              <Mail size={18} className="al-input-icon" />
+              <input
+                id="al-email"
+                className="al-input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
+                required
+                autoComplete="email"
+              />
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Right Panel - Login Form */}
-      <div className="admin-login-right">
-        <div className="admin-login-card">
-          <div className="admin-login-card-header">
-            <div className="admin-login-card-logo">
-              <Shield />
-            </div>
-            <h2>Admin Sign In</h2>
-            <p>Enter your credentials to access the dashboard</p>
           </div>
 
-          <div className="admin-login-card-body">
-            <form className="admin-login-form" onSubmit={handleSubmit}>
-              <div className="admin-login-field">
-                <label htmlFor="email">Email Address</label>
-                <div className="admin-login-input-wrapper">
-                  <Mail className="admin-login-input-icon" />
-                  <input
-                    id="email"
-                    type="email"
-                    className="admin-login-input"
-                    placeholder="admin@mednexus.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-              </div>
-
-              <div className="admin-login-field">
-                <label htmlFor="password">Password</label>
-                <div className="admin-login-input-wrapper">
-                  <Lock className="admin-login-input-icon" />
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    className="admin-login-input"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    className="admin-login-input-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <div className="admin-login-error">
-                  <AlertCircle />
-                  <span>{error}</span>
-                </div>
-              )}
-
+          {/* Password */}
+          <div className={`al-field ${focusedField === 'password' ? 'focused' : ''}`}>
+            <label className="al-label" htmlFor="al-password">Password</label>
+            <div className="al-input-wrap">
+              <Lock size={18} className="al-input-icon" />
+              <input
+                id="al-password"
+                className="al-input"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+                required
+                autoComplete="current-password"
+              />
               <button
-                type="submit"
-                className="admin-login-submit"
-                disabled={submitting || loading}
+                type="button"
+                className="al-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {submitting ? (
-                  <>
-                    <span className="admin-login-spinner" />
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Sign In to Dashboard</span>
-                    <ArrowRight />
-                  </>
-                )}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-            </form>
-
-            <div className="admin-login-divider">
-              <div className="admin-login-divider-line" />
-              <span className="admin-login-divider-text">or</span>
-              <div className="admin-login-divider-line" />
-            </div>
-
-            <div className="admin-login-footer">
-              <Link to="/" className="admin-login-home-link">
-                <Home />
-                <span>Back to Website</span>
-              </Link>
             </div>
           </div>
-        </div>
-      </div>
+
+          {/* Error */}
+          {error && (
+            <motion.div
+              className="al-error"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </motion.div>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="al-submit"
+            disabled={submitting || loading}
+          >
+            {submitting ? (
+              <>
+                <span className="al-spinner" />
+                Signing in…
+              </>
+            ) : (
+              <>
+                Sign in
+                <ArrowRight size={18} />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="al-footer">
+          Protected area &middot; Authorized personnel only
+        </p>
+      </motion.div>
     </div>
   );
 };

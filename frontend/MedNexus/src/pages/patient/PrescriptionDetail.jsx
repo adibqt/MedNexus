@@ -6,6 +6,7 @@ import {
   FlaskConical,
 } from 'lucide-react';
 import RequestQuotation from './RequestQuotation';
+import RequestLabQuotation from './RequestLabQuotation';
 
 const formatDate = (d) => {
   if (!d) return '—';
@@ -165,6 +166,13 @@ const PrescriptionDetail = ({ rx, onPrint }) => (
     {rx.medicines && rx.medicines.length > 0 && (
       <div style={{ padding: '0 20px 20px' }}>
         <RequestQuotation prescriptionId={rx.id} medicines={rx.medicines} />
+      </div>
+    )}
+
+    {/* Request Lab Test Quotation from clinics */}
+    {rx.lab_tests && rx.lab_tests.length > 0 && (
+      <div style={{ padding: '0 20px 20px' }}>
+        <RequestLabQuotation prescriptionId={rx.id} labTests={rx.lab_tests} />
       </div>
     )}
   </div>

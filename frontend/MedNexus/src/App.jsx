@@ -36,6 +36,9 @@ const ViewPrescriptions = React.lazy(() => import("./pages/patient/ViewPrescript
 const PharmacySignUp = React.lazy(() => import("./pages/pharmacy/PharmacySignUp.jsx"));
 const PharmacySignIn = React.lazy(() => import("./pages/pharmacy/PharmacySignIn.jsx"));
 const PharmacyDashboard = React.lazy(() => import("./pages/pharmacy/PharmacyDashboard.jsx"));
+const ClinicSignUp = React.lazy(() => import("./pages/clinic/ClinicSignUp.jsx"));
+const ClinicSignIn = React.lazy(() => import("./pages/clinic/ClinicSignIn.jsx"));
+const ClinicDashboard = React.lazy(() => import("./pages/clinic/ClinicDashboard.jsx"));
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -204,6 +207,44 @@ function AppRoutes() {
             </div>
           }>
             <PharmacyDashboard />
+          </Suspense>
+        }
+      />
+
+      {/* Clinic Routes */}
+      <Route
+        path="/sign-up/clinic"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <ClinicSignUp />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/sign-in/clinic"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <ClinicSignIn />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/clinic/dashboard"
+        element={
+          <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0fdfa' }}>
+              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+            </div>
+          }>
+            <ClinicDashboard />
           </Suspense>
         }
       />

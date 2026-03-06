@@ -5,10 +5,12 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from app.db import get_db
-from app.models import Patient, Doctor, Specialization, Symptom
+from app.models import Patient, Doctor, Specialization, Symptom, Appointment, AIConsultation, Prescription
 from app.models.pharmacy import Pharmacy
+from app.models.clinic import Clinic
 from app.schemas import PatientResponse, DoctorResponse
 from app.schemas.pharmacy import PharmacyResponse
+from app.schemas.clinic import ClinicResponse
 from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -41,6 +43,17 @@ class PharmaciesListResponse(BaseModel):
 
 
 class PharmacyStatusUpdate(BaseModel):
+    is_active: bool
+
+
+class ClinicsListResponse(BaseModel):
+    clinics: list[ClinicResponse]
+    total: int
+    approved: int
+    pending: int
+
+
+class ClinicStatusUpdate(BaseModel):
     is_active: bool
 
 
@@ -201,6 +214,10 @@ async def get_admin_stats(
     approved_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == True).count()
     pending_pharmacies = db.query(Pharmacy).filter(Pharmacy.is_approved == False).count()
 
+    total_clinics = db.query(Clinic).count()
+    approved_clinics = db.query(Clinic).filter(Clinic.is_approved == True).count()
+    pending_clinics = db.query(Clinic).filter(Clinic.is_approved == False).count()
+
     # New patients this month
     current_month = datetime.now().month
     current_year = datetime.now().year
@@ -220,6 +237,191 @@ async def get_admin_stats(
         "total_pharmacies": total_pharmacies,
         "approved_pharmacies": approved_pharmacies,
         "pending_pharmacies": pending_pharmacies,
+        "total_clinics": total_clinics,
+        "approved_clinics": approved_clinics,
+        "pending_clinics": pending_clinics,
+    }
+
+
+@router.get("/overview-stats")
+async def get_overview_stats(db: Session = Depends(get_db)):
+    """Comprehensive overview stats for the admin dashboard charts."""
+    now = datetime.now()
+
+    # ── KPI cards ─────────────────────────────────────────────
+    total_patients = db.query(Patient).count()
+    active_patients = db.query(Patient).filter(Patient.is_active == True).count()
+    total_doctors = db.query(Doctor).count()
+    approved_doctors = db.query(Doctor).filter(Doctor.is_approved == True).count()
+    total_appointments = db.query(Appointment).count()
+    appointments_this_month = db.query(Appointment).filter(
+        extract('month', Appointment.created_at) == now.month,
+        extract('year', Appointment.created_at) == now.year,
+    ).count()
+    total_prescriptions = db.query(Prescription).count()
+    total_ai_consultations = db.query(AIConsultation).count()
+    total_pharmacies = db.query(Pharmacy).count()
+    total_clinics = db.query(Clinic).count()
+
+    # Growth percentages (compare this month vs last month registrations)
+    last_month = (now.replace(day=1) - timedelta(days=1))
+    patients_this_month = db.query(Patient).filter(
+        extract('month', Patient.created_at) == now.month,
+        extract('year', Patient.created_at) == now.year,
+    ).count()
+    patients_last_month = db.query(Patient).filter(
+        extract('month', Patient.created_at) == last_month.month,
+        extract('year', Patient.created_at) == last_month.year,
+    ).count()
+    patient_growth = round(((patients_this_month - patients_last_month) / max(patients_last_month, 1)) * 100, 1)
+
+    doctors_this_month = db.query(Doctor).filter(
+        extract('month', Doctor.created_at) == now.month,
+        extract('year', Doctor.created_at) == now.year,
+    ).count()
+    doctors_last_month = db.query(Doctor).filter(
+        extract('month', Doctor.created_at) == last_month.month,
+        extract('year', Doctor.created_at) == last_month.year,
+    ).count()
+    doctor_growth = round(((doctors_this_month - doctors_last_month) / max(doctors_last_month, 1)) * 100, 1)
+
+    appts_last_month = db.query(Appointment).filter(
+        extract('month', Appointment.created_at) == last_month.month,
+        extract('year', Appointment.created_at) == last_month.year,
+    ).count()
+    appt_growth = round(((appointments_this_month - appts_last_month) / max(appts_last_month, 1)) * 100, 1)
+
+    ai_this_month = db.query(AIConsultation).filter(
+        extract('month', AIConsultation.created_at) == now.month,
+        extract('year', AIConsultation.created_at) == now.year,
+    ).count()
+    ai_last_month = db.query(AIConsultation).filter(
+        extract('month', AIConsultation.created_at) == last_month.month,
+        extract('year', AIConsultation.created_at) == last_month.year,
+    ).count()
+    ai_growth = round(((ai_this_month - ai_last_month) / max(ai_last_month, 1)) * 100, 1)
+
+    # ── Monthly registration trend (last 12 months) ──────────
+    registration_trend = []
+    for i in range(11, -1, -1):
+        d = now - timedelta(days=30 * i)
+        m, y = d.month, d.year
+        p_count = db.query(Patient).filter(
+            extract('month', Patient.created_at) == m,
+            extract('year', Patient.created_at) == y,
+        ).count()
+        doc_count = db.query(Doctor).filter(
+            extract('month', Doctor.created_at) == m,
+            extract('year', Doctor.created_at) == y,
+        ).count()
+        registration_trend.append({
+            "month": d.strftime("%b %Y"),
+            "month_short": d.strftime("%b"),
+            "patients": p_count,
+            "doctors": doc_count,
+        })
+
+    # ── Monthly appointments (last 6 months) ─────────────────
+    appointment_trend = []
+    for i in range(5, -1, -1):
+        d = now - timedelta(days=30 * i)
+        m, y = d.month, d.year
+        count = db.query(Appointment).filter(
+            extract('month', Appointment.created_at) == m,
+            extract('year', Appointment.created_at) == y,
+        ).count()
+        appointment_trend.append({
+            "month": d.strftime("%b %Y"),
+            "month_short": d.strftime("%b"),
+            "count": count,
+        })
+
+    # ── Appointment status distribution ───────────────────────
+    status_rows = (
+        db.query(Appointment.status, func.count(Appointment.id))
+        .group_by(Appointment.status)
+        .all()
+    )
+    appointment_statuses = {s: c for s, c in status_rows}
+
+    # ── AI consultation severity breakdown ────────────────────
+    severity_rows = (
+        db.query(AIConsultation.severity, func.count(AIConsultation.id))
+        .filter(AIConsultation.severity.isnot(None))
+        .group_by(AIConsultation.severity)
+        .all()
+    )
+    ai_severity = {s: c for s, c in severity_rows}
+
+    # ── Top specializations (by doctor count) ─────────────────
+    spec_rows = (
+        db.query(Doctor.specialization, func.count(Doctor.id))
+        .filter(Doctor.is_approved == True)
+        .group_by(Doctor.specialization)
+        .order_by(func.count(Doctor.id).desc())
+        .limit(8)
+        .all()
+    )
+    top_specializations = [{"name": s, "count": c} for s, c in spec_rows]
+
+    # ── Recent registrations (last 10) ────────────────────────
+    recent_patients = (
+        db.query(Patient.id, Patient.name, Patient.email, Patient.created_at)
+        .order_by(Patient.created_at.desc())
+        .limit(5)
+        .all()
+    )
+    recent_doctors = (
+        db.query(Doctor.id, Doctor.name, Doctor.specialization, Doctor.created_at)
+        .order_by(Doctor.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    recent_registrations = []
+    for p in recent_patients:
+        recent_registrations.append({
+            "type": "patient",
+            "name": p.name,
+            "detail": p.email,
+            "date": p.created_at.isoformat() if p.created_at else None,
+        })
+    for d in recent_doctors:
+        recent_registrations.append({
+            "type": "doctor",
+            "name": d.name,
+            "detail": d.specialization,
+            "date": d.created_at.isoformat() if d.created_at else None,
+        })
+    # Sort by date descending
+    recent_registrations.sort(key=lambda x: x["date"] or "", reverse=True)
+    recent_registrations = recent_registrations[:10]
+
+    return {
+        "kpi": {
+            "total_patients": total_patients,
+            "active_patients": active_patients,
+            "patient_growth": patient_growth,
+            "patients_this_month": patients_this_month,
+            "total_doctors": total_doctors,
+            "approved_doctors": approved_doctors,
+            "doctor_growth": doctor_growth,
+            "total_appointments": total_appointments,
+            "appointments_this_month": appointments_this_month,
+            "appt_growth": appt_growth,
+            "total_prescriptions": total_prescriptions,
+            "total_ai_consultations": total_ai_consultations,
+            "ai_this_month": ai_this_month,
+            "ai_growth": ai_growth,
+            "total_pharmacies": total_pharmacies,
+            "total_clinics": total_clinics,
+        },
+        "registration_trend": registration_trend,
+        "appointment_trend": appointment_trend,
+        "appointment_statuses": appointment_statuses,
+        "ai_severity": ai_severity,
+        "top_specializations": top_specializations,
+        "recent_registrations": recent_registrations,
     }
 
 
@@ -524,3 +726,88 @@ async def update_pharmacy_status(
 
     return PharmacyResponse.model_validate(pharmacy)
 
+
+# ── Clinic Management ──────────────────────────────────────────────────
+
+@router.get("/clinics", response_model=ClinicsListResponse)
+async def get_all_clinics(
+    skip: int = 0,
+    limit: int = 100,
+    status_filter: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """Get all clinics with optional filters."""
+    query = db.query(Clinic)
+
+    if status_filter == "approved":
+        query = query.filter(Clinic.is_approved == True)
+    elif status_filter == "pending":
+        query = query.filter(Clinic.is_approved == False)
+
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            (Clinic.owner_name.ilike(pattern))
+            | (Clinic.clinic_name.ilike(pattern))
+            | (Clinic.email.ilike(pattern))
+            | (Clinic.phone.ilike(pattern))
+            | (Clinic.licence_number.ilike(pattern))
+        )
+
+    total = query.count()
+    clinics = query.order_by(Clinic.created_at.desc()).offset(skip).limit(limit).all()
+
+    approved = db.query(Clinic).filter(Clinic.is_approved == True).count()
+    pending = db.query(Clinic).filter(Clinic.is_approved == False).count()
+
+    return ClinicsListResponse(
+        clinics=[ClinicResponse.model_validate(c) for c in clinics],
+        total=total,
+        approved=approved,
+        pending=pending,
+    )
+
+
+@router.patch("/clinics/{clinic_id}/approval", response_model=ClinicResponse)
+async def update_clinic_approval(
+    clinic_id: int,
+    approve: bool,
+    db: Session = Depends(get_db),
+):
+    """Approve or deny a clinic signup."""
+    clinic = db.query(Clinic).filter(Clinic.id == clinic_id).first()
+
+    if not clinic:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Clinic not found")
+
+    clinic.is_approved = approve
+    if not approve:
+        clinic.is_active = False
+
+    clinic.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(clinic)
+
+    return ClinicResponse.model_validate(clinic)
+
+
+@router.patch("/clinics/{clinic_id}/status", response_model=ClinicResponse)
+async def update_clinic_status(
+    clinic_id: int,
+    status_update: ClinicStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    """Activate or deactivate a clinic account."""
+    clinic = db.query(Clinic).filter(Clinic.id == clinic_id).first()
+
+    if not clinic:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Clinic not found")
+
+    clinic.is_active = status_update.is_active
+    clinic.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(clinic)
+
+    return ClinicResponse.model_validate(clinic)

@@ -9,6 +9,7 @@ from app.services.auth import (
     get_current_patient,
     get_current_doctor,
     get_current_pharmacy,
+    get_current_clinic,
 )
 from app.services.ai_service import ai_service, AIService
 
@@ -23,6 +24,7 @@ __all__ = [
     "get_current_patient",
     "get_current_doctor",
     "get_current_pharmacy",
+    "get_current_clinic",
     "ai_service",
     "AIService",
 ]
