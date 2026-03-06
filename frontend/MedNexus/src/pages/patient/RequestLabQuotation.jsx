@@ -13,6 +13,8 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  Download,
+  ClipboardList,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import apiService from '../../services/api';
@@ -29,6 +31,8 @@ const RequestLabQuotation = ({ prescriptionId, labTests }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [expandedQuote, setExpandedQuote] = useState(null);
+  const [reports, setReports] = useState({});
+  const [downloadingPdf, setDownloadingPdf] = useState(null);
 
   const loadClinics = useCallback(async () => {
     setLoadingClinics(true);
@@ -47,6 +51,14 @@ const RequestLabQuotation = ({ prescriptionId, labTests }) => {
     try {
       const data = await apiService.request(`/api/lab-quotations/patient/prescription/${prescriptionId}`);
       setQuotations(data);
+      // Load reports for completed requests
+      const completedIds = data.filter(q => q.request.status === 'completed').map(q => q.request.id);
+      for (const rid of completedIds) {
+        try {
+          const rep = await apiService.request(`/api/lab-reports/patient/request/${rid}`);
+          setReports(prev => ({ ...prev, [rid]: rep }));
+        } catch {}
+      }
     } catch (err) {
       console.error('Failed to load lab quotations:', err);
     } finally {
@@ -127,6 +139,28 @@ const RequestLabQuotation = ({ prescriptionId, labTests }) => {
     }
   };
 
+  const handleDownloadReport = async (requestId) => {
+    setDownloadingPdf(requestId);
+    try {
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`http://localhost:8000/api/lab-reports/patient/request/${requestId}/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to download');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `LabReport_${requestId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloadingPdf(null);
+    }
+  };
+
   // Clinics that already have an active (in-progress) request
   const requestedClinicIds = new Set(
     quotations
@@ -135,10 +169,11 @@ const RequestLabQuotation = ({ prescriptionId, labTests }) => {
   );
 
   const statusConfig = {
-    pending:  { icon: <Clock size={13} />,        color: '#f59e0b', label: 'Pending'  },
-    quoted:   { icon: <DollarSign size={13} />,    color: '#0891b2', label: 'Quoted'   },
-    accepted: { icon: <CheckCircle2 size={13} />,  color: '#10b981', label: 'Accepted' },
-    rejected: { icon: <XCircle size={13} />,       color: '#ef4444', label: 'Rejected' },
+    pending:   { icon: <Clock size={13} />,        color: '#f59e0b', label: 'Pending'   },
+    quoted:    { icon: <DollarSign size={13} />,    color: '#0891b2', label: 'Quoted'    },
+    accepted:  { icon: <CheckCircle2 size={13} />,  color: '#10b981', label: 'Accepted'  },
+    rejected:  { icon: <XCircle size={13} />,       color: '#ef4444', label: 'Rejected'  },
+    completed: { icon: <ClipboardList size={13} />, color: '#0e7490', label: 'Report Ready' },
   };
 
   return (
@@ -248,6 +283,65 @@ const RequestLabQuotation = ({ prescriptionId, labTests }) => {
                                     </button>
                                   </div>
                                 )}
+
+                                {/* Lab report for completed requests */}
+                                {q.request.status === 'completed' && reports[q.request.id] && (() => {
+                                  const report = reports[q.request.id];
+                                  const resultItems = (() => { try { return JSON.parse(report.results || '[]'); } catch { return []; } })();
+                                  return (
+                                    <div className="rlq-report-section">
+                                      <div className="rlq-report-header">
+                                        <ClipboardList size={14} /> Lab Report
+                                        <button
+                                          className="rlq-download-btn"
+                                          onClick={() => handleDownloadReport(q.request.id)}
+                                          disabled={downloadingPdf === q.request.id}
+                                        >
+                                          {downloadingPdf === q.request.id
+                                            ? <div className="rlq-spinner rlq-spinner--sm" />
+                                            : <><Download size={13} /> Download PDF</>
+                                          }
+                                        </button>
+                                      </div>
+                                      <table className="rlq-report-table">
+                                        <thead>
+                                          <tr>
+                                            <th>Test</th>
+                                            <th>Result</th>
+                                            <th>Unit</th>
+                                            <th>Ref. Range</th>
+                                            <th>Status</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {resultItems.map((ri, rIdx) => (
+                                            <tr key={rIdx} className={ri.status === 'critical' ? 'rlq-row--critical' : ri.status === 'abnormal' ? 'rlq-row--abnormal' : ''}>
+                                              <td>{ri.test_name}</td>
+                                              <td className="rlq-result-value">{ri.result || '—'}</td>
+                                              <td>{ri.unit || ''}</td>
+                                              <td>{ri.reference_range || ''}</td>
+                                              <td>
+                                                <span className={`rlq-status-pill rlq-status-pill--${ri.status || 'normal'}`}>
+                                                  {(ri.status || 'normal').charAt(0).toUpperCase() + (ri.status || 'normal').slice(1)}
+                                                </span>
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                      {report.summary && (
+                                        <div className="rlq-report-summary">
+                                          <strong>Summary:</strong> {report.summary}
+                                        </div>
+                                      )}
+                                      {report.notes && (
+                                        <div className="rlq-report-notes">
+                                          <strong>Notes:</strong> {report.notes}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
                               </motion.div>
                             )}
                           </AnimatePresence>

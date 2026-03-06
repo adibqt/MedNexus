@@ -21,6 +21,9 @@ import {
   MessageSquare,
   AlertCircle,
   Building2,
+  ClipboardList,
+  Download,
+  FileDown,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './ClinicDashboard.css';
@@ -48,7 +51,7 @@ const ClinicDashboard = () => {
   const hasFetched = useRef(false);
 
   const [clinic, setClinic] = useState(null);
-  const [stats, setStats] = useState(() => readCache(CACHE_STATS) || { total_requests: 0, pending_requests: 0, quoted_requests: 0, accepted_requests: 0 });
+  const [stats, setStats] = useState(() => readCache(CACHE_STATS) || { total_requests: 0, pending_requests: 0, quoted_requests: 0, accepted_requests: 0, completed_requests: 0 });
   const [requests, setRequests] = useState(() => readCache(CACHE_REQS) || []);
   const [loading, setLoading] = useState(() => !readCache(CACHE_REQS));
   const [refreshing, setRefreshing] = useState(false);
@@ -61,6 +64,14 @@ const ClinicDashboard = () => {
   const [homeCollectionFee, setHomeCollectionFee] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  /* ── Report state ──── */
+  const [reportModal, setReportModal] = useState(null);
+  const [reportItems, setReportItems] = useState([]);
+  const [reportSummary, setReportSummary] = useState('');
+  const [reportNotes, setReportNotes] = useState('');
+  const [submittingReport, setSubmittingReport] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(null);
 
   /* ── Auth helpers ──────────────────────── */
   const getClinicHeaders = useCallback(() => {
@@ -213,6 +224,76 @@ const ClinicDashboard = () => {
     }
   };
 
+  /* ── Report handlers ─────────────────── */
+  const openReportModal = (req) => {
+    const tests = (() => { try { return JSON.parse(req.lab_tests_snapshot || '[]'); } catch { return []; } })();
+    setReportItems(tests.map(t => ({
+      test_name: t.name,
+      result: '',
+      unit: '',
+      reference_range: '',
+      status: 'normal',
+      remarks: '',
+    })));
+    setReportSummary('');
+    setReportNotes('');
+    setReportModal(req);
+  };
+
+  const handleReportItemChange = (idx, field, value) => {
+    setReportItems(prev => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleSubmitReport = async () => {
+    setSubmittingReport(true);
+    setError('');
+    try {
+      await clinicRequest('/api/lab-reports/clinic/submit', {
+        method: 'POST',
+        body: JSON.stringify({
+          request_id: reportModal.id,
+          results: reportItems,
+          summary: reportSummary || null,
+          notes: reportNotes || null,
+        }),
+      });
+      setReportModal(null);
+      sessionStorage.removeItem(CACHE_REQS);
+      sessionStorage.removeItem(CACHE_STATS);
+      await loadAll(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
+
+  const handleDownloadReport = async (requestId) => {
+    setDownloadingPdf(requestId);
+    try {
+      const token = localStorage.getItem('clinic_access_token');
+      const res = await fetch(`http://localhost:8000/api/lab-reports/clinic/request/${requestId}/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to download');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `LabReport_${requestId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloadingPdf(null);
+    }
+  };
+
   /* ── Helpers ───────────────────────────── */
   const handleLogout = () => {
     localStorage.removeItem('clinic_access_token');
@@ -241,6 +322,7 @@ const ClinicDashboard = () => {
     quoted: '#6366f1',
     accepted: '#10b981',
     rejected: '#ef4444',
+    completed: '#0891b2',
   };
 
   const statusIcons = {
@@ -248,6 +330,7 @@ const ClinicDashboard = () => {
     quoted: <Send size={13} />,
     accepted: <CheckCircle2 size={13} />,
     rejected: <XCircle size={13} />,
+    completed: <ClipboardList size={13} />,
   };
 
   return (
@@ -288,6 +371,7 @@ const ClinicDashboard = () => {
             { label: 'Pending', value: stats.pending_requests, icon: <Clock size={20} />, color: '#f59e0b' },
             { label: 'Quoted', value: stats.quoted_requests, icon: <Send size={20} />, color: '#0891b2' },
             { label: 'Accepted', value: stats.accepted_requests, icon: <CheckCircle2 size={20} />, color: '#10b981' },
+            { label: 'Completed', value: stats.completed_requests, icon: <ClipboardList size={20} />, color: '#0e7490' },
           ].map((s, i) => (
             <motion.div
               key={s.label}
@@ -309,7 +393,7 @@ const ClinicDashboard = () => {
 
         {/* Tabs */}
         <div className="cld-tabs">
-          {['pending', 'quoted', 'accepted', 'rejected', 'all'].map((tab) => (
+          {['pending', 'quoted', 'accepted', 'completed', 'rejected', 'all'].map((tab) => (
             <button
               key={tab}
               className={`cld-tab ${activeTab === tab ? 'cld-tab--active' : ''}`}
@@ -444,13 +528,31 @@ const ClinicDashboard = () => {
                         )}
 
                         {req.status === 'accepted' && (
-                          <div className="cld-accepted-banner">
-                            <CheckCircle2 size={16} /> Patient accepted your quotation
+                          <div className="cld-card-actions">
+                            <div className="cld-accepted-banner">
+                              <CheckCircle2 size={16} /> Patient accepted your quotation
+                            </div>
+                            <button className="cld-btn cld-btn--report" onClick={() => openReportModal(req)}>
+                              <ClipboardList size={15} /> Submit Lab Report
+                            </button>
                           </div>
                         )}
 
-                        {/* Show submitted quotation pricing for quoted/accepted */}
-                        {(req.status === 'accepted' || req.status === 'quoted') && qResponse && quotedItems.length > 0 && (
+                        {req.status === 'completed' && (
+                          <div className="cld-completed-banner">
+                            <ClipboardList size={16} /> Lab report submitted
+                            <button
+                              className="cld-btn cld-btn--download"
+                              onClick={() => handleDownloadReport(req.id)}
+                              disabled={downloadingPdf === req.id}
+                            >
+                              {downloadingPdf === req.id ? <div className="cld-spinner cld-spinner--sm" /> : <><Download size={14} /> Download PDF</>}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Show submitted quotation pricing for quoted/accepted/completed */}
+                        {['accepted', 'quoted', 'completed'].includes(req.status) && qResponse && quotedItems.length > 0 && (
                           <div className="cld-quote-summary">
                             <h4><DollarSign size={14} /> Your Quotation</h4>
                             <div className="cld-quote-summary-table-wrap">
@@ -640,6 +742,133 @@ const ClinicDashboard = () => {
                 </button>
                 <button className="cld-btn cld-btn--primary" onClick={handleSubmitQuote} disabled={submitting}>
                   {submitting ? <div className="cld-spinner cld-spinner--sm" /> : <><Send size={15} /> Submit Quotation</>}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Report Modal ───────────────────── */}
+      <AnimatePresence>
+        {reportModal && (
+          <motion.div
+            className="cld-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setReportModal(null)}
+          >
+            <motion.div
+              className="cld-modal cld-modal--report"
+              initial={{ opacity: 0, y: 30, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.97 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="cld-modal-header">
+                <h2><ClipboardList size={20} /> Submit Lab Report</h2>
+                <p>for {reportModal.patient_name || 'Patient'}</p>
+              </div>
+
+              <div className="cld-modal-body">
+                <div className="cld-report-table-wrap">
+                  <table className="cld-report-table">
+                    <thead>
+                      <tr>
+                        <th>Test Name</th>
+                        <th style={{ width: 100 }}>Result</th>
+                        <th style={{ width: 70 }}>Unit</th>
+                        <th style={{ width: 110 }}>Ref. Range</th>
+                        <th style={{ width: 90 }}>Status</th>
+                        <th style={{ width: 110 }}>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reportItems.map((item, idx) => (
+                        <tr key={idx} className={item.status === 'critical' ? 'cld-report-row--critical' : item.status === 'abnormal' ? 'cld-report-row--abnormal' : ''}>
+                          <td className="cld-report-test">{item.test_name}</td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.result}
+                              onChange={(e) => handleReportItemChange(idx, 'result', e.target.value)}
+                              className="cld-quote-input"
+                              placeholder="Value"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.unit}
+                              onChange={(e) => handleReportItemChange(idx, 'unit', e.target.value)}
+                              className="cld-quote-input"
+                              placeholder="e.g. mg/dL"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.reference_range}
+                              onChange={(e) => handleReportItemChange(idx, 'reference_range', e.target.value)}
+                              className="cld-quote-input"
+                              placeholder="e.g. 70-110"
+                            />
+                          </td>
+                          <td>
+                            <select
+                              value={item.status}
+                              onChange={(e) => handleReportItemChange(idx, 'status', e.target.value)}
+                              className="cld-report-select"
+                            >
+                              <option value="normal">Normal</option>
+                              <option value="abnormal">Abnormal</option>
+                              <option value="critical">Critical</option>
+                            </select>
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.remarks}
+                              onChange={(e) => handleReportItemChange(idx, 'remarks', e.target.value)}
+                              className="cld-quote-input"
+                              placeholder="Optional"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="cld-report-extras">
+                  <div className="cld-quote-notes">
+                    <label>Summary / Impression (optional)</label>
+                    <textarea
+                      value={reportSummary}
+                      onChange={(e) => setReportSummary(e.target.value)}
+                      placeholder="e.g. All values within normal range..."
+                      rows={2}
+                    />
+                  </div>
+                  <div className="cld-quote-notes">
+                    <label>Notes for Patient (optional)</label>
+                    <textarea
+                      value={reportNotes}
+                      onChange={(e) => setReportNotes(e.target.value)}
+                      placeholder="e.g. Please consult your doctor with these results..."
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cld-modal-footer">
+                <button className="cld-btn cld-btn--ghost" onClick={() => setReportModal(null)} disabled={submittingReport}>
+                  Cancel
+                </button>
+                <button className="cld-btn cld-btn--report" onClick={handleSubmitReport} disabled={submittingReport}>
+                  {submittingReport ? <div className="cld-spinner cld-spinner--sm" /> : <><ClipboardList size={15} /> Submit Report</>}
                 </button>
               </div>
             </motion.div>

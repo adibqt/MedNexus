@@ -401,6 +401,93 @@
   transform: none;
 }
 
+/* ═══ Lab Report Section ═══ */
+.rlq-report-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-radius: 10px;
+}
+.rlq-report-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e7490;
+  margin-bottom: 12px;
+}
+.rlq-download-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rlq-download-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.rlq-download-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.rlq-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.rlq-report-table th {
+  background: #cffafe;
+  color: #0e7490;
+  padding: 8px 8px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rlq-report-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e0f2fe;
+  color: #1f2937;
+}
+.rlq-result-value { font-weight: 700; }
+
+.rlq-row--critical td { background: #fef2f2; }
+.rlq-row--abnormal td { background: #fffbeb; }
+
+.rlq-status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.rlq-status-pill--normal { background: #dcfce7; color: #15803d; }
+.rlq-status-pill--abnormal { background: #fef9c3; color: #a16207; }
+.rlq-status-pill--critical { background: #fee2e2; color: #dc2626; }
+
+.rlq-report-summary {
+  padding: 10px 12px;
+  background: #eff6ff;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e3a5f;
+  margin-bottom: 8px;
+}
+.rlq-report-notes {
+  padding: 10px 12px;
+  background: #fffbeb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #78350f;
+}
+
 /* ═══ Print: hide lab quotation UI ═══ */
 @media print {
   .rlq-wrapper { display: none !important; }
@@ -411,4 +498,5 @@
   .rlq-clinic-card { flex-direction: column; align-items: flex-start; gap: 10px; }
   .rlq-clinic-action { align-self: flex-end; }
   .rlq-items-table { font-size: 11px; }
+  .rlq-report-table { font-size: 10px; }
 }

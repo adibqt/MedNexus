@@ -91,7 +91,7 @@
 /* ── Stats ───────────────────── */
 .cld-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 28px;
 }
@@ -394,13 +394,109 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 20px 16px;
   padding: 12px 16px;
   background: #ecfdf5;
   border-radius: 10px;
   color: #059669;
   font-size: 13px;
   font-weight: 600;
+  flex: 1;
+}
+
+.cld-btn--report {
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.cld-btn--report:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.cld-btn--report:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.cld-btn--download {
+  background: transparent;
+  color: #0891b2;
+  border: 1.5px solid #0891b2;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+.cld-btn--download:hover { background: #ecfeff; }
+.cld-btn--download:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.cld-completed-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 16px;
+  padding: 12px 16px;
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-radius: 10px;
+  color: #0e7490;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ═══════ Report Modal extras ═══════ */
+.cld-modal--report { max-width: 820px; }
+
+.cld-report-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+.cld-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.cld-report-table th {
+  background: #e0f7fa;
+  color: #0e7490;
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cld-report-table td { padding: 8px 6px; border-bottom: 1px solid #f1f5f9; }
+.cld-report-test { font-weight: 600; color: #0f172a; }
+
+.cld-report-row--critical td { background: #fef2f2; }
+.cld-report-row--abnormal td { background: #fffbeb; }
+
+.cld-report-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #1f2937;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.cld-report-select:focus { border-color: #0891b2; box-shadow: 0 0 0 2px rgba(8,145,178,0.12); }
+
+.cld-report-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* ═══════ Quote Summary (accepted / quoted) ═══════ */
@@ -676,6 +772,9 @@
 }
 
 /* ═══════ Responsive ═══════ */
+@media (max-width: 900px) {
+  .cld-stats { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 768px) {
   .cld-stats { grid-template-columns: repeat(2, 1fr); }
   .cld-detail-grid { grid-template-columns: 1fr; }
@@ -683,6 +782,7 @@
   .cld-header { padding: 12px 16px; }
   .cld-content { padding: 16px 12px 40px; }
   .cld-quote-table { font-size: 12px; }
+  .cld-report-table { font-size: 11px; }
   .cld-modal { margin: 10px; max-height: 95vh; }
 }
 @media (max-width: 480px) {

@@ -360,10 +360,14 @@ async def get_clinic_stats(
     accepted = db.query(LQReqModel).filter(
         LQReqModel.clinic_id == current_clinic.id, LQReqModel.status == "accepted"
     ).count()
+    completed = db.query(LQReqModel).filter(
+        LQReqModel.clinic_id == current_clinic.id, LQReqModel.status == "completed"
+    ).count()
 
     return {
         "total_requests": total,
         "pending_requests": pending,
         "quoted_requests": quoted,
         "accepted_requests": accepted,
+        "completed_requests": completed,
     }
