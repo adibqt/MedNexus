@@ -415,6 +415,10 @@ class ApiService {
     return this.adminRequest('/api/admin/stats');
   }
 
+  async getAdminOverviewStats() {
+    return this.adminRequest('/api/admin/overview-stats');
+  }
+
   async getAllDoctors(params = {}) {
     const queryParams = new URLSearchParams();
     if (params.skip) queryParams.append('skip', params.skip);

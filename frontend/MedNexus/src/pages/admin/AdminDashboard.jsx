@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Activity,
   Users,
   Stethoscope,
-  CalendarClock,
   Cpu,
-  Shield,
   LogOut,
-  Bell,
-  Search,
   TrendingUp,
-  AlertTriangle,
   X,
   Pill,
   Building2,
   Microscope,
   FileText,
   User,
-  Menu,
   Heart,
-  Trash2,
   Video,
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -33,40 +25,7 @@ import PharmacyManagement from './PharmacyManagement';
 import ClinicManagement from './ClinicManagement';
 import './AdminDashboard.css';
 
-const statCards = [
-  {
-    label: 'Total Patients',
-    value: '18,245',
-    change: '+12.4%',
-    trend: 'up',
-    icon: Users,
-    gradient: 'linear-gradient(135deg, #10b981, #06b6d4)',
-  },
-  {
-    label: 'Active Doctors',
-    value: '248',
-    change: '+6.8%',
-    trend: 'up',
-    icon: Stethoscope,
-    gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-  },
-  {
-    label: "Today's Appointments",
-    value: '732',
-    change: '+3.1%',
-    trend: 'up',
-    icon: CalendarClock,
-    gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-  },
-  {
-    label: 'System Alerts',
-    value: '3',
-    change: '2 critical',
-    trend: 'down',
-    icon: AlertTriangle,
-    gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
-  },
-];
+const AdminOverview = lazy(() => import('./AdminOverview'));
 
 const AdminDashboard = () => {
   const { logout } = useAdminAuth();
@@ -196,30 +155,6 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <div className="admin-main">
-        {/* Header */}
-        <header className="admin-header">
-          <div className="admin-header-left">
-            <button className="admin-header-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-              <Heart size={20} />
-            </button>
-            <div className="admin-header-title">
-              <h2>Dashboard</h2>
-              <p>Admin Control Center</p>
-            </div>
-          </div>
-
-          <div className="admin-header-right">
-            <div className="admin-search-box">
-              <Search />
-              <input type="text" placeholder="Search patients, doctors, alerts..." />
-            </div>
-            <button className="admin-notification-btn">
-              <Bell size={20} />
-              <span className="admin-notification-badge" />
-            </button>
-          </div>
-        </header>
-
         {/* Content */}
         <main className="admin-content">
           {/* Conditionally render based on active nav */}
@@ -335,30 +270,13 @@ const AdminDashboard = () => {
               </motion.div>
             </div>
           ) : (
-            <div className="admin-dashboard-content">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="admin-chart-card"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: '400px',
-                  textAlign: 'center',
-                }}
-              >
-                <div>
-                  <Activity size={64} style={{ color: '#10b981', marginBottom: '20px' }} />
-                  <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', marginBottom: '12px' }}>
-                    Dashboard Analytics
-                  </h2>
-                  <p style={{ fontSize: '16px', color: '#6b7280' }}>
-                    Work in progress - Coming soon
-                  </p>
-                </div>
-              </motion.div>
-            </div>
+            <Suspense fallback={
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #e5e7eb', borderTopColor: '#6366f1', animation: 'ov-spin 0.7s linear infinite' }} />
+              </div>
+            }>
+              <AdminOverview />
+            </Suspense>
           )}
         </main>
       </div>
