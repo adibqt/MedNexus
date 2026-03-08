@@ -63,15 +63,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signIn = async (credentials) => {
+    console.log('DEBUG: AuthContext - Sign in process started', { email: credentials.email });
     setError(null);
     try {
       const response = await apiService.patientSignIn(credentials);
+      console.log('DEBUG: AuthContext - Sign in successful, storing auth data');
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
       localStorage.setItem('user', JSON.stringify(response.user));
       setUser(response.user);
       return response;
     } catch (err) {
+      console.error('DEBUG: AuthContext - Sign in failed', err);
       setError(err.message);
       throw err;
     }

@@ -41,15 +41,19 @@ const Auth = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    console.log('DEBUG: Patient sign-in initiated', { email: signInData.email });
+    console.log('DEBUG: Sending authentication request to backend...');
     setLoading(true);
     setError('');
     try {
       const response = await apiService.loginPatient(signInData.email, signInData.password);
+      console.log('DEBUG: Authentication successful, storing tokens');
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.patient));
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
+      console.error('DEBUG: Authentication failed', err.response?.data);
       setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
@@ -58,6 +62,7 @@ const Auth = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    console.log('DEBUG: Patient registration initiated', { email: signUpData.email, name: signUpData.fullName });
     setLoading(true);
     setError('');
 
