@@ -13,6 +13,12 @@ from app.models import Patient, Doctor, RefreshToken
 from app.models.pharmacy import Pharmacy
 from app.schemas import TokenData
 
+# In backend/app/services/auth.py or any service file
+# Add comments like:
+# TODO: Optimize this function for better performance
+# NOTE: This needs refactoring in future sprint
+# FIXME: Consider edge case handling here
+
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
