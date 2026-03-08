@@ -61,6 +61,47 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
+    # Edge case: Validate input for whitespace-only strings
+    if not patient_data.name or not patient_data.name.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Name cannot be empty or whitespace only"
+        )
+    
+    if not patient_data.email or not patient_data.email.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email cannot be empty or whitespace only"
+        )
+    
+    # Edge case: Validate name length
+    if len(patient_data.name.strip()) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Name must be at least 2 characters long"
+        )
+    
+    if len(patient_data.name.strip()) > 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Name cannot exceed 100 characters"
+        )
+    
+    # Edge case: Validate email format more strictly
+    if '@' not in patient_data.email or '.' not in patient_data.email.split('@')[-1]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid email format"
+        )
+    
+    # Edge case: Validate phone number format
+    phone_digits = ''.join(filter(str.isdigit, patient_data.phone))
+    if len(phone_digits) < 10 or len(phone_digits) > 15:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number must be between 10-15 digits"
+        )
+    
     # Check if email already exists
     existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
     if existing_email:
@@ -115,6 +156,26 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
 @router.post("/signin", response_model=TokenWithRefresh)
 async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     """Sign in a patient"""
+    # Edge case: Validate credentials are not empty or whitespace
+    if not credentials.email or not credentials.email.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email cannot be empty"
+        )
+    
+    if not credentials.password or not credentials.password.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password cannot be empty"
+        )
+    
+    # Edge case: Basic email format validation
+    if '@' not in credentials.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid email format"
+        )
+    
     # Find patient by email
     patient = db.query(Patient).filter(Patient.email == credentials.email).first()
     
