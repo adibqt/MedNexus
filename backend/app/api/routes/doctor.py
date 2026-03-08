@@ -28,41 +28,28 @@ MAX_DOC_SIZE = 10 * 1024 * 1024  # 10MB
 
 
 def _save_upload(file: UploadFile, subdir: str) -> str:
-    """Helper function to save uploaded files with validation"""
-    # Extract file extension and normalize to lowercase for comparison
     ext = Path(file.filename).suffix.lower()
-    # Security: Validate file extension against whitelist
-    # This prevents upload of potentially dangerous file types
     if ext not in ALLOWED_DOC_EXT:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_DOC_EXT)}",
         )
 
-    # Read file content into memory for size validation
     content = file.file.read()
-    # Security: Enforce maximum file size to prevent DoS attacks
-    # and manage storage space effectively
     if len(content) > MAX_DOC_SIZE:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File size exceeds 10MB limit",
         )
 
-    # Create subdirectory if it doesn't exist (e.g., 'mbbs', 'fcps', 'profile')
-    # This organizes uploaded documents by type
     subdir_path = DOCS_UPLOAD_DIR / subdir
     subdir_path.mkdir(parents=True, exist_ok=True)
 
-    # Generate unique filename using UUID to prevent collisions
-    # Preserves original file extension for proper file type handling
     filename = f"{uuid.uuid4().hex}{ext}"
     final_path = subdir_path / filename
-    # Write file content to disk
     with open(final_path, "wb") as f:
         f.write(content)
 
-    # Return relative URL path for database storage and client access
     return f"/uploads/doctor_documents/{subdir}/{filename}"
 
 

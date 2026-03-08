@@ -19,11 +19,8 @@ router = APIRouter(prefix="/api/appointments", tags=["appointments"])
 
 def parse_schedule(schedule_json: Optional[str]) -> dict:
     """Parse doctor schedule JSON and return default if None."""
-    # Handle case where doctor hasn't set a custom schedule yet
-    # Provide sensible default: standard business hours, weekdays only
     if not schedule_json:
         # Default schedule: Mon-Fri, 9 AM - 5 PM
-        # Weekend slots are disabled by default as most clinics are closed
         return {
             "Mon": {"enabled": True, "start": "09:00", "end": "17:00"},
             "Tue": {"enabled": True, "start": "09:00", "end": "17:00"},
@@ -34,13 +31,9 @@ def parse_schedule(schedule_json: Optional[str]) -> dict:
             "Sun": {"enabled": False, "start": "09:00", "end": "17:00"},
         }
     try:
-        # Attempt to parse JSON schedule from database
-        # Schedule format: {"Day": {"enabled": bool, "start": "HH:MM", "end": "HH:MM"}}
         return json.loads(schedule_json)
     except (json.JSONDecodeError, TypeError):
-        # Gracefully handle malformed JSON or data corruption
-        # Return default schedule rather than failing completely
-        # This ensures the system remains functional even with bad data
+        # Return default if parsing fails
         return {
             "Mon": {"enabled": True, "start": "09:00", "end": "17:00"},
             "Tue": {"enabled": True, "start": "09:00", "end": "17:00"},
