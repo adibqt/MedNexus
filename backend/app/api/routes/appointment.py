@@ -78,6 +78,8 @@ async def get_available_slots(
     """
     Get available time slots for a doctor on a specific date.
     """
+    print(f"DEBUG: Fetching slots for doctor ID: {doctor_id}")  
+    print(f"DEBUG: Selected date: {selected_date}") 
     # Check if doctor exists
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
@@ -170,6 +172,8 @@ async def book_appointment(
     """
     Book an appointment with a doctor.
     """
+    print(f"DEBUG: Booking appointment for patient ID: {current_patient.id}") 
+    print(f"DEBUG: Appointment data - Doctor: {appointment_data.doctor_id}, Date: {appointment_data.appointment_date}")  
     # Check if doctor exists
     doctor = db.query(Doctor).filter(Doctor.id == appointment_data.doctor_id).first()
     if not doctor:

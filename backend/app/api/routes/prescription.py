@@ -66,6 +66,7 @@ async def get_completed_appointments(
     db: Session = Depends(get_db),
 ):
     """Return all completed appointments for the current doctor, with prescription status."""
+    print(f"DEBUG: Fetching completed appointments for doctor ID: {current_doctor.id}") 
     appointments = db.query(Appointment).filter(
         Appointment.doctor_id == current_doctor.id,
         Appointment.status == "Completed",
@@ -100,6 +101,9 @@ async def create_prescription(
     db: Session = Depends(get_db),
 ):
     """Create a new prescription for a completed appointment."""
+    print(f"DEBUG: Creating prescription for appointment ID: {payload.appointment_id}")  
+    print(f"DEBUG: Doctor ID: {current_doctor.id}")  
+
     appointment = db.query(Appointment).filter(
         Appointment.id == payload.appointment_id,
         Appointment.doctor_id == current_doctor.id,

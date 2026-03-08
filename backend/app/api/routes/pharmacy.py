@@ -26,6 +26,9 @@ router = APIRouter(prefix="/api/pharmacies", tags=["pharmacies"])
 @router.post("/signup", response_model=PharmacyResponse, status_code=status.HTTP_201_CREATED)
 async def pharmacy_signup(payload: PharmacySignUp, db: Session = Depends(get_db)):
     """Register a new pharmacy. Account must be approved by admin before login."""
+    print(f"DEBUG: Pharmacy signup request - Name: {payload.pharmacy_name}")  
+    print(f"DEBUG: Pharmacy owner: {payload.owner_name}")  
+
 
     # Uniqueness checks
     if db.query(Pharmacy).filter(Pharmacy.email == payload.email).first():
@@ -71,6 +74,7 @@ async def pharmacy_signup(payload: PharmacySignUp, db: Session = Depends(get_db)
 @router.post("/signin", response_model=PharmacyToken)
 async def pharmacy_signin(credentials: PharmacySignIn, db: Session = Depends(get_db)):
     """Sign in a pharmacy owner using email and password."""
+    print(f"DEBUG: Pharmacy login attempt for email: {credentials.email}")  
 
     pharmacy = db.query(Pharmacy).filter(Pharmacy.email == credentials.email).first()
 
