@@ -43,37 +43,6 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
-    // Client-side validation for edge cases
-    // Validate email is not empty or whitespace
-    if (!signInData.email || !signInData.email.trim()) {
-      setError('Email cannot be empty');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(signInData.email.trim())) {
-      setError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate password is not empty
-    if (!signInData.password || !signInData.password.trim()) {
-      setError('Password cannot be empty');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate password minimum length
-    if (signInData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      setLoading(false);
-      return;
-    }
-    
     try {
       const response = await apiService.loginPatient(signInData.email, signInData.password);
       localStorage.setItem('access_token', response.access_token);
@@ -91,50 +60,6 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
-    // Client-side validation for edge cases
-    // Validate full name is not empty or whitespace
-    if (!signUpData.fullName || !signUpData.fullName.trim()) {
-      setError('Name cannot be empty');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate name length
-    if (signUpData.fullName.trim().length < 2) {
-      setError('Name must be at least 2 characters');
-      setLoading(false);
-      return;
-    }
-    
-    if (signUpData.fullName.trim().length > 100) {
-      setError('Name cannot exceed 100 characters');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(signUpData.email.trim())) {
-      setError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate phone number
-    if (!signUpData.phone || !signUpData.phone.trim()) {
-      setError('Phone number cannot be empty');
-      setLoading(false);
-      return;
-    }
-    
-    // Extract digits only from phone
-    const phoneDigits = signUpData.phone.replace(/\D/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-      setError('Phone number must be between 10-15 digits');
-      setLoading(false);
-      return;
-    }
 
     if (signUpData.password !== signUpData.confirmPassword) {
       setError('Passwords do not match');
@@ -144,13 +69,6 @@ const Auth = () => {
 
     if (signUpData.password.length < 6) {
       setError('Password must be at least 6 characters');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate password maximum length
-    if (signUpData.password.length > 128) {
-      setError('Password cannot exceed 128 characters');
       setLoading(false);
       return;
     }
