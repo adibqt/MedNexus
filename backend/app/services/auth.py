@@ -28,45 +28,64 @@ security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
-    # Truncate to 72 bytes (bcrypt limit) to match hashing
+    # Security: Truncate to 72 bytes (bcrypt limit) to match hashing behavior
+    # This prevents issues with very long passwords that bcrypt cannot handle
+    # Bcrypt has a maximum password length of 72 bytes
     plain_password = plain_password[:72]
+    # Use passlib's verify method to compare passwords securely
+    # This uses constant-time comparison to prevent timing attacks
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
-    # Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
+    # Security: Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
+    # This ensures consistent behavior across different bcrypt implementations
+    # Passwords longer than 72 bytes are automatically truncated by bcrypt anyway
     password = password[:72]
+    # Generate secure hash using bcrypt algorithm
+    # Cost factor is configured in CryptContext initialization
     return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
+    # Create a copy to avoid modifying the original data dictionary
     to_encode = data.copy()
+    # Calculate expiration time
+    # If custom expiration is provided, use it; otherwise use default from settings
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
+        # Default expiration from application settings
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Add expiration claim to token payload
     to_encode.update({"exp": expire})
+    # Encode JWT using configured secret key and algorithm
+    # The token can be decoded and verified by anyone with the secret key
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 
 def create_refresh_token(user_id: int, user_type: str, db: Session) -> str:
     """Create a refresh token and store it in the database"""
-    # Generate a secure random token
+    # Generate a secure random token using URL-safe base64 encoding
+    # This produces a 32-byte random token suitable for URLs
     token = secrets.token_urlsafe(32)
     
-    # Calculate expiration
+    # Calculate expiration timestamp
+    # Refresh tokens typically have longer lifespans than access tokens
     expires_at = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     
-    # Store in database
+    # Store token in database for server-side validation
+    # This allows us to revoke tokens if needed
     db_token = RefreshToken(
         token=token,
         user_id=user_id,
-        user_type=user_type,
+        user_type=user_type,  # Track which type of user (patient, doctor, etc.)
         expires_at=expires_at
     )
+    # Persist to database
     db.add(db_token)
     db.commit()
     
