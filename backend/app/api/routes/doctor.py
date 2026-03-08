@@ -66,6 +66,44 @@ async def doctor_signup(
     db: Session = Depends(get_db),
 ):
     """Register a new doctor. Account must be approved by admin before activation."""
+    
+    # Defensive: Validate all fields are not empty or whitespace
+    if not name or not name.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Doctor name cannot be empty"
+        )
+    
+    if not phone or not phone.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number cannot be empty"
+        )
+    
+    if not specialization or not specialization.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Specialization cannot be empty"
+        )
+    
+    if not bmdc_number or not bmdc_number.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="BMDC number cannot be empty"
+        )
+    
+    if not password or len(password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters"
+        )
+    
+    # Defensive: Validate MBBS certificate file is provided
+    if not mbbs_certificate or not mbbs_certificate.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="MBBS certificate is required"
+        )
 
     # Uniqueness checks
     # TODO: Add rate limiting for signup attempts to prevent abuse
