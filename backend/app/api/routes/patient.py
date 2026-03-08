@@ -62,8 +62,6 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
         # In backend API routes
-    print(f"DEBUG: Received request data: {data}")
-    print(f"DEBUG: Processing user ID: {user_id}")
     # Check if email already exists
     existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
     if existing_email:
