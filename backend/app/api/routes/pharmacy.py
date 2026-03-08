@@ -74,7 +74,6 @@ async def pharmacy_signup(payload: PharmacySignUp, db: Session = Depends(get_db)
 @router.post("/signin", response_model=PharmacyToken)
 async def pharmacy_signin(credentials: PharmacySignIn, db: Session = Depends(get_db)):
     """Sign in a pharmacy owner using email and password."""
-    print(f"DEBUG: Pharmacy login attempt for email: {credentials.email}")  
 
     pharmacy = db.query(Pharmacy).filter(Pharmacy.email == credentials.email).first()
 

@@ -66,8 +66,6 @@ async def doctor_signup(
     db: Session = Depends(get_db),
 ):
     """Register a new doctor. Account must be approved by admin before activation."""
-    print(f"DEBUG: Received doctor signup request for: {name}")  
-    print(f"DEBUG: Doctor BMDC number: {bmdc_number}")  
 
     # Uniqueness checks
     # TODO: Add rate limiting for signup attempts to prevent abuse

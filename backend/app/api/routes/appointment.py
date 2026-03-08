@@ -172,8 +172,6 @@ async def book_appointment(
     """
     Book an appointment with a doctor.
     """
-    print(f"DEBUG: Booking appointment for patient ID: {current_patient.id}") 
-    print(f"DEBUG: Appointment data - Doctor: {appointment_data.doctor_id}, Date: {appointment_data.appointment_date}")  
     # Check if doctor exists
     # TODO: Implement appointment reminder notifications
     doctor = db.query(Doctor).filter(Doctor.id == appointment_data.doctor_id).first()
