@@ -61,7 +61,9 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
-        # In backend API routes
+    print(f"DEBUG: Patient signup request received - Email: {patient_data.email}")
+    print(f"DEBUG: Patient details - Name: {patient_data.name}, Phone: {patient_data.phone}")
+    
     # Check if email already exists
     existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
     if existing_email:
@@ -116,7 +118,9 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
 @router.post("/signin", response_model=TokenWithRefresh)
 async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     """Sign in a patient"""
-    print(f"DEBUG: Received login request for email: {credentials.email}")
+    print(f"DEBUG: Patient signin attempt - Email: {credentials.email}")
+    print(f"DEBUG: Authenticating patient credentials...")
+    
     # Find patient by email
     patient = db.query(Patient).filter(Patient.email == credentials.email).first()
     
