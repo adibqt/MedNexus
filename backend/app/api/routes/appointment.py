@@ -80,28 +80,6 @@ async def get_available_slots(
     """
     print(f"DEBUG: Fetching slots for doctor ID: {doctor_id}")  
     print(f"DEBUG: Selected date: {selected_date}") 
-    
-    # Defensive: Validate doctor_id is positive
-    if doctor_id is None or doctor_id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid doctor ID"
-        )
-    
-    # Defensive: Validate date is not None and not in the past
-    from datetime import date as date_type
-    if selected_date is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Date cannot be empty"
-        )
-    
-    if selected_date < date_type.today():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot book appointments in the past"
-        )
-    
     # Check if doctor exists
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
@@ -194,48 +172,6 @@ async def book_appointment(
     """
     Book an appointment with a doctor.
     """
-    # Defensive: Validate all required fields are present
-    if appointment_data.doctor_id is None or appointment_data.doctor_id <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid doctor ID"
-        )
-    
-    if appointment_data.appointment_date is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Appointment date is required"
-        )
-    
-    if appointment_data.appointment_time is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Appointment time is required"
-        )
-    
-    # Defensive: Validate date is not in the past
-    from datetime import date as date_type, datetime, timedelta
-    if appointment_data.appointment_date < date_type.today():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot book appointments in the past"
-        )
-    
-    # Defensive: Validate date is not too far in future (e.g., max 90 days)
-    max_future_date = date_type.today() + timedelta(days=90)
-    if appointment_data.appointment_date > max_future_date:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot book appointments more than 90 days in advance"
-        )
-    
-    # Defensive: Validate reason is not empty or whitespace
-    if appointment_data.reason and not appointment_data.reason.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Reason cannot be empty or whitespace only"
-        )
-    
     # Check if doctor exists
     # TODO: Implement appointment reminder notifications
     doctor = db.query(Doctor).filter(Doctor.id == appointment_data.doctor_id).first()
