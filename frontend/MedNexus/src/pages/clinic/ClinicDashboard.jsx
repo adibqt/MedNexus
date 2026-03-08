@@ -28,7 +28,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import './ClinicDashboard.css';
 
-/* ── Cache ──────────────────────────────── */
+
+/* ── Cache ────────────────────────────────  */
 const CACHE_STATS = 'cld_stats_v1';
 const CACHE_REQS  = 'cld_requests_v1';
 const CACHE_TTL   = 3 * 60 * 1000;
@@ -45,6 +46,7 @@ const readCache = (k) => {
 const writeCache = (k, d) => {
   try { sessionStorage.setItem(k, JSON.stringify({ ts: Date.now(), data: d })); } catch {}
 };
+
 
 const ClinicDashboard = () => {
   const navigate = useNavigate();
