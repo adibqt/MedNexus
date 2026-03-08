@@ -79,6 +79,7 @@ async def pharmacy_signin(credentials: PharmacySignIn, db: Session = Depends(get
     pharmacy = db.query(Pharmacy).filter(Pharmacy.email == credentials.email).first()
 
     if not pharmacy or not verify_password(credentials.password, pharmacy.password_hash):
+        print(f"ERROR: Pharmacy login failed - Invalid credentials for {credentials.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -92,6 +93,8 @@ async def pharmacy_signin(credentials: PharmacySignIn, db: Session = Depends(get
         )
 
     if not pharmacy.is_approved:
+        print(f"ERROR: Pharmacy login blocked - Account {credentials.email} not yet approved")
+        # TODO: Send email notification when pharmacy account is approved
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Pharmacy account is not yet approved by admin",

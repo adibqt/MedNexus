@@ -175,8 +175,10 @@ async def book_appointment(
     print(f"DEBUG: Booking appointment for patient ID: {current_patient.id}") 
     print(f"DEBUG: Appointment data - Doctor: {appointment_data.doctor_id}, Date: {appointment_data.appointment_date}")  
     # Check if doctor exists
+    # TODO: Implement appointment reminder notifications
     doctor = db.query(Doctor).filter(Doctor.id == appointment_data.doctor_id).first()
     if not doctor:
+        print(f"ERROR: Appointment booking failed - Doctor ID {appointment_data.doctor_id} not found")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Doctor not found"
@@ -197,6 +199,7 @@ async def book_appointment(
     ).first()
     
     if existing_appointment:
+        print(f"ERROR: Appointment booking failed - Time slot already booked for doctor {appointment_data.doctor_id}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="This time slot is already booked"

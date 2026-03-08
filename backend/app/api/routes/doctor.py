@@ -70,8 +70,10 @@ async def doctor_signup(
     print(f"DEBUG: Doctor BMDC number: {bmdc_number}")  
 
     # Uniqueness checks
+    # TODO: Add rate limiting for signup attempts to prevent abuse
     existing_phone = db.query(Doctor).filter(Doctor.phone == phone).first()
     if existing_phone:
+        print(f"ERROR: Doctor signup failed - Phone {phone} already registered")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Phone number already registered for a doctor",
@@ -79,6 +81,7 @@ async def doctor_signup(
 
     existing_bmdc = db.query(Doctor).filter(Doctor.bmdc_number == bmdc_number).first()
     if existing_bmdc:
+        print(f"ERROR: Doctor signup failed - BMDC number {bmdc_number} already used")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="BMDC number already used",
