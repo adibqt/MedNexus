@@ -44,23 +44,6 @@ const Auth = () => {
     }
   }, [navigate]);
 
-  const handleSignIn = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const response = await apiService.loginPatient(signInData.email, signInData.password);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.patient));
-      setSuccess('Login successful! Redirecting...');
-      setTimeout(() => navigate('/patient/dashboard'), 1000);
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid email or password');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -98,6 +81,23 @@ const Auth = () => {
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const response = await apiService.loginPatient(signInData.email, signInData.password);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.patient));
+      setSuccess('Login successful! Redirecting...');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }

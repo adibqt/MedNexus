@@ -163,6 +163,27 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     )
 
 
+@router.post("/complete-profile", response_model=PatientResponse)
+async def complete_profile(
+    profile_data: ProfileComplete,
+    db: Session = Depends(get_db),
+    current_patient: Patient = Depends(get_current_patient)
+):
+    """Complete patient's profile with health information"""
+    current_patient.age = profile_data.age
+    current_patient.gender = profile_data.gender
+    current_patient.weight = profile_data.weight
+    current_patient.height = profile_data.height
+    current_patient.blood_group = profile_data.blood_group
+    current_patient.medical_conditions = profile_data.medical_conditions
+    current_patient.is_profile_complete = True
+    
+    db.commit()
+    db.refresh(current_patient)
+    
+    return PatientResponse.model_validate(current_patient)
+
+
 @router.post("/refresh", response_model=TokenWithRefresh)
 async def refresh_access_token(
     request: RefreshTokenRequest,
@@ -202,27 +223,6 @@ async def refresh_access_token(
 @router.get("/me", response_model=PatientResponse)
 async def get_profile(current_patient: Patient = Depends(get_current_patient)):
     """Get current patient's profile"""
-    return PatientResponse.model_validate(current_patient)
-
-
-@router.post("/complete-profile", response_model=PatientResponse)
-async def complete_profile(
-    profile_data: ProfileComplete,
-    db: Session = Depends(get_db),
-    current_patient: Patient = Depends(get_current_patient)
-):
-    """Complete patient's profile with health information"""
-    current_patient.age = profile_data.age
-    current_patient.gender = profile_data.gender
-    current_patient.weight = profile_data.weight
-    current_patient.height = profile_data.height
-    current_patient.blood_group = profile_data.blood_group
-    current_patient.medical_conditions = profile_data.medical_conditions
-    current_patient.is_profile_complete = True
-    
-    db.commit()
-    db.refresh(current_patient)
-    
     return PatientResponse.model_validate(current_patient)
 
 
