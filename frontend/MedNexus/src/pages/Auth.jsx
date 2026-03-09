@@ -4,30 +4,6 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import apiService from '../services/api';
 
-// Constants
-const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'access_token',
-  USER: 'user'
-};
-
-const ROUTES = {
-  PATIENT_DASHBOARD: '/patient/dashboard'
-};
-
-const VALIDATION = {
-  MIN_PASSWORD_LENGTH: 6,
-  REDIRECT_DELAY: 1000
-};
-
-const MESSAGES = {
-  PASSWORDS_MISMATCH: 'Passwords do not match',
-  PASSWORD_TOO_SHORT: 'Password must be at least 6 characters',
-  LOGIN_SUCCESS: 'Login successful! Redirecting...',
-  SIGNUP_SUCCESS: 'Account created successfully! Redirecting...',
-  INVALID_CREDENTIALS: 'Invalid email or password',
-  REGISTRATION_FAILED: 'Registration failed. Please try again.'
-};
-
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
@@ -57,9 +33,9 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if already logged in
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const token = localStorage.getItem('access_token');
     if (token) {
-      navigate(ROUTES.PATIENT_DASHBOARD);
+      navigate('/patient/dashboard');
     }
   }, [navigate]);
 
@@ -69,12 +45,12 @@ const Auth = () => {
     setError('');
     try {
       const response = await apiService.loginPatient(signInData.email, signInData.password);
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.access_token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.patient));
-      setSuccess(MESSAGES.LOGIN_SUCCESS);
-      setTimeout(() => navigate(ROUTES.PATIENT_DASHBOARD), VALIDATION.REDIRECT_DELAY);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.patient));
+      setSuccess('Login successful! Redirecting...');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || MESSAGES.INVALID_CREDENTIALS);
+      setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -86,13 +62,13 @@ const Auth = () => {
     setError('');
 
     if (signUpData.password !== signUpData.confirmPassword) {
-      setError(MESSAGES.PASSWORDS_MISMATCH);
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
 
-    if (signUpData.password.length < VALIDATION.MIN_PASSWORD_LENGTH) {
-      setError(MESSAGES.PASSWORD_TOO_SHORT);
+    if (signUpData.password.length < 6) {
+      setError('Password must be at least 6 characters');
       setLoading(false);
       return;
     }
@@ -111,12 +87,12 @@ const Auth = () => {
       
       // Auto login after registration
       const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, loginResponse.access_token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(loginResponse.patient));
-      setSuccess(MESSAGES.SIGNUP_SUCCESS);
-      setTimeout(() => navigate(ROUTES.PATIENT_DASHBOARD), VALIDATION.REDIRECT_DELAY);
+      localStorage.setItem('access_token', loginResponse.access_token);
+      localStorage.setItem('user', JSON.stringify(loginResponse.patient));
+      setSuccess('Account created successfully! Redirecting...');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || MESSAGES.REGISTRATION_FAILED);
+      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

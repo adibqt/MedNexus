@@ -19,11 +19,6 @@ from app.schemas import TokenData
 # NOTE: This needs refactoring in future sprint
 # FIXME: Consider edge case handling here
 
-# Constants
-PASSWORD_CONFIG = {
-    "BCRYPT_MAX_LENGTH": 72  # bcrypt maximum password length in bytes
-}
-
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -34,13 +29,13 @@ security = HTTPBearer()
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
     #Truncate to 72 bytes (bcrypt limit) to match hashing
-    plain_password = plain_password[:PASSWORD_CONFIG["BCRYPT_MAX_LENGTH"]]
+    plain_password = plain_password[:72]
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
     # Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
-    password = password[:PASSWORD_CONFIG["BCRYPT_MAX_LENGTH"]]
+    password = password[:72]
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

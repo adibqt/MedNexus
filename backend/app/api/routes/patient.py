@@ -47,27 +47,13 @@ from app.core.config import settings
 
 router = APIRouter(prefix="/api/patients", tags=["patients"])
 
-# Constants
-ERROR_MESSAGES = {
-    "EMAIL_EXISTS": "Email already registered",
-    "PHONE_EXISTS": "Phone number already registered",
-    "INVALID_CREDENTIALS": "Incorrect email or password",
-    "ACCOUNT_DEACTIVATED": "Account is deactivated",
-    "PATIENT_NOT_FOUND": "Patient not found"
-}
-
-FILE_CONFIG = {
-    "MAX_SIZE": 5 * 1024 * 1024,  # 5MB
-    "ALLOWED_EXTENSIONS": {".jpg", ".jpeg", ".png", ".webp"}
-}
-
 # Create uploads directory
 UPLOAD_DIR = Path("uploads/profile_pictures")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Allowed file extensions
-ALLOWED_EXTENSIONS = FILE_CONFIG["ALLOWED_EXTENSIONS"]
-MAX_FILE_SIZE = FILE_CONFIG["MAX_SIZE"]
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
 # ============ Authentication Routes ============
@@ -81,7 +67,7 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     if existing_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERROR_MESSAGES["EMAIL_EXISTS"]
+            detail="Email already registered"
         )
     
     # Check if phone already exists
@@ -89,7 +75,7 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     if existing_phone:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERROR_MESSAGES["PHONE_EXISTS"]
+            detail="Phone number already registered"
         )
     
     # Create new patient
@@ -137,14 +123,14 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     if not patient or not verify_password(credentials.password, patient.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=ERROR_MESSAGES["INVALID_CREDENTIALS"],
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
     if not patient.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERROR_MESSAGES["ACCOUNT_DEACTIVATED"]
+            detail="Account is deactivated"
         )
     
     # Update last login
