@@ -32,18 +32,34 @@ import Appointments from "./pages/Appointments.jsx";
 import DoctorSignUp from "./pages/doctor/DoctorSignUp.jsx";
 import DoctorSignIn from "./pages/doctor/DoctorSignIn.jsx";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule.jsx";
-const DoctorDashboard = React.lazy(() => import("./pages/doctor/DoctorDashboard.jsx"));
+const DoctorDashboard = React.lazy(
+  () => import("./pages/doctor/DoctorDashboard.jsx"),
+);
 import DoctorEditProfile from "./pages/doctor/DoctorEditProfile.jsx";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments.jsx";
 import WritePrescription from "./pages/doctor/WritePrescription.jsx";
 import PrescriptionEditor from "./pages/doctor/PrescriptionEditor.jsx";
-const ViewPrescriptions = React.lazy(() => import("./pages/patient/ViewPrescriptions.jsx"));
-const PharmacySignUp = React.lazy(() => import("./pages/pharmacy/PharmacySignUp.jsx"));
-const PharmacySignIn = React.lazy(() => import("./pages/pharmacy/PharmacySignIn.jsx"));
-const PharmacyDashboard = React.lazy(() => import("./pages/pharmacy/PharmacyDashboard.jsx"));
-const ClinicSignUp = React.lazy(() => import("./pages/clinic/ClinicSignUp.jsx"));
-const ClinicSignIn = React.lazy(() => import("./pages/clinic/ClinicSignIn.jsx"));
-const ClinicDashboard = React.lazy(() => import("./pages/clinic/ClinicDashboard.jsx"));
+const ViewPrescriptions = React.lazy(
+  () => import("./pages/patient/ViewPrescriptions.jsx"),
+);
+const PharmacySignUp = React.lazy(
+  () => import("./pages/pharmacy/PharmacySignUp.jsx"),
+);
+const PharmacySignIn = React.lazy(
+  () => import("./pages/pharmacy/PharmacySignIn.jsx"),
+);
+const PharmacyDashboard = React.lazy(
+  () => import("./pages/pharmacy/PharmacyDashboard.jsx"),
+);
+const ClinicSignUp = React.lazy(
+  () => import("./pages/clinic/ClinicSignUp.jsx"),
+);
+const ClinicSignIn = React.lazy(
+  () => import("./pages/clinic/ClinicSignIn.jsx"),
+);
+const ClinicDashboard = React.lazy(
+  () => import("./pages/clinic/ClinicDashboard.jsx"),
+);
 import About from "./pages/About.jsx";
 import ServicesPage from "./pages/Services.jsx";
 import Departments from "./pages/Departments.jsx";
@@ -177,11 +193,30 @@ function AppRoutes() {
         path="/doctor/dashboard"
         element={
           <DoctorVideoCallWrapper>
-            <Suspense fallback={
-              <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
-                <div style={{ width: 44, height: 44, border: '4px solid #e5e7eb', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-              </div>
-            }>
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "#f1f5f9",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      border: "4px solid #e5e7eb",
+                      borderTopColor: "#10b981",
+                      borderRadius: "50%",
+                      animation: "spin 0.9s linear infinite",
+                    }}
+                  />
+                </div>
+              }
+            >
               <DoctorDashboard />
             </Suspense>
           </DoctorVideoCallWrapper>
@@ -190,17 +225,39 @@ function AppRoutes() {
       <Route path="/doctor/profile" element={<DoctorEditProfile />} />
       <Route path="/doctor/appointments" element={<DoctorAppointments />} />
       <Route path="/doctor/prescriptions" element={<WritePrescription />} />
-      <Route path="/doctor/prescriptions/write/:appointmentId" element={<PrescriptionEditor />} />
+      <Route
+        path="/doctor/prescriptions/write/:appointmentId"
+        element={<PrescriptionEditor />}
+      />
 
       {/* Pharmacy Routes */}
       <Route
         path="/sign-up/pharmacy"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f9fafb",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ede9fe",
+                    borderTopColor: "#8b5cf6",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <PharmacySignUp />
           </Suspense>
         }
@@ -208,11 +265,30 @@ function AppRoutes() {
       <Route
         path="/sign-in/pharmacy"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f9fafb",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ede9fe",
+                    borderTopColor: "#8b5cf6",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <PharmacySignIn />
           </Suspense>
         }
@@ -220,11 +296,30 @@ function AppRoutes() {
       <Route
         path="/pharmacy/dashboard"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f3ff' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ede9fe', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f5f3ff",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ede9fe",
+                    borderTopColor: "#8b5cf6",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <PharmacyDashboard />
           </Suspense>
         }
@@ -234,11 +329,30 @@ function AppRoutes() {
       <Route
         path="/sign-up/clinic"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f9fafb",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ccfbf1",
+                    borderTopColor: "#0891b2",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <ClinicSignUp />
           </Suspense>
         }
@@ -246,11 +360,30 @@ function AppRoutes() {
       <Route
         path="/sign-in/clinic"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f9fafb",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ccfbf1",
+                    borderTopColor: "#0891b2",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <ClinicSignIn />
           </Suspense>
         }
@@ -258,11 +391,30 @@ function AppRoutes() {
       <Route
         path="/clinic/dashboard"
         element={
-          <Suspense fallback={
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0fdfa' }}>
-              <div style={{ width: 44, height: 44, border: '4px solid #ccfbf1', borderTopColor: '#0891b2', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  minHeight: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f0fdfa",
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    border: "4px solid #ccfbf1",
+                    borderTopColor: "#0891b2",
+                    borderRadius: "50%",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+              </div>
+            }
+          >
             <ClinicDashboard />
           </Suspense>
         }
@@ -330,11 +482,30 @@ function AppRoutes() {
         path="/view-prescription"
         element={
           <ProtectedRoute requireProfileComplete>
-            <Suspense fallback={
-              <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
-                <div style={{ width: 44, height: 44, border: '4px solid #e5e7eb', borderTopColor: '#0d9488', borderRadius: '50%', animation: 'vp-spin 0.9s linear infinite' }} />
-              </div>
-            }>
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "#f1f5f9",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      border: "4px solid #e5e7eb",
+                      borderTopColor: "#0d9488",
+                      borderRadius: "50%",
+                      animation: "vp-spin 0.9s linear infinite",
+                    }}
+                  />
+                </div>
+              }
+            >
               <ViewPrescriptions />
             </Suspense>
           </ProtectedRoute>
