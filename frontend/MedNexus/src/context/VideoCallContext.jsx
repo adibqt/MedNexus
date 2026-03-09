@@ -33,7 +33,7 @@ export const useVideoCall = () => {
 
 /**
  * VideoCallProvider - Context provider for video call management
- * Handles WebSocket connection, call notifications, and video room state
+ * Coordinates call notifications, room presence polling, and active call state
  */
 export const VideoCallProvider = ({
   children,
