@@ -1,3 +1,8 @@
+/**
+ * VideoCallContext - Manages video call state and WebSocket notifications
+ * Handles incoming calls, active calls, and appointment-based room joining
+ */
+
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import apiService from '../services/api';
 import CallNotification from '../components/video/CallNotification';
@@ -6,6 +11,10 @@ import '../components/video/VideoCallNew.css';
 
 const VideoCallContext = createContext(null);
 
+/**
+ * useVideoCall - Hook to access video call context
+ * Must be used within a VideoCallProvider
+ */
 export const useVideoCall = () => {
   const context = useContext(VideoCallContext);
   if (!context) {
@@ -14,6 +23,10 @@ export const useVideoCall = () => {
   return context;
 };
 
+/**
+ * VideoCallProvider - Context provider for video call management
+ * Handles WebSocket connection, call notifications, and video room state
+ */
 export const VideoCallProvider = ({ children, userId, userType, userName, appointments = [] }) => {
   const [incomingCall, setIncomingCall] = useState(null);
   const [activeCall, setActiveCall] = useState(null);
@@ -23,7 +36,10 @@ export const VideoCallProvider = ({ children, userId, userType, userName, appoin
   const checkedRoomsRef = useRef(new Set());
   const isFetchingRef = useRef(false);
 
-  // Fetch appointments once if not provided
+  /**
+   * Initialize and manage WebSocket connection for call notifications
+   * Fetches user appointments for call identification
+   */
   useEffect(() => {
     if (!userId || !userType) return;
     if (appointments && appointments.length > 0) {
