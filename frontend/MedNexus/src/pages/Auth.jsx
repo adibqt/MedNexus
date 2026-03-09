@@ -39,6 +39,11 @@ const Auth = () => {
     }
   }, [navigate]);
 
+  /**
+   * Handle user sign in
+   * @param {React.FormEvent<HTMLFormElement>} e - Form event
+   * @returns {Promise<void>}
+   */
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -56,6 +61,11 @@ const Auth = () => {
     }
   };
 
+  /**
+   * Handle user sign up
+   * @param {React.FormEvent<HTMLFormElement>} e - Form event
+   * @returns {Promise<void>}
+   */
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
