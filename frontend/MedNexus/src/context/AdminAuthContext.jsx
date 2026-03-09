@@ -3,8 +3,8 @@
  * Handles admin login and session state
  */
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AdminAuthContext = createContext(null);
 
@@ -15,7 +15,7 @@ const AdminAuthContext = createContext(null);
 export const useAdminAuth = () => {
   const ctx = useContext(AdminAuthContext);
   if (!ctx) {
-    throw new Error('useAdminAuth must be used within an AdminAuthProvider');
+    throw new Error("useAdminAuth must be used within an AdminAuthProvider");
   }
   return ctx;
 };
@@ -33,8 +33,8 @@ export const AdminAuthProvider = ({ children }) => {
    * Check for stored admin authentication on mount
    */
   useEffect(() => {
-    const stored = localStorage.getItem('admin_authenticated');
-    setIsAdminAuthenticated(stored === 'true');
+    const stored = localStorage.getItem("admin_authenticated");
+    setIsAdminAuthenticated(stored === "true");
     setLoading(false);
   }, []);
 
@@ -43,22 +43,22 @@ export const AdminAuthProvider = ({ children }) => {
    */
   const login = ({ email, password }) => {
     // Simple credential check as requested
-    if (email === 'admin@mednexus.com' && password === 'admin123') {
-      localStorage.setItem('admin_authenticated', 'true');
+    if (email === "admin@mednexus.com" && password === "admin123") {
+      localStorage.setItem("admin_authenticated", "true");
       setIsAdminAuthenticated(true);
-      navigate('/admin', { replace: true });
+      navigate("/admin", { replace: true });
       return { success: true };
     }
-    return { success: false, message: 'Invalid admin credentials' };
+    return { success: false, message: "Invalid admin credentials" };
   };
 
   /**
    * Admin logout - clears session and redirects to home
    */
   const logout = () => {
-    localStorage.removeItem('admin_authenticated');
+    localStorage.removeItem("admin_authenticated");
     setIsAdminAuthenticated(false);
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   };
 
   const value = {
@@ -76,5 +76,3 @@ export const AdminAuthProvider = ({ children }) => {
 };
 
 export default AdminAuthContext;
-
-
