@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import apiService from '../services/api';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Heart, Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import apiService from "../services/api";
 
 /**
  * Legacy patient auth screen (sign in / sign up tabs).
@@ -10,51 +10,55 @@ import apiService from '../services/api';
  */
 const Auth = () => {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
-  
+  const initialTab =
+    searchParams.get("mode") === "signup" ? "signup" : "signin";
+
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   // Sign In form state
   const [signInData, setSignInData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   // Sign Up form state
   const [signUpData, setSignUpData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: ''
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
     // Check if already logged in
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem("access_token");
     if (token) {
-      navigate('/patient/dashboard');
+      navigate("/patient/dashboard");
     }
   }, [navigate]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await apiService.loginPatient(signInData.email, signInData.password);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.patient));
-      setSuccess('Login successful! Redirecting...');
-      setTimeout(() => navigate('/patient/dashboard'), 1000);
+      const response = await apiService.loginPatient(
+        signInData.email,
+        signInData.password,
+      );
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("user", JSON.stringify(response.patient));
+      setSuccess("Login successful! Redirecting...");
+      setTimeout(() => navigate("/patient/dashboard"), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid email or password');
+      setError(err.response?.data?.detail || "Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -63,50 +67,57 @@ const Auth = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     if (signUpData.password !== signUpData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     if (signUpData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       setLoading(false);
       return;
     }
 
     try {
-      const [firstName, ...lastNameParts] = signUpData.fullName.trim().split(' ');
-      const lastName = lastNameParts.join(' ') || '';
-      
+      const [firstName, ...lastNameParts] = signUpData.fullName
+        .trim()
+        .split(" ");
+      const lastName = lastNameParts.join(" ") || "";
+
       await apiService.registerPatient({
         first_name: firstName,
         last_name: lastName,
         email: signUpData.email,
         phone: signUpData.phone,
-        password: signUpData.password
+        password: signUpData.password,
       });
-      
+
       // Auto login after registration
-      const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
-      localStorage.setItem('access_token', loginResponse.access_token);
-      localStorage.setItem('user', JSON.stringify(loginResponse.patient));
-      setSuccess('Account created successfully! Redirecting...');
-      setTimeout(() => navigate('/patient/dashboard'), 1000);
+      const loginResponse = await apiService.loginPatient(
+        signUpData.email,
+        signUpData.password,
+      );
+      localStorage.setItem("access_token", loginResponse.access_token);
+      localStorage.setItem("user", JSON.stringify(loginResponse.patient));
+      setSuccess("Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/patient/dashboard"), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      setError(
+        err.response?.data?.detail || "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const features = [
-    'Free first consultation',
-    'Access 200+ verified doctors',
-    'Secure video consultations',
-    '24/7 support included',
+    "Free first consultation",
+    "Access 200+ verified doctors",
+    "Secure video consultations",
+    "24/7 support included",
   ];
 
   return (
@@ -115,12 +126,12 @@ const Auth = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <motion.div 
+          <motion.div
             className="absolute top-20 right-20 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl"
             animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 8, repeat: Infinity }}
           />
-          <motion.div 
+          <motion.div
             className="absolute bottom-20 left-20 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"
             animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
             transition={{ duration: 10, repeat: Infinity }}
@@ -140,7 +151,7 @@ const Auth = () => {
 
           {/* Main Content */}
           <div className="max-w-md">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-bold text-white mb-6 leading-tight"
@@ -150,17 +161,18 @@ const Auth = () => {
                 Starts Here
               </span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="text-gray-300 text-lg mb-8"
             >
-              Connect with world-class doctors, manage your health records, and get personalized care — all from one platform.
+              Connect with world-class doctors, manage your health records, and
+              get personalized care — all from one platform.
             </motion.p>
 
             {/* Features */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -200,8 +212,8 @@ const Auth = () => {
           </div>
 
           {/* Back Button */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -209,7 +221,7 @@ const Auth = () => {
           </Link>
 
           {/* Auth Card */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
@@ -217,21 +229,29 @@ const Auth = () => {
             {/* Tabs */}
             <div className="flex mb-8 bg-gray-100 rounded-xl p-1">
               <button
-onClick={() => { setActiveTab('signin'); setError(''); setSuccess(''); }}
+                onClick={() => {
+                  setActiveTab("signin");
+                  setError("");
+                  setSuccess("");
+                }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                  activeTab === 'signin'
-                    ? 'bg-white text-emerald-600 shadow-md'
-                    : 'text-gray-500 hover:text-gray-700'
+                  activeTab === "signin"
+                    ? "bg-white text-emerald-600 shadow-md"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 Sign In
               </button>
               <button
-onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
+                onClick={() => {
+                  setActiveTab("signup");
+                  setError("");
+                  setSuccess("");
+                }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                  activeTab === 'signup'
-                    ? 'bg-white text-emerald-600 shadow-md'
-                    : 'text-gray-500 hover:text-gray-700'
+                  activeTab === "signup"
+                    ? "bg-white text-emerald-600 shadow-md"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 Sign Up
@@ -240,7 +260,7 @@ onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
 
             {/* Success Message */}
             {success && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm flex items-center gap-2"
@@ -252,7 +272,7 @@ onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
 
             {/* Error Message */}
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm"
@@ -262,39 +282,54 @@ onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
             )}
 
             {/* Sign In Form */}
-            {activeTab === 'signin' && (
-              <motion.form 
+            {activeTab === "signin" && (
+              <motion.form
                 key="signin"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                onSubmit={handleSignIn} 
+                onSubmit={handleSignIn}
                 className="space-y-5"
               >
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">Welcome Back</h2>
-                  <p className="text-gray-500">Sign in to continue to MedNexus</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                    Welcome Back
+                  </h2>
+                  <p className="text-gray-500">
+                    Sign in to continue to MedNexus
+                  </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     placeholder="you@example.com"
-value={signInData.email}
-                    onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                    value={signInData.email}
+                    onChange={(e) =>
+                      setSignInData({ ...signInData, email: e.target.value })
+                    }
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
                   <div className="relative">
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-value={signInData.password}
-                      onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
+                      value={signInData.password}
+                      onChange={(e) =>
+                        setSignInData({
+                          ...signInData,
+                          password: e.target.value,
+                        })
+                      }
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
@@ -303,13 +338,22 @@ value={signInData.password}
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 <div className="flex justify-end">
-                  <a href="#" className="text-sm text-emerald-600 hover:underline">Forgot password?</a>
+                  <a
+                    href="#"
+                    className="text-sm text-emerald-600 hover:underline"
+                  >
+                    Forgot password?
+                  </a>
                 </div>
 
                 <motion.button
@@ -322,19 +366,36 @@ value={signInData.password}
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Signing in...
                     </span>
-                  ) : 'Sign In'}
+                  ) : (
+                    "Sign In"
+                  )}
                 </motion.button>
 
                 <p className="text-center text-gray-500 text-sm">
-                  Don't have an account?{' '}
-                  <button 
-                    type="button" 
-onClick={() => { setActiveTab('signup'); setError(''); }}
+                  Don't have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("signup");
+                      setError("");
+                    }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign Up
@@ -344,63 +405,84 @@ onClick={() => { setActiveTab('signup'); setError(''); }}
             )}
 
             {/* Sign Up Form */}
-            {activeTab === 'signup' && (
-              <motion.form 
+            {activeTab === "signup" && (
+              <motion.form
                 key="signup"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                onSubmit={handleSignUp} 
+                onSubmit={handleSignUp}
                 className="space-y-4"
               >
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">Create Account</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                    Create Account
+                  </h2>
                   <p className="text-gray-500">Join MedNexus today</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     placeholder="John Doe"
-value={signUpData.fullName}
-                    onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
+                    value={signUpData.fullName}
+                    onChange={(e) =>
+                      setSignUpData({ ...signUpData, fullName: e.target.value })
+                    }
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     placeholder="you@example.com"
-value={signUpData.email}
-                    onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                    value={signUpData.email}
+                    onChange={(e) =>
+                      setSignUpData({ ...signUpData, email: e.target.value })
+                    }
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
                   <input
                     type="tel"
                     placeholder="+880 1XXX XXXXXX"
-value={signUpData.phone}
-                    onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                    value={signUpData.phone}
+                    onChange={(e) =>
+                      setSignUpData({ ...signUpData, phone: e.target.value })
+                    }
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
                   <div className="relative">
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Min. 6 characters"
-value={signUpData.password}
-                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                      value={signUpData.password}
+                      onChange={(e) =>
+                        setSignUpData({
+                          ...signUpData,
+                          password: e.target.value,
+                        })
+                      }
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
@@ -409,28 +491,45 @@ value={signUpData.password}
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
                   <div className="relative">
                     <input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="••••••••"
-value={signUpData.confirmPassword}
-                      onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
+                      value={signUpData.confirmPassword}
+                      onChange={(e) =>
+                        setSignUpData({
+                          ...signUpData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -445,26 +544,47 @@ value={signUpData.confirmPassword}
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Creating Account...
                     </span>
-                  ) : 'Create Account'}
+                  ) : (
+                    "Create Account"
+                  )}
                 </motion.button>
 
                 <p className="text-center text-gray-400 text-xs">
-                  By signing up, you agree to our{' '}
-                  <a href="#" className="text-emerald-600 hover:underline">Terms of Service</a>
-                  {' '}and{' '}
-                  <a href="#" className="text-emerald-600 hover:underline">Privacy Policy</a>
+                  By signing up, you agree to our{" "}
+                  <a href="#" className="text-emerald-600 hover:underline">
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a href="#" className="text-emerald-600 hover:underline">
+                    Privacy Policy
+                  </a>
                 </p>
 
                 <p className="text-center text-gray-500 text-sm">
-                  Already have an account?{' '}
-                  <button 
-                    type="button" 
-onClick={() => { setActiveTab('signin'); setError(''); }}
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("signin");
+                      setError("");
+                    }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign In
@@ -477,8 +597,11 @@ onClick={() => { setActiveTab('signin'); setError(''); }}
           {/* Additional Options */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
-              Are you a doctor?{' '}
-              <Link to="/sign-in/doctor" className="text-emerald-600 font-semibold hover:underline">
+              Are you a doctor?{" "}
+              <Link
+                to="/sign-in/doctor"
+                className="text-emerald-600 font-semibold hover:underline"
+              >
                 Sign in as Doctor
               </Link>
             </p>

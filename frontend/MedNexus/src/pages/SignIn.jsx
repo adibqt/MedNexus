@@ -4,6 +4,10 @@ import { User, Stethoscope, Pill, Building2, Heart, ChevronRight } from 'lucide-
 import { motion } from 'framer-motion';
 import './SignIn.css';
 
+/**
+ * SignIn role selector page.
+ * Lets users choose the portal they want to sign into.
+ */
 const SignIn = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -43,6 +47,7 @@ const SignIn = () => {
     [],
   );
 
+  // Update URL query and route to role-specific sign-in screen.
   const handleRoleClick = (roleKey) => {
     setSearchParams({ role: roleKey });
     setTimeout(() => navigate(`/sign-in/${roleKey}`), 300);
