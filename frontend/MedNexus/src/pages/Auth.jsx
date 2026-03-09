@@ -45,12 +45,18 @@ const Auth = () => {
     setError('');
     try {
       const response = await apiService.loginPatient(signInData.email, signInData.password);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.patient));
+      try {
+        localStorage.setItem('access_token', response.access_token);
+        localStorage.setItem('user', JSON.stringify(response.patient));
+      } catch (storageError) {
+        console.error('Failed to store auth data:', storageError);
+        throw new Error('Failed to save login data');
+      }
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid email or password');
+      console.error('Sign in error:', err);
+      setError(err.response?.data?.detail || err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -87,12 +93,18 @@ const Auth = () => {
       
       // Auto login after registration
       const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
-      localStorage.setItem('access_token', loginResponse.access_token);
-      localStorage.setItem('user', JSON.stringify(loginResponse.patient));
+      try {
+        localStorage.setItem('access_token', loginResponse.access_token);
+        localStorage.setItem('user', JSON.stringify(loginResponse.patient));
+      } catch (storageError) {
+        console.error('Failed to store auth data:', storageError);
+        throw new Error('Failed to save registration data');
+      }
       setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      console.error('Sign up error:', err);
+      setError(err.response?.data?.detail || err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
