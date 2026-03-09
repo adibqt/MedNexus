@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
-from datetime import date, time, datetime, timedelta
-from typing import List, Optional
+# Standard library imports
 import json
+from datetime import date, datetime, time, timedelta
+from typing import List, Optional
 
+# Third-party imports
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
+
+# Local application imports
 from app.db import get_db
 from app.models import Appointment, Doctor, Patient
 from app.schemas.appointment import (
@@ -12,7 +16,7 @@ from app.schemas.appointment import (
     AvailableSlot,
     DoctorAppointmentResponse,
 )
-from app.services import get_current_patient, get_current_doctor
+from app.services import get_current_doctor, get_current_patient
 
 router = APIRouter(prefix="/api/appointments", tags=["appointments"])
 

@@ -1,43 +1,47 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-import os
-import uuid
+# Standard library imports (alphabetically)
 import json
+import os
+import tempfile
+import uuid
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
-import speech_recognition as sr
-from pydub import AudioSegment
-import tempfile
 
+# Third-party imports (alphabetically)
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from pydub import AudioSegment
+from sqlalchemy.orm import Session
+import speech_recognition as sr
+
+# Local application imports (alphabetically)
 from app.db import get_db
-from app.models import Patient, Appointment, Doctor, Symptom, Specialization, AIConsultation
+from app.models import AIConsultation, Appointment, Doctor, Patient, Specialization, Symptom
 from app.schemas import (
-    PatientSignUp,
-    PatientSignIn,
-    Token,
-    TokenWithRefresh,
-    RefreshTokenRequest,
-    ProfileComplete,
-    ProfileUpdate,
-    PatientResponse,
-    MessageResponse,
-    AppointmentOut,
-    AIConsultationRequest,
-    AIConsultationResponse,
     AIChatRequest,
     AIChatResponse,
-    DoctorSuggestion,
-    SpecializationMatch,
-    SymptomInfo,
     AIConsultationHistoryItem,
     AIConsultationHistoryResponse,
+    AIConsultationRequest,
+    AIConsultationResponse,
+    AppointmentOut,
+    DoctorSuggestion,
+    MessageResponse,
+    PatientResponse,
+    PatientSignIn,
+    PatientSignUp,
+    ProfileComplete,
+    ProfileUpdate,
+    RefreshTokenRequest,
+    SpecializationMatch,
+    SymptomInfo,
+    Token,
+    TokenWithRefresh,
 )
 from app.services import (
-    verify_password,
-    get_password_hash,
     create_access_token,
     create_refresh_token,
+    get_password_hash,
+    verify_password,
     validate_refresh_token,
     revoke_refresh_token,
     get_current_patient,

@@ -1,23 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+# Standard library imports
 from datetime import timedelta
 
+# Third-party imports
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+# Local application imports
 from app.db import get_db
 from app.models.pharmacy import Pharmacy
 from app.schemas.pharmacy import (
-    PharmacySignUp,
-    PharmacySignIn,
     PharmacyResponse,
+    PharmacySignIn,
+    PharmacySignUp,
     PharmacyToken,
 )
+from app.schemas.refresh_token import RefreshTokenRequest, TokenWithRefresh
 from app.services import (
-    get_password_hash,
-    verify_password,
     create_access_token,
     create_refresh_token,
+    get_password_hash,
     validate_refresh_token,
+    verify_password,
 )
-from app.schemas.refresh_token import TokenWithRefresh, RefreshTokenRequest
 from app.core.config import settings
 
 router = APIRouter(prefix="/api/pharmacies", tags=["pharmacies"])

@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react';
+// React imports
+import { useEffect, useState } from 'react';
+
+// Third-party library imports
+import { ArrowLeft, Check, Eye, EyeOff, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+
+// Local imports
 import apiService from '../services/api';
 
 const Auth = () => {
