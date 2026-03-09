@@ -56,53 +56,27 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
-# ============ Helper Functions ============
-
-def create_patient_token_response(patient: Patient, db: Session) -> TokenWithRefresh:
-    """Create token response for patient authentication"""
-    access_token = create_access_token(
-        data={
-            "sub": str(patient.id),
-            "email": patient.email,
-            "role": "patient"
-        },
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    
-    refresh_token = create_refresh_token(patient.id, "patient", db)
-    
-    return TokenWithRefresh(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="bearer",
-        user=PatientResponse.model_validate(patient)
-    )
-
-def validate_unique_patient(email: str, phone: str, db: Session) -> None:
-    """Validate that email and phone are unique"""
-    existing_email = db.query(Patient).filter(Patient.email == email).first()
-    if existing_email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    
-    existing_phone = db.query(Patient).filter(Patient.phone == phone).first()
-    if existing_phone:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Phone number already registered"
-        )
-
-
 # ============ Authentication Routes ============
 
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
     
-    # Validate unique email and phone
-    validate_unique_patient(patient_data.email, patient_data.phone, db)
+    # Check if email already exists
+    existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Check if phone already exists
+    existing_phone = db.query(Patient).filter(Patient.phone == patient_data.phone).first()
+    if existing_phone:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number already registered"
+        )
     
     # Create new patient
     hashed_password = get_password_hash(patient_data.password)
@@ -119,7 +93,25 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_patient)
     
-    return create_patient_token_response(new_patient, db)
+    # Create access token
+    access_token = create_access_token(
+        data={
+            "sub": str(new_patient.id),
+            "email": new_patient.email,
+            "role": "patient"
+        },
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    # Create refresh token
+    refresh_token = create_refresh_token(new_patient.id, "patient", db)
+    
+    return TokenWithRefresh(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        user=PatientResponse.model_validate(new_patient)
+    )
 
 
 @router.post("/signin", response_model=TokenWithRefresh)
@@ -146,7 +138,25 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(patient)
     
-    return create_patient_token_response(patient, db)
+    # Create access token
+    access_token = create_access_token(
+        data={
+            "sub": str(patient.id),
+            "email": patient.email,
+            "role": "patient"
+        },
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    # Create refresh token
+    refresh_token = create_refresh_token(patient.id, "patient", db)
+    
+    return TokenWithRefresh(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        user=PatientResponse.model_validate(patient)
+    )
 
 @router.post("/refresh", response_model=TokenWithRefresh)
 async def refresh_access_token(

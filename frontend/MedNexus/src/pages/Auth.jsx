@@ -4,22 +4,6 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import apiService from '../services/api';
 
-// Helper Functions
-const parseFullName = (fullName) => {
-  const [firstName, ...lastNameParts] = fullName.trim().split(' ');
-  const lastName = lastNameParts.join(' ') || '';
-  return { firstName, lastName };
-};
-
-const storeAuthData = (accessToken, userData) => {
-  localStorage.setItem('access_token', accessToken);
-  localStorage.setItem('user', JSON.stringify(userData));
-};
-
-const navigateWithDelay = (navigate, path, delay = 1000) => {
-  setTimeout(() => navigate(path), delay);
-};
-
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
@@ -61,9 +45,10 @@ const Auth = () => {
     setError('');
     try {
       const response = await apiService.loginPatient(signInData.email, signInData.password);
-      storeAuthData(response.access_token, response.patient);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.patient));
       setSuccess('Login successful! Redirecting...');
-      navigateWithDelay(navigate, '/patient/dashboard');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
@@ -89,7 +74,8 @@ const Auth = () => {
     }
 
     try {
-      const { firstName, lastName } = parseFullName(signUpData.fullName);
+      const [firstName, ...lastNameParts] = signUpData.fullName.trim().split(' ');
+      const lastName = lastNameParts.join(' ') || '';
       
       await apiService.registerPatient({
         first_name: firstName,
@@ -101,9 +87,10 @@ const Auth = () => {
       
       // Auto login after registration
       const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
-      storeAuthData(loginResponse.access_token, loginResponse.patient);
+      localStorage.setItem('access_token', loginResponse.access_token);
+      localStorage.setItem('user', JSON.stringify(loginResponse.patient));
       setSuccess('Account created successfully! Redirecting...');
-      navigateWithDelay(navigate, '/patient/dashboard');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
