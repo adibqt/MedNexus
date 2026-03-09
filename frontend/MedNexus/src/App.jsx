@@ -1,3 +1,8 @@
+/**
+ * MedNexus - Main Application Router
+ * Handles all routing for patients, doctors, pharmacies, clinics, and admin
+ */
+
 import {
   Navbar,
   Hero,
@@ -54,6 +59,10 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
 import "./pages/Landing.css";
 
+/**
+ * Landing page component - displays public-facing homepage
+ * with hero, services, appointment form, and testimonials
+ */
 const Landing = () => (
   <div className="landing-page">
     <Navbar />
@@ -73,7 +82,11 @@ const Landing = () => (
   </div>
 );
 
-// Protected Route Component
+/**
+ * ProtectedRoute - Wrapper component for authenticated routes
+ * Redirects to login if not authenticated
+ * Optionally enforces profile completion
+ */
 const ProtectedRoute = ({ children, requireProfileComplete = false }) => {
   const { user, loading, isAuthenticated, isProfileComplete } = useAuth();
 
@@ -96,7 +109,10 @@ const ProtectedRoute = ({ children, requireProfileComplete = false }) => {
   return children;
 };
 
-// Profile Completion Route (accessible only if profile is incomplete)
+/**
+ * ProfileRoute - Route guard for profile completion flow
+ * Only accessible if authenticated but profile is incomplete
+ */
 const ProfileRoute = ({ children }) => {
   const { loading, isAuthenticated, isProfileComplete } = useAuth();
 
@@ -119,7 +135,10 @@ const ProfileRoute = ({ children }) => {
   return children;
 };
 
-// Admin Protected Route
+/**
+ * AdminProtectedRoute - Admin-only route protection
+ * Requires valid admin authentication token
+ */
 const AdminProtectedRoute = ({ children }) => {
   const { isAdminAuthenticated, loading } = useAdminAuth();
 
