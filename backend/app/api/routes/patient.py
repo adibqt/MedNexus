@@ -1,55 +1,4 @@
-# Standard library imports (alphabetically)
-import json
-import os
-import tempfile
-import uuid
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import List
-
-# Third-party imports (alphabetically)
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
-from pydub import AudioSegment
-from sqlalchemy.orm import Session
-import speech_recognition as sr
-
-# Local application imports (alphabetically)
-from app.db import get_db
-from app.models import AIConsultation, Appointment, Doctor, Patient, Specialization, Symptom
-from app.schemas import (
-    AIChatRequest,
-    AIChatResponse,
-    AIConsultationHistoryItem,
-    AIConsultationHistoryResponse,
-    AIConsultationRequest,
-    AIConsultationResponse,
-    AppointmentOut,
-    DoctorSuggestion,
-    MessageResponse,
-    PatientResponse,
-    PatientSignIn,
-    PatientSignUp,
-    ProfileComplete,
-    ProfileUpdate,
-    RefreshTokenRequest,
-    SpecializationMatch,
-    SymptomInfo,
-    Token,
-    TokenWithRefresh,
-)
-from app.services import (
-    create_access_token,
-    create_refresh_token,
-    get_password_hash,
-    verify_password,
-    validate_refresh_token,
-    revoke_refresh_token,
-    get_current_patient,
-    ai_service,
-)
-from app.core.config import settings
-
-router = APIRouter(prefix="/api/patients", tags=["patients"])
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query\nfrom sqlalchemy.orm import Session\nfrom datetime import datetime, timedelta\nfrom pathlib import Path\nimport uuid\nimport os\nimport tempfile\nfrom typing import Optional, List\nfrom pydub import AudioSegment\nimport json\nimport speech_recognition as sr\n\nfrom app.db import get_db\nfrom app.models import Patient, Doctor, Appointment, AIConsultation, Symptom, Specialization\nfrom app.schemas import (\n    PatientSignUp,\n    PatientSignIn,\n    PatientResponse,\n    ProfileComplete,\n    ProfileUpdate,\n    Token,\n    TokenWithRefresh,\n    RefreshTokenRequest,\n    MessageResponse,\n    AppointmentOut,\n    AIConsultationRequest,\n    AIConsultationResponse,\n    DoctorSuggestion,\n    SymptomInfo,\n    SpecializationMatch,\n    AIConsultationHistoryItem,\n    AIConsultationHistoryResponse,\n    AIChatRequest,\n    AIChatResponse,\n)\nfrom app.services import (\n    get_password_hash,\n    verify_password,\n    create_access_token,\n    create_refresh_token,\n    validate_refresh_token,\n    revoke_refresh_token,\n    get_current_patient,\n    ai_service,\n)\nfrom app.core.config import settings\n\nrouter = APIRouter(prefix=\"/api/patients\", tags=[\"patients\"])
 
 # Create uploads directory
 UPLOAD_DIR = Path("uploads/profile_pictures")
@@ -162,28 +111,6 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
         user=PatientResponse.model_validate(patient)
     )
 
-
-@router.post("/complete-profile", response_model=PatientResponse)
-async def complete_profile(
-    profile_data: ProfileComplete,
-    db: Session = Depends(get_db),
-    current_patient: Patient = Depends(get_current_patient)
-):
-    """Complete patient's profile with health information"""
-    current_patient.age = profile_data.age
-    current_patient.gender = profile_data.gender
-    current_patient.weight = profile_data.weight
-    current_patient.height = profile_data.height
-    current_patient.blood_group = profile_data.blood_group
-    current_patient.medical_conditions = profile_data.medical_conditions
-    current_patient.is_profile_complete = True
-    
-    db.commit()
-    db.refresh(current_patient)
-    
-    return PatientResponse.model_validate(current_patient)
-
-
 @router.post("/refresh", response_model=TokenWithRefresh)
 async def refresh_access_token(
     request: RefreshTokenRequest,
@@ -225,6 +152,25 @@ async def get_profile(current_patient: Patient = Depends(get_current_patient)):
     """Get current patient's profile"""
     return PatientResponse.model_validate(current_patient)
 
+@router.post("/complete-profile", response_model=PatientResponse)
+async def complete_profile(
+    profile_data: ProfileComplete,
+    db: Session = Depends(get_db),
+    current_patient: Patient = Depends(get_current_patient)
+):
+    """Complete patient's profile with health information"""
+    current_patient.age = profile_data.age
+    current_patient.gender = profile_data.gender
+    current_patient.weight = profile_data.weight
+    current_patient.height = profile_data.height
+    current_patient.blood_group = profile_data.blood_group
+    current_patient.medical_conditions = profile_data.medical_conditions
+    current_patient.is_profile_complete = True
+    
+    db.commit()
+    db.refresh(current_patient)
+    
+    return PatientResponse.model_validate(current_patient)
 
 @router.put("/profile", response_model=PatientResponse)
 async def update_profile(

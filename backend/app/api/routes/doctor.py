@@ -1,26 +1,22 @@
-# Standard library imports
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status
+from sqlalchemy.orm import Session
+from pathlib import Path
 import uuid
 from datetime import timedelta
-from pathlib import Path
 
-# Third-party imports
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from sqlalchemy.orm import Session
-
-# Local application imports
-from app.core.config import settings
 from app.db import get_db
 from app.models import Doctor
-from app.schemas import DoctorResponse, DoctorSignIn, DoctorSignUp, DoctorToken, RefreshTokenRequest, TokenWithRefresh
+from app.schemas import DoctorSignUp, DoctorSignIn, DoctorResponse, DoctorToken, TokenWithRefresh, RefreshTokenRequest
 from app.services import (
+    get_password_hash,
+    verify_password,
     create_access_token,
     create_refresh_token,
-    get_current_doctor,
-    get_password_hash,
-    revoke_refresh_token,
     validate_refresh_token,
-    verify_password,
+    revoke_refresh_token,
+    get_current_doctor,
 )
+from app.core.config import settings
 
 router = APIRouter(prefix="/api/doctors", tags=["doctors"])
 

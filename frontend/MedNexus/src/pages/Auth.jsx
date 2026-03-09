@@ -1,12 +1,7 @@
-// React imports
-import { useEffect, useState } from 'react';
-
-// Third-party library imports
-import { ArrowLeft, Check, Eye, EyeOff, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-
-// Local imports
 import apiService from '../services/api';
 
 const Auth = () => {
@@ -43,6 +38,23 @@ const Auth = () => {
       navigate('/patient/dashboard');
     }
   }, [navigate]);
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const response = await apiService.loginPatient(signInData.email, signInData.password);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.patient));
+      setSuccess('Login successful! Redirecting...');
+      setTimeout(() => navigate('/patient/dashboard'), 1000);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -81,23 +93,6 @@ const Auth = () => {
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignIn = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const response = await apiService.loginPatient(signInData.email, signInData.password);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.patient));
-      setSuccess('Login successful! Redirecting...');
-      setTimeout(() => navigate('/patient/dashboard'), 1000);
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -218,7 +213,7 @@ const Auth = () => {
             {/* Tabs */}
             <div className="flex mb-8 bg-gray-100 rounded-xl p-1">
               <button
-                onClick={() => { setActiveTab('signin'); setError(''); setSuccess(''); }}
+onClick={() => { setActiveTab('signin'); setError(''); setSuccess(''); }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
                   activeTab === 'signin'
                     ? 'bg-white text-emerald-600 shadow-md'
@@ -228,7 +223,7 @@ const Auth = () => {
                 Sign In
               </button>
               <button
-                onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
+onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
                   activeTab === 'signup'
                     ? 'bg-white text-emerald-600 shadow-md'
@@ -281,7 +276,7 @@ const Auth = () => {
                   <input
                     type="email"
                     placeholder="you@example.com"
-                    value={signInData.email}
+value={signInData.email}
                     onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
@@ -294,7 +289,7 @@ const Auth = () => {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      value={signInData.password}
+value={signInData.password}
                       onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
@@ -335,7 +330,7 @@ const Auth = () => {
                   Don't have an account?{' '}
                   <button 
                     type="button" 
-                    onClick={() => { setActiveTab('signup'); setError(''); }}
+onClick={() => { setActiveTab('signup'); setError(''); }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign Up
@@ -363,7 +358,7 @@ const Auth = () => {
                   <input
                     type="text"
                     placeholder="John Doe"
-                    value={signUpData.fullName}
+value={signUpData.fullName}
                     onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
@@ -375,7 +370,7 @@ const Auth = () => {
                   <input
                     type="email"
                     placeholder="you@example.com"
-                    value={signUpData.email}
+value={signUpData.email}
                     onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
@@ -387,7 +382,7 @@ const Auth = () => {
                   <input
                     type="tel"
                     placeholder="+880 1XXX XXXXXX"
-                    value={signUpData.phone}
+value={signUpData.phone}
                     onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
@@ -400,7 +395,7 @@ const Auth = () => {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Min. 6 characters"
-                      value={signUpData.password}
+value={signUpData.password}
                       onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
@@ -421,7 +416,7 @@ const Auth = () => {
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      value={signUpData.confirmPassword}
+value={signUpData.confirmPassword}
                       onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
@@ -447,7 +442,7 @@ const Auth = () => {
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
                       Creating Account...
                     </span>
@@ -465,7 +460,7 @@ const Auth = () => {
                   Already have an account?{' '}
                   <button 
                     type="button" 
-                    onClick={() => { setActiveTab('signin'); setError(''); }}
+onClick={() => { setActiveTab('signin'); setError(''); }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign In
