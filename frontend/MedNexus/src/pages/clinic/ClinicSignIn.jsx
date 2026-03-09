@@ -97,130 +97,146 @@ const ClinicSignIn = () => {
               transition={{ delay: 0.15 }}
               className="clinic-signin-heading"
             >
-              Diagnostic Services,<br />
-              <span>Digitally Connected</span>
+              Welcome back,
+              <span>Diagnostic Clinic.</span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="clinic-signin-desc"
+              className="clinic-signin-description"
             >
               Manage lab test quotation requests, respond with pricing,
               and grow your diagnostic business — all from one dashboard.
             </motion.p>
 
             <motion.div
-              className="clinic-signin-stats"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35 }}
+              className="clinic-signin-stats"
             >
-              <div className="clinic-signin-stat">
-                <div className="clinic-signin-stat-num">500+</div>
-                <div className="clinic-signin-stat-label">Lab Requests</div>
+              <div>
+                <div className="clinic-signin-stat-value">500+</div>
+                <div className="clinic-signin-stat-label">Lab Requests / month</div>
               </div>
-              <div className="clinic-signin-stat-sep" />
-              <div className="clinic-signin-stat">
-                <div className="clinic-signin-stat-num">98%</div>
-                <div className="clinic-signin-stat-label">Satisfaction</div>
-              </div>
-              <div className="clinic-signin-stat-sep" />
-              <div className="clinic-signin-stat">
-                <div className="clinic-signin-stat-num">24/7</div>
-                <div className="clinic-signin-stat-label">Access</div>
+              <div>
+                <div className="clinic-signin-stat-value">98%</div>
+                <div className="clinic-signin-stat-label">Satisfaction rate</div>
               </div>
             </motion.div>
+          </div>
+
+          <div className="clinic-signin-left-footer">
+            © 2026 MedNexus. All rights reserved.
           </div>
         </div>
       </div>
 
-      {/* Right form */}
+      {/* Right: sign-in form */}
       <div className="clinic-signin-right">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="clinic-signin-card"
-        >
-          <div className="clinic-signin-card-header">
-            <div className="clinic-signin-card-icon">
-              <FlaskConical />
+        {/* Mobile header */}
+        <div className="clinic-signin-mobile-header">
+          <Link to="/" className="clinic-signin-mobile-logo">
+            <div className="clinic-signin-mobile-logo-icon">
+              <Heart />
             </div>
-            <h1>Clinic Sign In</h1>
-            <p>Access your clinic dashboard</p>
-          </div>
+            <div className="clinic-signin-mobile-logo-text">
+              Med<span>Nexus</span>
+            </div>
+          </Link>
+          <Link to="/" className="clinic-signin-mobile-back">Back</Link>
+        </div>
 
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="clinic-signin-error"
-            >
-              {error}
-            </motion.div>
-          )}
-
-          <form onSubmit={handleSubmit} className="clinic-signin-form">
-            <div className="clinic-signin-field">
-              <label>Email address</label>
-              <div className="clinic-signin-input-wrap">
-                <Mail className="clinic-signin-input-icon" />
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="clinic@example.com"
-                />
+        <div className="clinic-signin-main">
+          <div className="clinic-signin-card">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="clinic-signin-card-icon">
+                <FlaskConical />
               </div>
-            </div>
 
-            <div className="clinic-signin-field">
-              <label>Password</label>
-              <div className="clinic-signin-input-wrap">
-                <Lock className="clinic-signin-input-icon" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  placeholder="Your password"
-                />
-                <button
-                  type="button"
-                  className="clinic-signin-eye"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
+              <h1 className="clinic-signin-title">Clinic Sign In</h1>
+              <p className="clinic-signin-subtitle">
+                Use your registered email and password to access your clinic dashboard.
+              </p>
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="clinic-signin-error"
                 >
-                  {showPassword ? <EyeOff /> : <Eye />}
-                </button>
-              </div>
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              type="submit"
-              className="clinic-signin-submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="clinic-signin-spinner" />
-              ) : (
-                <>
-                  Sign In <ArrowRight size={16} />
-                </>
+                  {error}
+                </motion.div>
               )}
-            </motion.button>
-          </form>
 
-          <p className="clinic-signin-register">
-            Don't have an account?{' '}
-            <Link to="/sign-up/clinic">Register your clinic</Link>
-          </p>
-        </motion.div>
+              <form onSubmit={handleSubmit} className="clinic-signin-form">
+                <div className="clinic-signin-field">
+                  <label className="clinic-signin-label">Email Address</label>
+                  <div className="clinic-signin-input-wrap">
+                    <Mail className="clinic-signin-input-icon" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                      placeholder="clinic@example.com"
+                      className="clinic-signin-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="clinic-signin-field">
+                  <label className="clinic-signin-label">Password</label>
+                  <div className="clinic-signin-input-wrap">
+                    <Lock className="clinic-signin-input-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      required
+                      minLength={6}
+                      placeholder="Your password"
+                      className="clinic-signin-input"
+                    />
+                    <button
+                      type="button"
+                      className="clinic-signin-eye-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="clinic-signin-submit"
+                >
+                  {loading ? (
+                    <div className="clinic-signin-spinner" />
+                  ) : (
+                    <>
+                      Continue
+                      <ArrowRight />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="clinic-signin-footer-text">
+                Don't have an account?{' '}
+                <Link to="/sign-up/clinic">
+                  <span>Register your clinic</span>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
