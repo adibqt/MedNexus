@@ -30,21 +30,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
     #Truncate to 72 bytes (bcrypt limit) to match hashing
     plain_password = plain_password[:72]
-    try:
-        return pwd_context.verify(plain_password, hashed_password)
-    except Exception as e:
-        print(f"Password verification error: {e}")
-        return False
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
     # Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
     password = password[:72]
-    try:
-        return pwd_context.hash(password)
-    except Exception as e:
-        print(f"Password hashing error: {e}")
-        raise ValueError("Failed to hash password")
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
@@ -54,12 +46,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    try:
-        encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-        return encoded_jwt
-    except Exception as e:
-        print(f"JWT creation error: {e}")
-        raise ValueError("Failed to create access token")
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
 
 
 def create_refresh_token(user_id: int, user_type: str, db: Session) -> str:

@@ -89,17 +89,9 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
         is_profile_complete=False,
     )
     
-    try:
-        db.add(new_patient)
-        db.commit()
-        db.refresh(new_patient)
-    except Exception as e:
-        db.rollback()
-        print(f"Database error during patient signup: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create patient account"
-        )
+    db.add(new_patient)
+    db.commit()
+    db.refresh(new_patient)
     
     # Create access token
     access_token = create_access_token(
@@ -143,13 +135,8 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     
     # Update last login
     patient.last_login = datetime.utcnow()
-    try:
-        db.commit()
-        db.refresh(patient)
-    except Exception as e:
-        db.rollback()
-        print(f"Failed to update last login: {e}")
-        # Continue anyway, login still successful
+    db.commit()
+    db.refresh(patient)
     
     # Create access token
     access_token = create_access_token(
