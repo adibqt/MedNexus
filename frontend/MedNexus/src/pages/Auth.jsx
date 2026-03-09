@@ -35,6 +35,7 @@ const Auth = () => {
     // Check if already logged in
     const token = localStorage.getItem('access_token');
     if (token) {
+      // Redirect authenticated users to dashboard
       navigate('/patient/dashboard');
     }
   }, [navigate]);
@@ -42,14 +43,19 @@ const Auth = () => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError(''); // Clear previous errors
     try {
+      // Call API to authenticate user
       const response = await apiService.loginPatient(signInData.email, signInData.password);
+      // Store authentication token in localStorage
       localStorage.setItem('access_token', response.access_token);
+      // Store user data for quick access
       localStorage.setItem('user', JSON.stringify(response.patient));
       setSuccess('Login successful! Redirecting...');
+      // Delay navigation to show success message
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
+      // Display error message from server or default message
       setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
@@ -59,14 +65,16 @@ const Auth = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError(''); // Clear previous errors
 
+    // Validate password confirmation
     if (signUpData.password !== signUpData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
       return;
     }
 
+    // Validate password strength
     if (signUpData.password.length < 6) {
       setError('Password must be at least 6 characters');
       setLoading(false);
@@ -74,9 +82,11 @@ const Auth = () => {
     }
 
     try {
+      // Split full name into first and last name
       const [firstName, ...lastNameParts] = signUpData.fullName.trim().split(' ');
-      const lastName = lastNameParts.join(' ') || '';
+      const lastName = lastNameParts.join(' ') || ''; // Join remaining parts as last name
       
+      // Register new patient account
       await apiService.registerPatient({
         first_name: firstName,
         last_name: lastName,
@@ -87,11 +97,14 @@ const Auth = () => {
       
       // Auto login after registration
       const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
+      // Store authentication credentials
       localStorage.setItem('access_token', loginResponse.access_token);
       localStorage.setItem('user', JSON.stringify(loginResponse.patient));
       setSuccess('Account created successfully! Redirecting...');
+      // Delay navigation to show success message
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
+      // Display error message from server or default message
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
