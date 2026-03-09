@@ -1,9 +1,18 @@
+/**
+ * AuthContext - Patient authentication state management
+ * Handles login, logout, profile management, and token refresh
+ */
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
 
 const AuthContext = createContext(null);
 
+/**
+ * useAuth - Hook to access authentication context
+ * Must be used within an AuthProvider
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -12,13 +21,20 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * AuthProvider - Context provider for patient authentication
+ * Manages user state, tokens, and profile data
+ */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Check for existing auth on mount
+  /**
+   * Check for existing authentication on app startup
+   * Validates stored token and restores user session
+   */
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('access_token');
