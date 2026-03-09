@@ -92,6 +92,22 @@
   margin: 0;
 }
 
+.book-appointment-doctor-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.book-appointment-doctor-rating-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.book-appointment-doctor-rating-count {
+  font-size: 13px;
+  color: #6b7280;
+}
+
 .book-appointment-error-message {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -394,5 +410,77 @@
   .book-appointment-slots {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
+}
+
+/* ── Reviews Section ──────────────────────────── */
+.book-appointment-reviews-summary {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-left: 8px;
+}
+
+.book-appointment-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.book-appointment-review-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.book-appointment-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.book-appointment-review-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.book-appointment-review-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.book-appointment-review-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.book-appointment-review-date {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.book-appointment-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.book-appointment-review-text {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.55;
+  margin: 0;
 }
 

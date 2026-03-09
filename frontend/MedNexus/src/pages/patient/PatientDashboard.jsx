@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useVideoCall } from '../../context/VideoCallContext';
 import apiService from '../../services/api';
+import RatingModal from '../../components/patient/RatingModal';
 import './PatientDashboard.css';
 
 const API_URL = 'http://localhost:8000';
@@ -116,6 +117,8 @@ const PatientDashboard = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAppointments, setShowAppointments] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('all');
+  const [ratingAppointment, setRatingAppointment] = useState(null);
+  const [ratedAppointmentIds, setRatedAppointmentIds] = useState(new Set());
 
   const doctorsCarouselRef = useRef(null);
   const carouselIntervalRef = useRef(null);
@@ -123,6 +126,20 @@ const PatientDashboard = () => {
 
   // Use static notifications from outside component
   const notifications = staticNotifications;
+
+  // Fetch which appointments the patient has already rated
+  const { data: myRatings = [] } = useQuery({
+    queryKey: ['myRatings'],
+    queryFn: () => apiService.getMyRatings(),
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Keep ratedAppointmentIds in sync with fetched ratings
+  useEffect(() => {
+    if (myRatings.length > 0) {
+      setRatedAppointmentIds(new Set(myRatings.map((r) => r.appointment_id)));
+    }
+  }, [myRatings]);
 
   // React Query hooks - data is cached and shared across components
   const { 
@@ -996,13 +1013,20 @@ const PatientDashboard = () => {
                               <Video />
                             </button>
                           )}
-                          {appointment.status === 'Completed' && (
+                          {appointment.status === 'Completed' && !ratedAppointmentIds.has(appointment.id) && (
                             <button
                               type="button"
                               className="patient-dashboard-modal-apt-rate"
+                              onClick={() => setRatingAppointment(appointment)}
+                              title="Rate this doctor"
                             >
                               <Star />
                             </button>
+                          )}
+                          {appointment.status === 'Completed' && ratedAppointmentIds.has(appointment.id) && (
+                            <span className="patient-dashboard-modal-apt-rated">
+                              <Star size={16} fill="#f59e0b" color="#f59e0b" /> Rated
+                            </span>
                           )}
                         </div>
                       </div>
@@ -1032,6 +1056,18 @@ const PatientDashboard = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Rating Modal */}
+      {ratingAppointment && (
+        <RatingModal
+          appointment={ratingAppointment}
+          onClose={() => setRatingAppointment(null)}
+          onRated={(appointmentId) => {
+            setRatedAppointmentIds((prev) => new Set([...prev, appointmentId]));
+            setRatingAppointment(null);
+          }}
+        />
       )}
     </div>
   );
