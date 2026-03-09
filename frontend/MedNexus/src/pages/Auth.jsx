@@ -11,19 +11,19 @@ const Auth = () => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   // Sign In form state
-  const [loginFormData, setLoginFormData] = useState({
+  const [signInData, setSignInData] = useState({
     email: '',
     password: ''
   });
 
   // Sign Up form state
-  const [registrationFormData, setRegistrationFormData] = useState({
+  const [signUpData, setSignUpData] = useState({
     fullName: '',
     email: '',
     phone: '',
@@ -41,60 +41,60 @@ const Auth = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage('');
+    setLoading(true);
+    setError('');
     try {
-      const response = await apiService.loginPatient(loginFormData.email, loginFormData.password);
+      const response = await apiService.loginPatient(signInData.email, signInData.password);
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.patient));
-      setSuccessMessage('Login successful! Redirecting...');
+      setSuccess('Login successful! Redirecting...');
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setErrorMessage(err.response?.data?.detail || 'Invalid email or password');
+      setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage('');
+    setLoading(true);
+    setError('');
 
-    if (registrationFormData.password !== registrationFormData.confirmPassword) {
-      setErrorMessage('Passwords do not match');
-      setIsSubmitting(false);
+    if (signUpData.password !== signUpData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
       return;
     }
 
-    if (registrationFormData.password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters');
-      setIsSubmitting(false);
+    if (signUpData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
       return;
     }
 
     try {
-      const [firstName, ...lastNameParts] = registrationFormData.fullName.trim().split(' ');
+      const [firstName, ...lastNameParts] = signUpData.fullName.trim().split(' ');
       const lastName = lastNameParts.join(' ') || '';
       
       await apiService.registerPatient({
         first_name: firstName,
         last_name: lastName,
-        email: registrationFormData.email,
-        phone: registrationFormData.phone,
-        password: registrationFormData.password
+        email: signUpData.email,
+        phone: signUpData.phone,
+        password: signUpData.password
       });
       
       // Auto login after registration
-      const loginResponse = await apiService.loginPatient(registrationFormData.email, registrationFormData.password);
+      const loginResponse = await apiService.loginPatient(signUpData.email, signUpData.password);
       localStorage.setItem('access_token', loginResponse.access_token);
       localStorage.setItem('user', JSON.stringify(loginResponse.patient));
-      setSuccessMessage('Account created successfully! Redirecting...');
+      setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => navigate('/patient/dashboard'), 1000);
     } catch (err) {
-      setErrorMessage(err.response?.data?.detail || 'Registration failed. Please try again.');
+      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -213,7 +213,7 @@ const Auth = () => {
             {/* Tabs */}
             <div className="flex mb-8 bg-gray-100 rounded-xl p-1">
               <button
-onClick={() => { setActiveTab('signin'); setErrorMessage(''); setSuccessMessage(''); }}
+onClick={() => { setActiveTab('signin'); setError(''); setSuccess(''); }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
                   activeTab === 'signin'
                     ? 'bg-white text-emerald-600 shadow-md'
@@ -223,7 +223,7 @@ onClick={() => { setActiveTab('signin'); setErrorMessage(''); setSuccessMessage(
                 Sign In
               </button>
               <button
-onClick={() => { setActiveTab('signup'); setErrorMessage(''); setSuccessMessage(''); }}
+onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); }}
                 className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
                   activeTab === 'signup'
                     ? 'bg-white text-emerald-600 shadow-md'
@@ -235,25 +235,25 @@ onClick={() => { setActiveTab('signup'); setErrorMessage(''); setSuccessMessage(
             </div>
 
             {/* Success Message */}
-            {successMessage && (
+            {success && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm flex items-center gap-2"
               >
                 <Check className="w-5 h-5" />
-                {successMessage}
+                {success}
               </motion.div>
             )}
 
             {/* Error Message */}
-            {errorMessage && (
+            {error && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm"
               >
-                {errorMessage}
+                {error}
               </motion.div>
             )}
 
@@ -276,8 +276,8 @@ onClick={() => { setActiveTab('signup'); setErrorMessage(''); setSuccessMessage(
                   <input
                     type="email"
                     placeholder="you@example.com"
-value={loginFormData.email}
-                    onChange={(e) => setLoginFormData({ ...loginFormData, email: e.target.value })}
+value={signInData.email}
+                    onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
@@ -289,8 +289,8 @@ value={loginFormData.email}
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-value={loginFormData.password}
-                      onChange={(e) => setLoginFormData({ ...loginFormData, password: e.target.value })}
+value={signInData.password}
+                      onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
@@ -319,7 +319,7 @@ value={loginFormData.password}
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
                       Signing in...
                     </span>
@@ -330,7 +330,7 @@ value={loginFormData.password}
                   Don't have an account?{' '}
                   <button 
                     type="button" 
-onClick={() => { setActiveTab('signup'); setErrorMessage(''); }}
+onClick={() => { setActiveTab('signup'); setError(''); }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign Up
@@ -358,8 +358,8 @@ onClick={() => { setActiveTab('signup'); setErrorMessage(''); }}
                   <input
                     type="text"
                     placeholder="John Doe"
-value={registrationFormData.fullName}
-                    onChange={(e) => setRegistrationFormData({ ...registrationFormData, fullName: e.target.value })}
+value={signUpData.fullName}
+                    onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
@@ -370,8 +370,8 @@ value={registrationFormData.fullName}
                   <input
                     type="email"
                     placeholder="you@example.com"
-value={registrationFormData.email}
-                    onChange={(e) => setRegistrationFormData({ ...registrationFormData, email: e.target.value })}
+value={signUpData.email}
+                    onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
@@ -382,8 +382,8 @@ value={registrationFormData.email}
                   <input
                     type="tel"
                     placeholder="+880 1XXX XXXXXX"
-value={registrationFormData.phone}
-                    onChange={(e) => setRegistrationFormData({ ...registrationFormData, phone: e.target.value })}
+value={signUpData.phone}
+                    onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
                     required
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
@@ -395,8 +395,8 @@ value={registrationFormData.phone}
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Min. 6 characters"
-value={registrationFormData.password}
-                      onChange={(e) => setRegistrationFormData({ ...registrationFormData, password: e.target.value })}
+value={signUpData.password}
+                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
@@ -416,8 +416,8 @@ value={registrationFormData.password}
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-value={registrationFormData.confirmPassword}
-                      onChange={(e) => setRegistrationFormData({ ...registrationFormData, confirmPassword: e.target.value })}
+value={signUpData.confirmPassword}
+                      onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                       required
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
@@ -460,7 +460,7 @@ value={registrationFormData.confirmPassword}
                   Already have an account?{' '}
                   <button 
                     type="button" 
-onClick={() => { setActiveTab('signin'); setErrorMessage(''); }}
+onClick={() => { setActiveTab('signin'); setError(''); }}
                     className="text-emerald-600 font-semibold hover:underline"
                   >
                     Sign In

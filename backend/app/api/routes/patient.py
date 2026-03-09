@@ -1,4 +1,51 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query\nfrom sqlalchemy.orm import Session\nfrom datetime import datetime, timedelta\nfrom pathlib import Path\nimport uuid\nimport os\nimport tempfile\nfrom typing import Optional, List\nfrom pydub import AudioSegment\nimport json\nimport speech_recognition as sr\n\nfrom app.db import get_db\nfrom app.models import Patient, Doctor, Appointment, AIConsultation, Symptom, Specialization\nfrom app.schemas import (\n    PatientSignUp,\n    PatientSignIn,\n    PatientResponse,\n    ProfileComplete,\n    ProfileUpdate,\n    Token,\n    TokenWithRefresh,\n    RefreshTokenRequest,\n    MessageResponse,\n    AppointmentOut,\n    AIConsultationRequest,\n    AIConsultationResponse,\n    DoctorSuggestion,\n    SymptomInfo,\n    SpecializationMatch,\n    AIConsultationHistoryItem,\n    AIConsultationHistoryResponse,\n    AIChatRequest,\n    AIChatResponse,\n)\nfrom app.services import (\n    get_password_hash,\n    verify_password,\n    create_access_token,\n    create_refresh_token,\n    validate_refresh_token,\n    revoke_refresh_token,\n    get_current_patient,\n    ai_service,\n)\nfrom app.core.config import settings\n\nrouter = APIRouter(prefix=\"/api/patients\", tags=[\"patients\"])
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from pathlib import Path
+import uuid
+import os
+import tempfile
+from typing import Optional, List
+from pydub import AudioSegment
+import json
+import speech_recognition as sr
+
+from app.db import get_db
+from app.models import Patient, Doctor, Appointment, AIConsultation, Symptom, Specialization
+from app.schemas import (
+    PatientSignUp,
+    PatientSignIn,
+    PatientResponse,
+    ProfileComplete,
+    ProfileUpdate,
+    Token,
+    TokenWithRefresh,
+    RefreshTokenRequest,
+    MessageResponse,
+    AppointmentOut,
+    AIConsultationRequest,
+    AIConsultationResponse,
+    DoctorSuggestion,
+    SymptomInfo,
+    SpecializationMatch,
+    AIConsultationHistoryItem,
+    AIConsultationHistoryResponse,
+    AIChatRequest,
+    AIChatResponse,
+)
+from app.services import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+    validate_refresh_token,
+    revoke_refresh_token,
+    get_current_patient,
+    ai_service,
+)
+from app.core.config import settings
+
+router = APIRouter(prefix="/api/patients", tags=["patients"])
 
 # Create uploads directory
 UPLOAD_DIR = Path("uploads/profile_pictures")
@@ -1074,3 +1121,4 @@ async def delete_ai_consultation(
     db.commit()
     
     return MessageResponse(message="Consultation deleted successfully")
+
