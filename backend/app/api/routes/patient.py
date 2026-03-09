@@ -61,6 +61,7 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
+    
     # Check if email already exists
     existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
     if existing_email:
@@ -79,6 +80,7 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     
     # Create new patient
     hashed_password = get_password_hash(patient_data.password)
+    
     new_patient = Patient(
         name=patient_data.name,
         email=patient_data.email,
