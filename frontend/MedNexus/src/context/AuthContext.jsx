@@ -3,9 +3,9 @@
  * Handles login, logout, profile management, and token refresh
  */
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import apiService from '../services/api';
+import { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import apiService from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -16,7 +16,7 @@ const AuthContext = createContext(null);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -37,9 +37,9 @@ export const AuthProvider = ({ children }) => {
    */
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('access_token');
-      const storedUser = localStorage.getItem('user');
-      
+      const token = localStorage.getItem("access_token");
+      const storedUser = localStorage.getItem("user");
+
       if (token && storedUser) {
         try {
           // Verify token is still valid
@@ -47,13 +47,13 @@ export const AuthProvider = ({ children }) => {
           setUser(profile);
         } catch (err) {
           // Token invalid, clear storage
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('user');
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("user");
         }
       }
       setLoading(false);
     };
-    
+
     checkAuth();
   }, []);
 
@@ -61,15 +61,15 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await apiService.patientSignUp(userData);
-      console.log('SignUp Response:', {
+      console.log("SignUp Response:", {
         hasToken: !!response.access_token,
         hasRefreshToken: !!response.refresh_token,
         hasUser: !!response.user,
         user: response.user,
       });
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("refresh_token", response.refresh_token);
+      localStorage.setItem("user", JSON.stringify(response.user));
       setUser(response.user);
       return response;
     } catch (err) {
@@ -82,9 +82,9 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await apiService.patientSignIn(credentials);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("refresh_token", response.refresh_token);
+      localStorage.setItem("user", JSON.stringify(response.user));
       setUser(response.user);
       return response;
     } catch (err) {
@@ -94,16 +94,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
     setUser(null);
-    navigate('/');
+    navigate("/");
   };
 
   const updateUser = (updatedUser) => {
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   const completeProfile = async (profileData) => {
@@ -131,11 +131,7 @@ export const AuthProvider = ({ children }) => {
     isProfileComplete: user?.is_profile_complete || false,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;
