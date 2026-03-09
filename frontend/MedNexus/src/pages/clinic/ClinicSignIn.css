@@ -1,345 +1,485 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* -- Page --------------------------------------------------- */
 .clinic-signin-page {
-  display: flex;
   min-height: 100vh;
+  width: 100%;
+  display: flex;
   position: relative;
   overflow: hidden;
-  background: #0c1220;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #ecfeff 0, transparent 45%),
+    radial-gradient(circle at 100% 0%, #cffafe 0, transparent 45%),
+    linear-gradient(180deg, #020617 0%, #020617 55%, #020617 100%);
 }
 
-/* ── animated background ── */
+/* -- Background Orbs ---------------------------------------- */
 .clinic-signin-bg {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 0;
   pointer-events: none;
 }
+
 .clinic-signin-orb {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
+  border-radius: 999px;
+  filter: blur(64px);
 }
+
 .clinic-signin-orb--cyan {
-  width: 560px;
-  height: 560px;
-  top: -180px;
-  left: -120px;
-  background: rgba(6, 182, 212, 0.28);
-}
-.clinic-signin-orb--teal {
   width: 420px;
   height: 420px;
-  bottom: -140px;
-  right: -80px;
-  background: rgba(20, 184, 166, 0.22);
+  top: 18%;
+  left: -60px;
+  background: rgba(6, 182, 212, 0.24);
 }
+
+.clinic-signin-orb--teal {
+  width: 380px;
+  height: 380px;
+  bottom: 14%;
+  right: 0;
+  background: rgba(20, 184, 166, 0.2);
+}
+
 .clinic-signin-orb--sky {
-  width: 300px;
-  height: 300px;
+  width: 360px;
+  height: 360px;
   top: 50%;
-  left: 55%;
-  background: rgba(56, 189, 248, 0.18);
+  left: 52%;
+  transform: translate(-50%, -8%);
+  background: rgba(56, 189, 248, 0.16);
 }
+
 .clinic-signin-grid {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
-  background-size: 42px 42px;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.5) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
-/* ── left panel ── */
-.clinic-signin-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* -- Left brand panel --------------------------------------- */
+.clinic-signin-left,
+.clinic-signin-right {
   position: relative;
-  z-index: 1;
-  padding: 2rem;
+  z-index: 10;
 }
+
+.clinic-signin-left {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .clinic-signin-left {
+    display: flex;
+    width: 50%;
+    padding: 40px 40px 32px 48px;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.2) 0, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(20, 184, 166, 0.14) 0, transparent 55%),
+      #020617;
+  }
+}
+
 .clinic-signin-left-inner {
-  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  color: #e5e7eb;
 }
+
+/* Logo */
 .clinic-signin-logo-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 12px;
   text-decoration: none;
-  margin-bottom: 2.5rem;
 }
+
 .clinic-signin-logo-icon {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #0891b2, #06b6d4);
-  color: #fff;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 40px rgba(6, 182, 212, 0.5);
 }
+
 .clinic-signin-logo-icon svg {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
 }
+
 .clinic-signin-logo-text {
-  font-size: 1.55rem;
+  font-size: 26px;
   font-weight: 800;
-  color: #e2e8f0;
+  letter-spacing: -0.05em;
+  color: #f9fafb;
 }
+
 .clinic-signin-logo-text span {
-  background: linear-gradient(135deg, #06b6d4, #22d3ee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #22d3ee;
+}
+
+/* Hero */
+.clinic-signin-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 520px;
+  padding: 40px 0;
 }
 
 .clinic-signin-heading {
-  font-size: 2.4rem;
+  font-size: 38px;
   font-weight: 800;
+  color: #f9fafb;
+  letter-spacing: -0.06em;
   line-height: 1.15;
-  color: #e2e8f0;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
+
 .clinic-signin-heading span {
-  background: linear-gradient(135deg, #06b6d4, #22d3ee);
+  display: block;
+  background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 40%, #0e7490 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-.clinic-signin-desc {
-  font-size: 1.05rem;
-  color: #94a3b8;
-  line-height: 1.65;
-  margin-bottom: 2rem;
+  background-clip: text;
 }
 
-/* stats row */
+.clinic-signin-description {
+  font-size: 15px;
+  color: #9ca3af;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
 .clinic-signin-stats {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  background: rgba(6, 182, 212, 0.06);
-  border: 1px solid rgba(6, 182, 212, 0.12);
-  border-radius: 14px;
-  padding: 1.2rem 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
-.clinic-signin-stat {
-  text-align: center;
-}
-.clinic-signin-stat-num {
-  font-size: 1.5rem;
-  font-weight: 800;
+
+.clinic-signin-stat-value {
+  font-size: 22px;
+  font-weight: 700;
   color: #22d3ee;
 }
+
 .clinic-signin-stat-label {
-  font-size: 0.78rem;
-  color: #94a3b8;
-  margin-top: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.clinic-signin-stat-sep {
-  width: 1px;
-  height: 32px;
-  background: rgba(6, 182, 212, 0.2);
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
-/* ── right panel (form) ── */
+.clinic-signin-left-footer {
+  margin-top: 28px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* -- Right: Form panel -------------------------------------- */
 .clinic-signin-right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f9fafb 0%, #ecfeff 100%);
+}
+
+@media (min-width: 1024px) {
+  .clinic-signin-right {
+    width: 50%;
+    background: #f9fafb;
+  }
+}
+
+/* Mobile header */
+.clinic-signin-mobile-header {
+  display: flex;
+  padding: 16px 20px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(18px);
+}
+
+@media (min-width: 1024px) {
+  .clinic-signin-mobile-header {
+    display: none;
+  }
+}
+
+.clinic-signin-mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.clinic-signin-mobile-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clinic-signin-mobile-logo-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.clinic-signin-mobile-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.clinic-signin-mobile-logo-text span {
+  color: #0891b2;
+}
+
+.clinic-signin-mobile-back {
+  font-size: 13px;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+/* Main centering container */
+.clinic-signin-main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 1;
-  padding: 2rem;
+  padding: 28px 20px 40px;
 }
+
+@media (min-width: 640px) {
+  .clinic-signin-main {
+    padding: 40px 32px 48px;
+  }
+}
+
+/* Card */
 .clinic-signin-card {
   width: 100%;
   max-width: 420px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(40px);
-  border: 1px solid rgba(6, 182, 212, 0.15);
-  border-radius: 20px;
-  padding: 2.5rem 2.2rem;
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 28px 22px;
+  box-shadow:
+    0 18px 60px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
 }
 
-/* header */
-.clinic-signin-card-header {
-  text-align: center;
-  margin-bottom: 2rem;
+@media (min-width: 640px) {
+  .clinic-signin-card {
+    padding: 32px 28px;
+  }
 }
+
 .clinic-signin-card-icon {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
-  display: inline-grid;
-  place-items: center;
-  background: linear-gradient(135deg, #0891b2, #06b6d4);
-  color: #fff;
-  margin: 0 auto 0.8rem;
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.35);
 }
+
 .clinic-signin-card-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
 }
-.clinic-signin-card-header h1 {
-  font-size: 1.55rem;
+
+.clinic-signin-title {
+  font-size: 26px;
   font-weight: 800;
-  color: #e2e8f0;
-  margin: 0 0 0.3rem;
-}
-.clinic-signin-card-header p {
-  color: #94a3b8;
-  font-size: 0.92rem;
+  color: #0f172a;
+  letter-spacing: -0.06em;
+  margin-bottom: 6px;
 }
 
-/* error */
+@media (min-width: 640px) {
+  .clinic-signin-title {
+    font-size: 30px;
+  }
+}
+
+.clinic-signin-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 22px;
+}
+
+/* Error */
 .clinic-signin-error {
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #fca5a5;
-  font-size: 0.88rem;
-  margin-bottom: 1.2rem;
-  text-align: center;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #b91c1c;
+  font-size: 13px;
 }
 
-/* form */
+/* Form */
 .clinic-signin-form {
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
+  gap: 14px;
 }
-.clinic-signin-field label {
-  display: block;
-  font-size: 0.82rem;
+
+.clinic-signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clinic-signin-label {
+  font-size: 12px;
   font-weight: 600;
-  color: #cbd5e1;
-  margin-bottom: 0.4rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #111827;
 }
+
+/* Input with icon */
 .clinic-signin-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .clinic-signin-input-icon {
   position: absolute;
   left: 12px;
-  width: 18px;
-  height: 18px;
-  color: #64748b;
+  width: 16px;
+  height: 16px;
+  color: #22d3ee;
   pointer-events: none;
 }
-.clinic-signin-input-wrap input {
+
+.clinic-signin-input {
   width: 100%;
-  padding: 0.72rem 2.6rem 0.72rem 2.6rem;
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  border-radius: 10px;
-  color: #e2e8f0;
-  font-size: 0.92rem;
+  padding: 12px 12px 12px 38px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.clinic-signin-input-wrap input:focus {
-  border-color: #0891b2;
-  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
-}
-.clinic-signin-input-wrap input::placeholder {
-  color: #475569;
-}
-.clinic-signin-eye {
-  position: absolute;
-  right: 10px;
-  background: none;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  padding: 4px;
-  display: grid;
-  place-items: center;
-}
-.clinic-signin-eye svg {
-  width: 18px;
-  height: 18px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 
-/* submit */
-.clinic-signin-submit {
+.clinic-signin-input::placeholder {
+  color: #9ca3af;
+}
+
+.clinic-signin-input:focus {
+  border-color: #0891b2;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(8, 145, 178, 0.45);
+}
+
+/* Eye toggle */
+.clinic-signin-eye-btn {
+  position: absolute;
+  right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.78rem 1.5rem;
-  background: linear-gradient(135deg, #0891b2, #06b6d4);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
   border: none;
-  border-radius: 10px;
+  background: none;
   cursor: pointer;
-  margin-top: 0.4rem;
-  transition: opacity 0.2s, transform 0.15s;
+  color: #9ca3af;
+  padding: 0;
 }
-.clinic-signin-submit:hover {
-  opacity: 0.92;
+
+.clinic-signin-eye-btn svg {
+  width: 16px;
+  height: 16px;
 }
+
+/* Submit */
+.clinic-signin-submit {
+  margin-top: 4px;
+  width: 100%;
+  border-radius: 999px;
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 40%, #0e7490 100%);
+  box-shadow: 0 18px 45px rgba(6, 182, 212, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+
+.clinic-signin-submit svg {
+  width: 18px;
+  height: 18px;
+}
+
+.clinic-signin-submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 22px 55px rgba(6, 182, 212, 0.65);
+}
+
 .clinic-signin-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  opacity: 0.7;
+  cursor: default;
+  box-shadow: none;
 }
+
 .clinic-signin-spinner {
-  width: 22px;
-  height: 22px;
-  border: 3px solid rgba(255, 255, 255, 0.25);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: clinicSignInSpin 0.7s linear infinite;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: clinic-signin-spin 0.8s linear infinite;
 }
-@keyframes clinicSignInSpin {
+
+@keyframes clinic-signin-spin {
   to { transform: rotate(360deg); }
 }
 
-/* register link */
-.clinic-signin-register {
+/* Footer text */
+.clinic-signin-footer-text {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #6b7280;
   text-align: center;
-  font-size: 0.9rem;
-  color: #94a3b8;
-  margin-top: 1.5rem;
-}
-.clinic-signin-register a {
-  color: #22d3ee;
-  font-weight: 600;
-  text-decoration: none;
-}
-.clinic-signin-register a:hover {
-  text-decoration: underline;
 }
 
-/* ── responsive ── */
-@media (max-width: 900px) {
-  .clinic-signin-page {
-    flex-direction: column;
-  }
-  .clinic-signin-left {
-    padding: 2rem 1.5rem 1rem;
-  }
-  .clinic-signin-heading {
-    font-size: 1.7rem;
-  }
-  .clinic-signin-stats {
-    display: none;
-  }
-  .clinic-signin-right {
-    padding: 0.5rem 1.5rem 2.5rem;
-  }
-  .clinic-signin-card {
-    max-width: 100%;
-  }
+.clinic-signin-footer-text a {
+  text-decoration: none;
 }
-@media (max-width: 480px) {
-  .clinic-signin-card {
-    padding: 1.8rem 1.2rem;
-  }
+
+.clinic-signin-footer-text span {
+  font-weight: 600;
+  color: #0e7490;
 }

@@ -689,6 +689,27 @@ class ApiService {
       body: JSON.stringify({ is_active: isActive }),
     });
   }
+
+  // ── Doctor Ratings ──────────────────────────────────
+
+  async submitRating(payload) {
+    return this.request('/api/ratings', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getDoctorRatings(doctorId) {
+    return this.request(`/api/ratings/doctor/${doctorId}`);
+  }
+
+  async getDoctorRatingSummary(doctorId) {
+    return this.request(`/api/ratings/doctor/${doctorId}/summary`);
+  }
+
+  async getMyRatings() {
+    return this.request('/api/ratings/my-ratings');
+  }
 }
 
 export const apiService = new ApiService();

@@ -14,6 +14,7 @@ from app.api.routes import quotation as quotation_router
 from app.api.routes import clinic as clinic_router
 from app.api.routes import lab_quotation as lab_quotation_router
 from app.api.routes import lab_report as lab_report_router
+from app.api.routes import rating as rating_router
 from app.db import Base, engine
 
 # Create database tables
@@ -163,6 +164,7 @@ app.include_router(quotation_router.router)
 app.include_router(clinic_router.router)
 app.include_router(lab_quotation_router.router)
 app.include_router(lab_report_router.router)
+app.include_router(rating_router.router)
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

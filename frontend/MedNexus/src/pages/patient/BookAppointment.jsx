@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, User, Stethoscope, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Stethoscope, CheckCircle2, AlertCircle, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import apiService from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -21,6 +21,8 @@ const BookAppointment = () => {
   const [symptoms, setSymptoms] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [ratingSummary, setRatingSummary] = useState(null);
+  const [ratings, setRatings] = useState([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -47,6 +49,24 @@ const BookAppointment = () => {
 
     loadDoctor();
   }, [doctorId, isAuthenticated, navigate]);
+
+  // Fetch rating summary + reviews when doctor is loaded
+  useEffect(() => {
+    if (!doctor) return;
+    const loadRatings = async () => {
+      try {
+        const [summary, reviews] = await Promise.all([
+          apiService.getDoctorRatingSummary(doctor.id),
+          apiService.getDoctorRatings(doctor.id),
+        ]);
+        setRatingSummary(summary);
+        setRatings(reviews);
+      } catch (_) {
+        // Non-critical – fail silently
+      }
+    };
+    loadRatings();
+  }, [doctor]);
 
   useEffect(() => {
     if (doctor && selectedDate) {
@@ -210,6 +230,17 @@ const BookAppointment = () => {
                 <Stethoscope size={16} />
                 {doctor.specialization}
               </p>
+              {ratingSummary && ratingSummary.total_ratings > 0 && (
+                <div className="book-appointment-doctor-rating">
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                  <span className="book-appointment-doctor-rating-value">
+                    {ratingSummary.average_rating}
+                  </span>
+                  <span className="book-appointment-doctor-rating-count">
+                    ({ratingSummary.total_ratings} {ratingSummary.total_ratings === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -348,6 +379,58 @@ const BookAppointment = () => {
             {submitting ? 'Booking...' : 'Book Appointment'}
           </button>
         </motion.div>
+
+        {/* Patient Reviews */}
+        {ratings.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="book-appointment-section"
+          >
+            <h3 className="book-appointment-section-title">
+              <Star size={20} />
+              Patient Reviews
+              {ratingSummary && (
+                <span className="book-appointment-reviews-summary">
+                  {ratingSummary.average_rating} &middot; {ratingSummary.total_ratings} {ratingSummary.total_ratings === 1 ? 'review' : 'reviews'}
+                </span>
+              )}
+            </h3>
+            <div className="book-appointment-reviews">
+              {ratings.slice(0, 5).map((review) => (
+                <div key={review.id} className="book-appointment-review-card">
+                  <div className="book-appointment-review-header">
+                    <div className="book-appointment-review-avatar">
+                      <User size={16} />
+                    </div>
+                    <div className="book-appointment-review-meta">
+                      <span className="book-appointment-review-name">{review.patient_name}</span>
+                      <span className="book-appointment-review-date">
+                        {new Date(review.created_at).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                    <div className="book-appointment-review-stars">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          size={14}
+                          fill={s <= review.rating ? '#f59e0b' : 'none'}
+                          color={s <= review.rating ? '#f59e0b' : '#d1d5db'}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {review.review && (
+                    <p className="book-appointment-review-text">{review.review}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
