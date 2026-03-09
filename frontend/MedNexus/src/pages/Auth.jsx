@@ -4,6 +4,10 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import apiService from '../services/api';
 
+/**
+ * Legacy patient auth screen (sign in / sign up tabs).
+ * Kept for compatibility with existing routes.
+ */
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
