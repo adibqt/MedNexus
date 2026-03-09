@@ -38,13 +38,18 @@ def get_password_hash(password: str) -> str:
     password = password[:72]
     return pwd_context.hash(password)
 
+def calculate_token_expiration(expires_delta: Optional[timedelta] = None, default_minutes: int = None) -> datetime:
+    """Calculate token expiration time"""
+    if expires_delta:
+        return datetime.utcnow() + expires_delta
+    else:
+        minutes = default_minutes or settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        return datetime.utcnow() + timedelta(minutes=minutes)
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = calculate_token_expiration(expires_delta)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
