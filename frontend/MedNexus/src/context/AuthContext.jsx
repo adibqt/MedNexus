@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Authenticate patient with backend and persist session tokens.
   const signIn = async (credentials) => {
     setError(null);
     try {
@@ -93,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Clear local session and return to landing page.
   const signOut = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -101,6 +103,7 @@ export const AuthProvider = ({ children }) => {
     navigate("/");
   };
 
+  // Keep in-memory and localStorage user payload in sync.
   const updateUser = (updatedUser) => {
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
