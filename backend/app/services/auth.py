@@ -28,30 +28,24 @@ security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
-    # Truncate to 72 bytes (bcrypt limit) to match hashing
+    #Truncate to 72 bytes (bcrypt limit) to match hashing
     plain_password = plain_password[:72]
-    # Use passlib to verify the password against the hash
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
     """Hash a password"""
     # Truncate to 72 bytes (bcrypt limit) to avoid ValueError with newer versions
     password = password[:72]
-    # Generate bcrypt hash for secure password storage
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
     to_encode = data.copy()
-    # Calculate expiration time
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        # Use default expiration from settings if not provided
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    # Add expiration claim to token payload
     to_encode.update({"exp": expire})
-    # Encode JWT token with secret key
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 

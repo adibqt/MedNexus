@@ -62,7 +62,7 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
     """Register a new patient"""
     
-    # Check if email already exists to prevent duplicate accounts
+    # Check if email already exists
     existing_email = db.query(Patient).filter(Patient.email == patient_data.email).first()
     if existing_email:
         raise HTTPException(
@@ -70,7 +70,7 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     
-    # Check if phone already exists to prevent duplicate accounts
+    # Check if phone already exists
     existing_phone = db.query(Patient).filter(Patient.phone == patient_data.phone).first()
     if existing_phone:
         raise HTTPException(
@@ -78,7 +78,7 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
             detail="Phone number already registered"
         )
     
-    # Create new patient with hashed password for security
+    # Create new patient
     hashed_password = get_password_hash(patient_data.password)
     
     new_patient = Patient(
@@ -117,10 +117,9 @@ async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
 @router.post("/signin", response_model=TokenWithRefresh)
 async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
     """Sign in a patient"""
-    # Find patient by email in database
+    # Find patient by email
     patient = db.query(Patient).filter(Patient.email == credentials.email).first()
     
-    # Verify credentials - check both patient exists and password is correct
     if not patient or not verify_password(credentials.password, patient.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -128,14 +127,13 @@ async def signin(credentials: PatientSignIn, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Check if account is active
     if not patient.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Account is deactivated"
         )
     
-    # Update last login timestamp for tracking
+    # Update last login
     patient.last_login = datetime.utcnow()
     db.commit()
     db.refresh(patient)
