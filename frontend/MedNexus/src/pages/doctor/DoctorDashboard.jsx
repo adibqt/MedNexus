@@ -50,6 +50,7 @@ const DoctorDashboard = () => {
   const [appointments, setAppointments] = useState(() => readCache(CACHE_APPTS) || []);
   const [loadingAppointments, setLoadingAppointments] = useState(() => !readCache(CACHE_APPTS));
   const [refreshing, setRefreshing] = useState(false);
+  const [ratingSummary, setRatingSummary] = useState(null);
   const hasFetched = useRef(false);
 
   const loadDoctor = useCallback(async () => {
@@ -79,6 +80,15 @@ const DoctorDashboard = () => {
     }
   }, []);
 
+  const loadRatingSummary = useCallback(async (doctorId) => {
+    try {
+      const summary = await apiService.getDoctorRatingSummary(doctorId);
+      setRatingSummary(summary);
+    } catch (err) {
+      console.error('Failed to load rating summary:', err);
+    }
+  }, []);
+
   const loadAll = useCallback(async (force = false) => {
     if (!force) {
       const cachedDoc = readCache(CACHE_DOCTOR);
@@ -90,6 +100,7 @@ const DoctorDashboard = () => {
           try { setSchedule(JSON.parse(cachedDoc.schedule)); } catch { setSchedule(null); }
         }
         setLoadingAppointments(false);
+        if (cachedDoc.id) loadRatingSummary(cachedDoc.id);
         return;
       }
     }
@@ -97,7 +108,7 @@ const DoctorDashboard = () => {
     await Promise.all([loadDoctor(), loadAppointments()]);
     setLoadingAppointments(false);
     setRefreshing(false);
-  }, [loadDoctor, loadAppointments]);
+  }, [loadDoctor, loadAppointments, loadRatingSummary]);
 
   useEffect(() => {
     const token = localStorage.getItem('doctor_access_token');
@@ -110,6 +121,11 @@ const DoctorDashboard = () => {
       loadAll();
     }
   }, [navigate, loadAll]);
+
+  // Fetch rating summary once doctor id is available
+  useEffect(() => {
+    if (doctor?.id) loadRatingSummary(doctor.id);
+  }, [doctor?.id, loadRatingSummary]);
 
   const scheduleEntries = schedule
     ? Object.entries(schedule).filter(([, v]) => v.enabled)
@@ -256,8 +272,16 @@ const DoctorDashboard = () => {
         </div>
         <div className="doctor-dashboard-stat-card">
           <div className="doctor-dashboard-stat-label">Patient rating</div>
-          <div className="doctor-dashboard-stat-value">4.9★</div>
-          <div className="doctor-dashboard-stat-caption">Based on future feedback</div>
+          <div className="doctor-dashboard-stat-value">
+            {ratingSummary && ratingSummary.total_ratings > 0
+              ? `${ratingSummary.average_rating}★`
+              : '—'}
+          </div>
+          <div className="doctor-dashboard-stat-caption">
+            {ratingSummary && ratingSummary.total_ratings > 0
+              ? `Based on ${ratingSummary.total_ratings} rating${ratingSummary.total_ratings === 1 ? '' : 's'}`
+              : 'No ratings yet'}
+          </div>
         </div>
         <div className="doctor-dashboard-stat-card">
           <div className="doctor-dashboard-stat-label">Avg. visit length</div>

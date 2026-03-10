@@ -481,18 +481,6 @@ const PatientDashboard = () => {
 
             <button
               type="button"
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="patient-dashboard-icon-button"
-              aria-label="Notifications"
-            >
-              <Bell />
-              {unreadCount > 0 && (
-                <span className="patient-dashboard-badge">{unreadCount}</span>
-              )}
-            </button>
-
-            <button
-              type="button"
               onClick={handleSignOut}
               className="patient-dashboard-logout"
               aria-label="Logout"
@@ -898,17 +886,7 @@ const PatientDashboard = () => {
                 <p className="patient-dashboard-activity-text">View appointments</p>
               </button>
 
-              <button
-                type="button"
-                onClick={() => navigate('/medical-records')}
-                className="patient-dashboard-activity-card"
-              >
-                <div className="patient-dashboard-activity-icon patient-dashboard-activity-icon--records">
-                  <FileText />
-                </div>
-                <h3 className="patient-dashboard-activity-title">Records</h3>
-                <p className="patient-dashboard-activity-text">Medical documents</p>
-              </button>
+              
             </div>
           </div>
         </section>
