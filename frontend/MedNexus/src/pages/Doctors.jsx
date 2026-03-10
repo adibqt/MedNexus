@@ -29,6 +29,7 @@ const Doctors = () => {
     fetchDoctors();
   }, []);
 
+  // Navigate to the doctor profile when a doctor card is selected.
   return (
     <div className="landing-page">
       <Navbar />
