@@ -1,8 +1,15 @@
-import { useMemo } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { User, Stethoscope, Pill, Building2, Heart, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import './SignIn.css';
+import { useMemo } from "react";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import {
+  User,
+  Stethoscope,
+  Pill,
+  Building2,
+  Heart,
+  ChevronRight,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import "./SignIn.css";
 
 /**
  * SignIn role selector page.
@@ -11,37 +18,37 @@ import './SignIn.css';
 const SignIn = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const selectedRole = searchParams.get('role') || '';
+  const selectedRole = searchParams.get("role") || "";
 
   const roles = useMemo(
     () => [
       {
-        key: 'patient',
-        label: 'Patient',
+        key: "patient",
+        label: "Patient",
         icon: User,
-        description: 'Access consultations & health records',
-        color: '#3b82f6',
+        description: "Access consultations & health records",
+        color: "#3b82f6",
       },
       {
-        key: 'doctor',
-        label: 'Doctor',
+        key: "doctor",
+        label: "Doctor",
         icon: Stethoscope,
-        description: 'Manage appointments & patients',
-        color: '#10b981',
+        description: "Manage appointments & patients",
+        color: "#10b981",
       },
       {
-        key: 'pharmacy',
-        label: 'Pharmacy',
+        key: "pharmacy",
+        label: "Pharmacy",
         icon: Pill,
-        description: 'Handle prescriptions & inventory',
-        color: '#8b5cf6',
+        description: "Handle prescriptions & inventory",
+        color: "#8b5cf6",
       },
       {
-        key: 'clinic',
-        label: 'Clinic',
+        key: "clinic",
+        label: "Clinic",
         icon: Building2,
-        description: 'Oversee operations & staff',
-        color: '#f59e0b',
+        description: "Oversee operations & staff",
+        color: "#f59e0b",
       },
     ],
     [],
@@ -60,17 +67,17 @@ const SignIn = () => {
         <motion.div
           className="signin-orb signin-orb--emerald"
           animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.6, 0.35] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="signin-orb signin-orb--cyan"
           animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="signin-orb signin-orb--indigo"
           animate={{ scale: [1, 1.25, 1], x: [0, 24, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         />
         <div className="signin-grid" />
       </div>
@@ -104,8 +111,8 @@ const SignIn = () => {
               transition={{ delay: 0.25 }}
               className="signin-description"
             >
-              Connect with doctors, manage prescriptions, and take control of your health
-              journey — all from one intelligent, secure platform.
+              Connect with doctors, manage prescriptions, and take control of
+              your health journey — all from one intelligent, secure platform.
             </motion.p>
 
             <motion.div
@@ -115,9 +122,9 @@ const SignIn = () => {
               className="signin-stats"
             >
               {[
-                { value: '50K+', label: 'Patients cared for' },
-                { value: '200+', label: 'Verified doctors' },
-                { value: '99%', label: 'Satisfaction rate' },
+                { value: "50K+", label: "Patients cared for" },
+                { value: "200+", label: "Verified doctors" },
+                { value: "99%", label: "Satisfaction rate" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <div className="signin-stat-value">{stat.value}</div>
@@ -127,7 +134,9 @@ const SignIn = () => {
             </motion.div>
           </div>
 
-          <div className="signin-left-footer">© 2025 MedNexus. All rights reserved.</div>
+          <div className="signin-left-footer">
+            © 2025 MedNexus. All rights reserved.
+          </div>
         </div>
       </div>
 
@@ -180,7 +189,7 @@ const SignIn = () => {
                     >
                       <div
                         className={`signin-role-card ${
-                          isSelected ? 'signin-role-card--selected' : ''
+                          isSelected ? "signin-role-card--selected" : ""
                         }`}
                       >
                         <div
@@ -191,7 +200,9 @@ const SignIn = () => {
                         </div>
                         <div className="signin-role-content">
                           <div className="signin-role-label">{role.label}</div>
-                          <div className="signin-role-description">{role.description}</div>
+                          <div className="signin-role-description">
+                            {role.description}
+                          </div>
                         </div>
                         <ChevronRight className="signin-role-arrow" />
                       </div>
@@ -215,10 +226,7 @@ const SignIn = () => {
                 className="signin-footer"
               >
                 <p>
-                  New to MedNexus?{' '}
-                  <Link to="/sign-up">
-                    Create an account
-                  </Link>
+                  New to MedNexus? <Link to="/sign-up">Create an account</Link>
                 </p>
               </motion.div>
             </motion.div>
