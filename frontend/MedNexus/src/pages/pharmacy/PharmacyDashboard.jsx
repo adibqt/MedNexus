@@ -330,7 +330,7 @@ const PharmacyDashboard = () => {
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
               {tab !== 'all' && (
                 <span className="phd-tab-count">
-                  {requests.filter(r => r.status === tab).length}
+                  {requests.filter(r => (r.request ? r.request.status : r.status) === tab).length}
                 </span>
               )}
             </button>

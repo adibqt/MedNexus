@@ -13,6 +13,7 @@ from app.schemas.appointment import (
     DoctorAppointmentResponse,
 )
 from app.services import get_current_patient, get_current_doctor
+from app.services.email_service import send_appointment_confirmation_email
 
 router = APIRouter(prefix="/api/appointments", tags=["appointments"])
 
@@ -299,6 +300,22 @@ async def confirm_appointment(
     db.refresh(appointment)
     
     patient = db.query(Patient).filter(Patient.id == appointment.patient_id).first()
+
+    # Send confirmation email to patient (non-blocking)
+    if patient and patient.email:
+        await send_appointment_confirmation_email(
+            patient_email=patient.email,
+            data={
+                "patient_name": patient.name,
+                "doctor_name": current_doctor.name,
+                "doctor_specialization": current_doctor.specialization,
+                "appointment_date": appointment.date,
+                "appointment_time": appointment.time,
+                "reason": appointment.reason,
+                "symptoms": appointment.symptoms,
+            },
+        )
+
     return DoctorAppointmentResponse(
         id=appointment.id,
         appointment_date=appointment.date,
