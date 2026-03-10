@@ -847,3 +847,200 @@ async def send_lab_report_email(
     except Exception as e:
         logger.error(f"Failed to send lab report email to {to_email}: {e}", exc_info=True)
         return False
+
+
+# ════════════════════════════════════════════════════════════════════
+# APPOINTMENT CONFIRMATION EMAIL
+# ════════════════════════════════════════════════════════════════════
+
+def _build_appointment_confirmation_html(data: dict) -> str:
+    """Build an inline-styled HTML email for appointment confirmation notification."""
+
+    patient_name = data.get("patient_name", "Patient")
+    doctor_name = data.get("doctor_name", "Doctor")
+    doctor_specialization = data.get("doctor_specialization", "")
+    appointment_date = _fmt_date(data.get("appointment_date"))
+    appointment_time = data.get("appointment_time", "")
+    reason = data.get("reason", "")
+    symptoms = data.get("symptoms", "")
+
+    # Format time for display
+    time_display = ""
+    if appointment_time:
+        try:
+            from datetime import time as time_type
+            if isinstance(appointment_time, time_type):
+                time_display = appointment_time.strftime("%I:%M %p")
+            elif isinstance(appointment_time, str):
+                time_display = datetime.strptime(appointment_time, "%H:%M:%S").strftime("%I:%M %p")
+            else:
+                time_display = str(appointment_time)
+        except Exception:
+            time_display = str(appointment_time)
+
+    reason_html = ""
+    if reason:
+        reason_html = f"""
+        <tr><td style="padding:0 32px;">
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;margin:8px 0;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:4px;">Reason for Visit</div>
+            <div style="font-size:13px;color:#0f172a;line-height:1.5;">{reason}</div>
+          </div>
+        </td></tr>"""
+
+    symptoms_html = ""
+    if symptoms:
+        symptoms_html = f"""
+        <tr><td style="padding:0 32px;">
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin:8px 0;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#92400e;margin-bottom:4px;">Symptoms</div>
+            <div style="font-size:13px;color:#78350f;line-height:1.5;">{symptoms}</div>
+          </div>
+        </td></tr>"""
+
+    spec_html = f'<div style="font-size:11px;color:#0d9488;font-weight:600;margin-top:3px;">{doctor_specialization}</div>' if doctor_specialization else ""
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+<tr><td align="center">
+
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+  <!-- Teal accent bar -->
+  <tr><td style="background:linear-gradient(90deg,#0d9488,#14b8a6,#5eead4,#0d9488);height:6px;line-height:6px;font-size:0;">&nbsp;</td></tr>
+
+  <!-- Letterhead -->
+  <tr><td style="padding:24px 32px 16px;border-bottom:2px solid #0d9488;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="vertical-align:top;">
+        <div style="font-size:20px;font-weight:900;color:#0d9488;letter-spacing:0.02em;">MedNexus Healthcare</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:3px;letter-spacing:0.04em;">Connected Care &middot; Anytime &middot; Anywhere</div>
+      </td>
+      <td style="vertical-align:top;text-align:right;">
+        <div style="display:inline-block;padding:5px 14px;border:2px solid #059669;border-radius:8px;font-size:11px;font-weight:800;color:#059669;letter-spacing:0.08em;">&#10003; CONFIRMED</div>
+      </td>
+    </tr>
+    </table>
+  </td></tr>
+
+  <!-- Greeting -->
+  <tr><td style="padding:24px 32px 12px;">
+    <div style="font-size:16px;color:#0f172a;">Dear <strong>{patient_name}</strong>,</div>
+    <div style="font-size:14px;color:#475569;margin-top:8px;line-height:1.6;">
+      Your appointment with <strong>Dr. {doctor_name}</strong> has been <strong style="color:#059669;">confirmed</strong>.
+      Please find the details below.
+    </div>
+  </td></tr>
+
+  <!-- Appointment details card -->
+  <tr><td style="padding:8px 32px;">
+    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:20px;margin:8px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:8px 0;vertical-align:top;width:40%;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:4px;">Doctor</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">Dr. {doctor_name}</div>
+            {spec_html}
+          </td>
+          <td style="padding:8px 0;vertical-align:top;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:4px;">Date</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">{appointment_date}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0;vertical-align:top;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:4px;">Time</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">{time_display}</div>
+          </td>
+          <td style="padding:8px 0;vertical-align:top;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:4px;">Status</div>
+            <div style="font-size:14px;font-weight:700;color:#059669;">Confirmed</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td></tr>
+
+  <!-- Reason -->
+  {reason_html}
+
+  <!-- Symptoms -->
+  {symptoms_html}
+
+  <!-- CTA -->
+  <tr><td style="padding:20px 32px 12px;text-align:center;">
+    <a href="http://localhost:5173/my-appointments" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#0d9488,#14b8a6);color:#ffffff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;">
+      View My Appointments
+    </a>
+  </td></tr>
+
+  <!-- Reminder -->
+  <tr><td style="padding:12px 32px;">
+    <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;padding:10px 14px;text-align:center;font-size:13px;color:#374151;">
+      Please arrive on time for your appointment. If you need to reschedule or cancel, please do so at least 24 hours in advance.
+    </div>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="padding:16px 32px 24px;text-align:center;border-top:1px solid #f1f5f9;">
+    <div style="font-size:11px;color:#94a3b8;line-height:1.6;">
+      This is an automated email from MedNexus Healthcare. Please do not reply to this email.<br>
+      &copy; {datetime.now().year} MedNexus Healthcare. All rights reserved.
+    </div>
+  </td></tr>
+
+</table>
+
+</td></tr>
+</table>
+
+</body>
+</html>"""
+    return html
+
+
+async def send_appointment_confirmation_email(
+    patient_email: str,
+    data: dict,
+) -> bool:
+    """
+    Send an appointment confirmation email to the patient.
+    `data` should contain: patient_name, doctor_name, doctor_specialization,
+    appointment_date, appointment_time, reason, symptoms.
+    """
+    if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+        logger.warning("SMTP not configured — skipping appointment confirmation email.")
+        return False
+
+    from_email = settings.SMTP_FROM_EMAIL or settings.SMTP_USER
+    from_name = settings.SMTP_FROM_NAME
+    to_email = patient_email
+    doctor_name = data.get("doctor_name", "Your Doctor")
+
+    msg = MIMEMultipart("mixed")
+    msg["From"] = f"{from_name} <{from_email}>"
+    msg["To"] = to_email
+    msg["Subject"] = f"Appointment Confirmed with Dr. {doctor_name} — MedNexus"
+
+    html_body = _build_appointment_confirmation_html(data)
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+    try:
+        await aiosmtplib.send(
+            msg,
+            hostname=settings.SMTP_HOST,
+            port=settings.SMTP_PORT,
+            start_tls=settings.SMTP_USE_TLS,
+            username=settings.SMTP_USER,
+            password=settings.SMTP_PASSWORD,
+        )
+        logger.info(f"Appointment confirmation email sent to {to_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send appointment confirmation email to {to_email}: {e}", exc_info=True)
+        return False
