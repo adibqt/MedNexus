@@ -66,6 +66,10 @@ const testimonials = [
   { title: "Modern Service!", name: "Kolis Mullar" },
 ];
 
+/**
+ * About page for MedNexus.
+ * Combines brand story, feature highlights, specialists, and testimonials.
+ */
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = testimonials.length;
