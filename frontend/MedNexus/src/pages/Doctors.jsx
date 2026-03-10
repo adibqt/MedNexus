@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "../components/landing";
 import "../pages/Landing.css";
 
+/**
+ * Doctors listing page.
+ * Displays publicly visible doctors fetched from the backend.
+ */
 const Doctors = () => {
   const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
