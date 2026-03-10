@@ -4,6 +4,7 @@ import Navbar from "../components/landing/Navbar";
 import Footer from "../components/landing/Footer";
 import "./Departments.css";
 
+// Static department card content used for the public departments page.
 const departmentsData = [
   {
     id: 1,
@@ -49,6 +50,10 @@ const departmentsData = [
   },
 ];
 
+/**
+ * Departments overview page.
+ * Highlights major specialties and routes users to department detail pages.
+ */
 const Departments = () => {
   const navigate = useNavigate();
 
