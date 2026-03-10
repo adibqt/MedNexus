@@ -48,10 +48,15 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
+    // Security: Sanitize inputs before submission
+    const sanitizedEmail = signInData.email.trim().toLowerCase();
+    const sanitizedPassword = signInData.password.trim();
+    
     try {
       const response = await apiService.loginPatient(
-        signInData.email,
-        signInData.password,
+        sanitizedEmail,
+        sanitizedPassword,
       );
       localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("user", JSON.stringify(response.patient));
@@ -82,23 +87,27 @@ const Auth = () => {
     }
 
     try {
-      const [firstName, ...lastNameParts] = signUpData.fullName
-        .trim()
-        .split(" ");
+      // Security: Sanitize all inputs before submission
+      const sanitizedFullName = signUpData.fullName.trim();
+      const sanitizedEmail = signUpData.email.trim().toLowerCase();
+      const sanitizedPhone = signUpData.phone.trim();
+      const sanitizedPassword = signUpData.password.trim();
+      
+      const [firstName, ...lastNameParts] = sanitizedFullName.split(" ");
       const lastName = lastNameParts.join(" ") || "";
 
       await apiService.registerPatient({
         first_name: firstName,
         last_name: lastName,
-        email: signUpData.email,
-        phone: signUpData.phone,
-        password: signUpData.password,
+        email: sanitizedEmail,
+        phone: sanitizedPhone,
+        password: sanitizedPassword,
       });
 
       // Auto login after registration
       const loginResponse = await apiService.loginPatient(
-        signUpData.email,
-        signUpData.password,
+        sanitizedEmail,
+        sanitizedPassword,
       );
       localStorage.setItem("access_token", loginResponse.access_token);
       localStorage.setItem("user", JSON.stringify(loginResponse.patient));
@@ -311,6 +320,8 @@ const Auth = () => {
                       setSignInData({ ...signInData, email: e.target.value })
                     }
                     required
+                    maxLength={100}
+                    autoComplete="email"
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
@@ -331,6 +342,9 @@ const Auth = () => {
                         })
                       }
                       required
+                      minLength={6}
+                      maxLength={72}
+                      autoComplete="current-password"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
                     <button
@@ -432,6 +446,8 @@ const Auth = () => {
                       setSignUpData({ ...signUpData, fullName: e.target.value })
                     }
                     required
+                    maxLength={100}
+                    autoComplete="name"
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
@@ -448,6 +464,8 @@ const Auth = () => {
                       setSignUpData({ ...signUpData, email: e.target.value })
                     }
                     required
+                    maxLength={100}
+                    autoComplete="email"
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
@@ -464,6 +482,8 @@ const Auth = () => {
                       setSignUpData({ ...signUpData, phone: e.target.value })
                     }
                     required
+                    maxLength={20}
+                    autoComplete="tel"
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
                   />
                 </div>
@@ -484,6 +504,9 @@ const Auth = () => {
                         })
                       }
                       required
+                      minLength={6}
+                      maxLength={72}
+                      autoComplete="new-password"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
                     <button
@@ -516,6 +539,9 @@ const Auth = () => {
                         })
                       }
                       required
+                      minLength={6}
+                      maxLength={72}
+                      autoComplete="new-password"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all pr-12"
                     />
                     <button
