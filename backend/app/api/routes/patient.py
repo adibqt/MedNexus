@@ -56,44 +56,6 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
-# ============ Field Validators ============
-
-class FieldValidators:
-    """Validators for specific fields"""
-    
-    @staticmethod
-    def validate_email_field(email: str) -> tuple[bool, str]:
-        """Validate email field with detailed error message"""
-        if not email:
-            return False, "Email is required"
-        if len(email) > 255:
-            return False, "Email is too long"
-        import re
-        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            return False, "Invalid email format"
-        return True, ""
-    
-    @staticmethod
-    def validate_phone_field(phone: str) -> tuple[bool, str]:
-        """Validate phone field with detailed error message"""
-        if not phone:
-            return False, "Phone number is required"
-        import re
-        cleaned = re.sub(r'\D', '', phone)
-        if len(cleaned) < 10:
-            return False, "Phone number must have at least 10 digits"
-        return True, ""
-    
-    @staticmethod
-    def validate_name_field(name: str) -> tuple[bool, str]:
-        """Validate name field"""
-        if not name:
-            return False, "Name is required"
-        if len(name.strip()) < 2:
-            return False, "Name must be at least 2 characters"
-        return True, ""
-
-
 # ============ Authentication Routes ============
 
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
