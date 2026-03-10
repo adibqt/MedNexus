@@ -5,6 +5,7 @@ import Navbar from '../components/landing/Navbar';
 import Footer from '../components/landing/Footer';
 import './DepartmentSingle.css';
 
+// Static fallback content for department detail presentation.
 const departmentsData = {
   1: {
     title: 'Ophthalmology',
@@ -98,6 +99,10 @@ const departmentsData = {
   },
 };
 
+/**
+ * Department detail page.
+ * Renders informational content for a selected specialty area.
+ */
 const DepartmentSingle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
