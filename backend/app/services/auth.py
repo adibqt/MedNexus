@@ -26,6 +26,32 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
+# ============ Field Validators ============
+
+class AuthFieldValidators:
+    """Validators for authentication fields"""
+    
+    @staticmethod
+    def validate_password_field(password: str) -> tuple[bool, str]:
+        """Validate password field with detailed requirements"""
+        if not password:
+            return False, "Password is required"
+        if len(password) < 6:
+            return False, "Password must be at least 6 characters"
+        if len(password) > 128:
+            return False, "Password is too long"
+        return True, ""
+    
+    @staticmethod
+    def validate_credentials_fields(email: str, password: str) -> tuple[bool, str]:
+        """Validate login credentials fields"""
+        if not email:
+            return False, "Email is required"
+        if not password:
+            return False, "Password is required"
+        return True, ""
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
     #Truncate to 72 bytes (bcrypt limit) to match hashing

@@ -4,6 +4,35 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import apiService from "../services/api";
 
+// Form field validators
+const validators = {
+  email: (value) => {
+    if (!value) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Invalid email format";
+    return null;
+  },
+  password: (value) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    return null;
+  },
+  phone: (value) => {
+    if (!value) return "Phone number is required";
+    if (!/^\+?[\d\s-()]{10,}$/.test(value)) return "Invalid phone number";
+    return null;
+  },
+  fullName: (value) => {
+    if (!value) return "Full name is required";
+    if (value.trim().split(' ').length < 2) return "Please enter your full name";
+    return null;
+  },
+  confirmPassword: (password, confirmPassword) => {
+    if (!confirmPassword) return "Please confirm your password";
+    if (password !== confirmPassword) return "Passwords do not match";
+    return null;
+  }
+};
+
 /**
  * Legacy patient auth screen (sign in / sign up tabs).
  * Kept for compatibility with existing routes.
