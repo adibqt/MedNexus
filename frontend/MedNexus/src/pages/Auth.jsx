@@ -4,6 +4,26 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import apiService from "../services/api";
 
+// API Configuration
+const API_CONFIG = {
+  REDIRECT_DELAY: 1000,
+  DASHBOARD_ROUTE: "/patient/dashboard",
+  STORAGE_KEYS: {
+    ACCESS_TOKEN: "access_token",
+    USER_DATA: "user"
+  },
+  ERROR_MESSAGES: {
+    INVALID_CREDENTIALS: "Invalid email or password",
+    REGISTRATION_FAILED: "Registration failed. Please try again.",
+    PASSWORD_MISMATCH: "Passwords do not match",
+    PASSWORD_TOO_SHORT: "Password must be at least 6 characters"
+  },
+  SUCCESS_MESSAGES: {
+    LOGIN: "Login successful! Redirecting...",
+    REGISTRATION: "Account created successfully! Redirecting..."
+  }
+};
+
 /**
  * Legacy patient auth screen (sign in / sign up tabs).
  * Kept for compatibility with existing routes.

@@ -26,6 +26,29 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
+# ============ JWT Configuration ============
+
+class JWTConfig:
+    """JWT token configuration constants"""
+    
+    # Token Types
+    TOKEN_TYPE_ACCESS = "access"
+    TOKEN_TYPE_REFRESH = "refresh"
+    
+    # Algorithm
+    DEFAULT_ALGORITHM = "HS256"
+    
+    # Token Claims
+    CLAIM_SUBJECT = "sub"
+    CLAIM_EMAIL = "email"
+    CLAIM_ROLE = "role"
+    CLAIM_EXPIRATION = "exp"
+    
+    # Password Constraints
+    PASSWORD_MAX_LENGTH = 72  # bcrypt limit
+    PASSWORD_MIN_LENGTH = 6
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
     #Truncate to 72 bytes (bcrypt limit) to match hashing
