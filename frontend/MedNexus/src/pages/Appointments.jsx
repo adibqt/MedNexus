@@ -4,6 +4,10 @@ import { Navbar, Footer } from "../components/landing";
 import { useAuth } from "../context/AuthContext";
 import "../pages/Landing.css";
 
+/**
+ * Public appointments page.
+ * Lets visitors explore departments and available doctors before authentication.
+ */
 const Appointments = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
