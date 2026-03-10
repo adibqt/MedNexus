@@ -3,6 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "../components/landing";
 import "../pages/Landing.css";
 
+/**
+ * Doctor profile page.
+ * Fetches and displays public details for a single doctor.
+ */
 const DoctorSingle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
