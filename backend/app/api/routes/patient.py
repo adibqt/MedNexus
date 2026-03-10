@@ -56,29 +56,6 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
-# ============ API Configuration ============
-
-class APIConfig:
-    """API endpoint and response configuration"""
-    
-    # HTTP Status Codes
-    STATUS_OK = 200
-    STATUS_CREATED = 201
-    STATUS_BAD_REQUEST = 400
-    STATUS_UNAUTHORIZED = 401
-    STATUS_NOT_FOUND = 404
-    
-    # Error Messages
-    EMAIL_EXISTS = "Email already registered"
-    PHONE_EXISTS = "Phone number already registered"
-    INVALID_CREDENTIALS = "Incorrect email or password"
-    ACCOUNT_DEACTIVATED = "Account is deactivated"
-    
-    # Token Configuration
-    TOKEN_TYPE = "bearer"
-    AUTH_HEADER = {"WWW-Authenticate": "Bearer"}
-
-
 # ============ Authentication Routes ============
 
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
