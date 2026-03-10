@@ -5,6 +5,7 @@ import Footer from "../components/landing/Footer";
 import { useAuth } from "../context/AuthContext";
 import "./Services.css";
 
+// Static presentation data for the services overview section.
 const serviceCards = [
   {
     title: "Video Consultation",
@@ -44,6 +45,10 @@ const serviceCards = [
   },
 ];
 
+/**
+ * Services page.
+ * Presents major platform capabilities and routes users toward booking flow.
+ */
 const Services = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
