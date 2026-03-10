@@ -56,6 +56,32 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
+# ============ Validation Utilities ============
+
+def validate_email_format(email: str) -> bool:
+    """Validate email format"""
+    import re
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def validate_phone_format(phone: str) -> bool:
+    """Validate phone number format"""
+    import re
+    pattern = r'^\+?[\d\s-()]{10,}$'
+    cleaned = re.sub(r'\D', '', phone)
+    return len(cleaned) >= 10
+
+def validate_password_requirements(password: str) -> tuple[bool, str]:
+    """Validate password meets security requirements"""
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters"
+    return True, ""
+
+def sanitize_string_input(value: str) -> str:
+    """Sanitize string input by trimming whitespace"""
+    return value.strip() if value else ""
+
+
 # ============ Authentication Routes ============
 
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)

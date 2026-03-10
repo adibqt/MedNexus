@@ -4,6 +4,29 @@ import { Heart, Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import apiService from "../services/api";
 
+// Input validation utilities
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePhone = (phone) => {
+  const phoneRegex = /^\+?[\d\s-()]+$/;
+  return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
+};
+
+const validatePasswordStrength = (password) => {
+  return {
+    isValid: password.length >= 6,
+    length: password.length,
+    hasMinLength: password.length >= 6
+  };
+};
+
+const sanitizeInput = (input) => {
+  return input.trim();
+};
+
 /**
  * Legacy patient auth screen (sign in / sign up tabs).
  * Kept for compatibility with existing routes.

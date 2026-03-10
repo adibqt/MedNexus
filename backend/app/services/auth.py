@@ -26,6 +26,26 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
+# ============ Input Validation Utilities ============
+
+def validate_token_format(token: str) -> bool:
+    """Validate JWT token format"""
+    if not token or len(token) < 10:
+        return False
+    parts = token.split('.')
+    return len(parts) == 3
+
+def validate_user_id(user_id: int) -> bool:
+    """Validate user ID is positive integer"""
+    return isinstance(user_id, int) and user_id > 0
+
+def sanitize_email(email: str) -> str:
+    """Sanitize email input"""
+    return email.strip().lower() if email else ""
+
+
+# ============ Password Functions ============
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
     #Truncate to 72 bytes (bcrypt limit) to match hashing
