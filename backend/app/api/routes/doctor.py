@@ -18,12 +18,20 @@ from app.services import (
 )
 from app.core.config import settings
 
+# ---------------------------------------------------------------------------
+# Doctor Routes
+# Handles doctor sign-up, login, profile management, and schedule updates.
+# ---------------------------------------------------------------------------
+
 router = APIRouter(prefix="/api/doctors", tags=["doctors"])
 
+# Directory where doctor credential documents are stored
 DOCS_UPLOAD_DIR = Path("uploads/doctor_documents")
 DOCS_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+# Allowed file types for doctor credential uploads (MBBS certificate, etc.)
 ALLOWED_DOC_EXT = {".pdf", ".jpg", ".jpeg", ".png", ".webp"}
+# Maximum upload size: 10 MB per document
 MAX_DOC_SIZE = 10 * 1024 * 1024  # 10MB
 
 
