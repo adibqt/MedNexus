@@ -12,6 +12,11 @@ class UserRole(str, enum.Enum):
 
 
 class Patient(Base):
+    """
+    Represents a registered patient in the MedNexus system.
+    Basic info is captured at sign-up; profile details are filled in
+    during the profile-completion step.
+    """
     __tablename__ = "patients"
 
     id = Column(Integer, primary_key=True, index=True)
