@@ -47,16 +47,18 @@ from app.core.config import settings
 
 router = APIRouter(prefix="/api/patients", tags=["patients"])
 
-# Create uploads directory
+# Create uploads directory for patient profile pictures
 UPLOAD_DIR = Path("uploads/profile_pictures")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# Allowed file extensions
+# Allowed file extensions for profile picture uploads
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+# Maximum upload size: 5 MB per file
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
 # ============ Authentication Routes ============
+# Handles patient registration, login, token refresh, and logout
 
 @router.post("/signup", response_model=TokenWithRefresh, status_code=status.HTTP_201_CREATED)
 async def signup(patient_data: PatientSignUp, db: Session = Depends(get_db)):
