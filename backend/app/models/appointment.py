@@ -5,6 +5,10 @@ from app.db.database import Base
 
 
 class Appointment(Base):
+    """
+    Represents a booked appointment between a patient and a doctor.
+    Status lifecycle: Pending → Confirmed → Completed | Cancelled
+    """
     __tablename__ = "appointments"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -13,6 +17,7 @@ class Appointment(Base):
 
     date = Column(Date, nullable=False)
     time = Column(Time, nullable=False)
+    # Status values: Pending, Confirmed, Completed, Cancelled
     status = Column(String(20), default="Pending", nullable=False)
     reason = Column(String(255), nullable=True)
     symptoms = Column(Text, nullable=True)
