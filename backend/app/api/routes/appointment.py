@@ -15,6 +15,12 @@ from app.schemas.appointment import (
 from app.services import get_current_patient, get_current_doctor
 from app.services.email_service import send_appointment_confirmation_email
 
+# ---------------------------------------------------------------------------
+# Appointment Routes
+# Covers slot generation, booking, status updates, and cancellation.
+# Both patients and doctors have access to relevant endpoints.
+# ---------------------------------------------------------------------------
+
 router = APIRouter(prefix="/api/appointments", tags=["appointments"])
 
 
