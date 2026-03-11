@@ -10,9 +10,17 @@ from chromadb.config import Settings
 from pathlib import Path
 
 
+# ---------------------------------------------------------------------------
+# MedicalRAGService
+# Handles vector-based retrieval of medical symptom-to-specialization mappings.
+# ChromaDB is used as the local persistent vector store.
+# ---------------------------------------------------------------------------
+
 class MedicalRAGService:
     """
-    RAG service for medical symptom-to-specialization knowledge retrieval
+    RAG service for medical symptom-to-specialization knowledge retrieval.
+    Loads pre-defined symptom mappings into ChromaDB and enables semantic
+    similarity search so the AI can recommend the correct specialist.
     """
     
     def __init__(self, persist_directory: str = "./chroma_db"):

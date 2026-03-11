@@ -5,6 +5,11 @@ from app.db.database import Base
 
 
 class Prescription(Base):
+    """
+    Digital prescription issued by a doctor after an appointment.
+    Medicines and lab tests are stored as JSON strings for flexibility.
+    A prescription is locked for editing once is_finalized=True.
+    """
     __tablename__ = "prescriptions"
 
     id = Column(Integer, primary_key=True, index=True)

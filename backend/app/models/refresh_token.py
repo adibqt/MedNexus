@@ -5,6 +5,11 @@ from app.db.database import Base
 
 
 class RefreshToken(Base):
+    """
+    Long-lived token stored in the database used to issue new access tokens.
+    Tokens can be revoked on logout or compromised-account scenarios.
+    user_type distinguishes between 'patient', 'doctor', and 'admin' sessions.
+    """
     __tablename__ = "refresh_tokens"
 
     id = Column(Integer, primary_key=True, index=True)
