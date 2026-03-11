@@ -5,6 +5,11 @@ from app.db.database import Base
 
 
 class Doctor(Base):
+    """
+    Represents a registered doctor in the MedNexus system.
+    New registrations are pending until an admin approves the account
+    (is_approved=False by default).
+    """
     __tablename__ = "doctors"
 
     id = Column(Integer, primary_key=True, index=True)
