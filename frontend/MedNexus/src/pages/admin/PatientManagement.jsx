@@ -155,14 +155,8 @@ const PatientManagement = () => {
           <p>Manage and monitor all registered patients</p>
         </div>
         <div className="patient-header-actions">
-          <button className="patient-export-btn">
-            <Download size={18} />
-            <span>Export</span>
-          </button>
-          <button className="patient-add-btn">
-            <UserPlus size={18} />
-            <span>Add Patient</span>
-          </button>
+          
+          
         </div>
       </div>
 
